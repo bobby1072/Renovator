@@ -4,6 +4,7 @@ using Npm.Renovator.RepoReader.Models;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 
 namespace Npm.Renovator.RepoReader.Concrete
 {
@@ -12,7 +13,15 @@ namespace Npm.Renovator.RepoReader.Concrete
         private static readonly JsonSerializerOptions _jsonSerializerOptionsForPackageJsonWrite = new()
         {
             WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
+        private readonly ILogger<RepoReaderService> _logger;
+
+        public RepoReaderService(ILogger<RepoReaderService> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Get dependencies from package json file
         /// </summary>
@@ -26,10 +35,17 @@ namespace Npm.Renovator.RepoReader.Concrete
             var parsedPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(fileText.FileText)
                 ?? throw new InvalidOperationException("Unable to parse file content");
             
-            
             return parsedPackageJsonDependencies;
         }
-
+        /// <summary>
+        /// Update dependencies from package json file
+        /// </summary>
+        /// <param name="filePath">
+        ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
+        /// </param>
+        /// <param name="newPackageJsonDependencies">
+        ///     Pass in updated dependencies. This will replace the existing values completely.
+        /// </param>
         public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependencies(
             PackageJsonDependencies newPackageJsonDependencies, string filePath, CancellationToken cancellationToken = default)
         {
@@ -47,7 +63,7 @@ namespace Npm.Renovator.RepoReader.Concrete
             return await AnalysePackageJsonDependencies(filePath, cancellationToken);
         }
 
-        private static async Task<(string FileText, string FullFilePath)> ReadJsonFile(string filePath, CancellationToken cancellationToken)
+        private async Task<(string FileText, string FullFilePath)> ReadJsonFile(string filePath, CancellationToken cancellationToken)
         {
             var fullPath = Path.GetFullPath(filePath) ?? throw new InvalidOperationException("Unable to find json file");
 
@@ -62,6 +78,8 @@ namespace Npm.Renovator.RepoReader.Concrete
                 throw new InvalidOperationException("Json file could not be read");
             }
             
+            _logger.LogDebug("Successfully read package json dependencies: {Dependencies}", fileText);
+            
             return (fileText, fullPath);
         }
         private static JsonObject UpdateProperties<T>(JsonObject jsonObject, T objectToUpdateWith) where T : class
@@ -72,7 +90,7 @@ namespace Npm.Renovator.RepoReader.Concrete
             {
                 var propertyName = property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? property.Name;
                 
-                jsonObject[propertyName] = JsonSerializer.Serialize(property.GetValue(objectToUpdateWith));
+                jsonObject[propertyName] = JsonSerializer.Serialize(property.GetValue(objectToUpdateWith), _jsonSerializerOptionsForPackageJsonWrite);
             }
             
             return jsonObject;

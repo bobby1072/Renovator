@@ -2,5 +2,5 @@
 
 public interface IConsoleApp
 {
-    Task ExecuteAsync();
+    Task ExecuteAsync(CancellationToken cancellationToken = default);
 }

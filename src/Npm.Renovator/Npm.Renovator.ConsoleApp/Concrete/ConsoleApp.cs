@@ -7,7 +7,7 @@ internal class ConsoleApp: IConsoleApp
     public ConsoleApp()
     {
     }
-    public async Task ExecuteAsync()
+    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
     }
 }
