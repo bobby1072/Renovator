@@ -5,6 +5,6 @@ namespace Npm.Renovator.NpmHttpClient.Abstract
 {
     public interface INpmJsRegistryHttpClient
     {
-        Task<NpmJsRegistryResponse> ExecuteAsync(NpmJsRegistryRequestBody requestBody, CancellationToken token = default);
+        Task<NpmJsRegistryResponse?> ExecuteAsync(NpmJsRegistryRequestBody requestBody, CancellationToken token = default);
     }
 }

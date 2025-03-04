@@ -16,6 +16,7 @@ public static class Program
 
         serviceCollection
             .AddRenovatorApplication(configurationManager)
+            .AddLogging()
             .AddSingleton<IConfigurationManager>(configurationManager)
             .AddTransient<IConsoleApp, Concrete.ConsoleApp>();
 
