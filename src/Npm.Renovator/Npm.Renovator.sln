@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.OperationTimer", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.NpmHttpClient", "Npm.Renovator.NpmHttpClient\Npm.Renovator.NpmHttpClient.csproj", "{F00AEAF3-13AA-4005-99B5-E062B673C6B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npm.Renovator.Application", "Npm.Renovator.Application\Npm.Renovator.Application.csproj", "{3C9EE641-5C52-4A18-8223-2D739AD4D860}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{F00AEAF3-13AA-4005-99B5-E062B673C6B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F00AEAF3-13AA-4005-99B5-E062B673C6B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F00AEAF3-13AA-4005-99B5-E062B673C6B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C9EE641-5C52-4A18-8223-2D739AD4D860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C9EE641-5C52-4A18-8223-2D739AD4D860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C9EE641-5C52-4A18-8223-2D739AD4D860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C9EE641-5C52-4A18-8223-2D739AD4D860}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
