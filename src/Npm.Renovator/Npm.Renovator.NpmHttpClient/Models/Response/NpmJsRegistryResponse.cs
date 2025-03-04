@@ -1,6 +1,4 @@
-using Npm.Renovator.NpmHttpClient.Models;
-
-namespace Npm.Renovator.NpmHttpClient
+namespace Npm.Renovator.NpmHttpClient.Models.Response
 {
     public record NpmJsRegistryResponse
     {

@@ -1,4 +1,4 @@
-namespace Npm.Renovator.NpmHttpClient.Models
+namespace Npm.Renovator.NpmHttpClient.Models.Response
 {
     public record NpmJsRegistryResponseSingleObjectScore
     {

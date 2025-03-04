@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.2" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
+      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.HttpClient\BT.Common.HttpClient.csproj" />
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.OperationTimer\BT.Common.OperationTimer.csproj" />
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Polly\BT.Common.Polly.csproj" />

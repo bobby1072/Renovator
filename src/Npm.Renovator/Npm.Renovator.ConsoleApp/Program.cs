@@ -15,6 +15,8 @@ public static class Program
         var serviceCollection = new ServiceCollection();
      
         
+
+
         serviceCollection.AddSingleton<IConfigurationManager>(configurationManager);
 
         serviceCollection.AddTransient<IConsoleApp, Concrete.ConsoleApp>();
