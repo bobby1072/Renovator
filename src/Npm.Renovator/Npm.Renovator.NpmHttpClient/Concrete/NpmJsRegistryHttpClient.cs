@@ -1,12 +1,11 @@
-﻿using Flurl;
+﻿using BT.Common.HttpClient.Extensions;
+using Flurl;
 using Flurl.Http;
 using Microsoft.Extensions.Options;
 using Npm.Renovator.NpmHttpClient.Abstract;
 using Npm.Renovator.NpmHttpClient.Configuration;
 using Npm.Renovator.NpmHttpClient.Models.Request;
 using Npm.Renovator.NpmHttpClient.Models.Response;
-using BT.Common.Polly.Models.Abstract;
-using BT.Common.HttpClient.Extensions;
 
 namespace Npm.Renovator.NpmHttpClient.Concrete
 {
