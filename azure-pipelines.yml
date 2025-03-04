@@ -1,0 +1,31 @@
+trigger:
+  branches:
+    include:
+      - master
+
+pr:
+  branches:
+    include:
+      - "*"
+
+pool:
+  vmImage: "ubuntu-latest"
+
+stages:
+  - stage: Build
+    jobs:
+      - job: build_backend
+        displayName: "Build backend"
+        steps:
+          - task: UseDotNet@2
+            displayName: "Install .NET SDK"
+            inputs:
+              packageType: "sdk"
+              version: "8.0.x"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Run .NET Unit Tests"
+            inputs:
+              command: "test"
+              projects: "src/Npm.Renovator/Npm.Renovator.sln"
+              arguments: "-c Release"
