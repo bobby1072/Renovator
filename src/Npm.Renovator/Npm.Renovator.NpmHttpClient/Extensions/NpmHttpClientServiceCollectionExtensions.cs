@@ -1,0 +1,33 @@
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Npm.Renovator.NpmHttpClient.Abstract;
+using Npm.Renovator.NpmHttpClient.Concrete;
+using Npm.Renovator.NpmHttpClient.Configuration;
+using Npm.Renovator.NpmHttpClient.Serializers.Abstract;
+using Npm.Renovator.NpmHttpClient.Serializers.Concrete;
+
+namespace Npm.Renovator.NpmHttpClient.Extensions
+{
+    public static class NpmHttpClientServiceCollectionExtensions
+    {
+        public static IServiceCollection AddNpmHttpClient(this IServiceCollection services,
+            IConfigurationManager configManager) 
+        {
+            var npmApiHttpSettingsSection = configManager.GetSection(NpmJsRegistryHttpClientSettingsConfiguration.Key);
+
+            if (!npmApiHttpSettingsSection.Exists())
+            {
+                throw new InvalidDataException($"Environment variables missing for {NpmJsRegistryHttpClientSettingsConfiguration.Key}");
+            }
+
+            services.Configure<NpmJsRegistryHttpClientSettingsConfiguration>(npmApiHttpSettingsSection);
+
+            services
+                .AddSingleton<INpmJsRegistryHttpClientSerializer, NpmJsRegistryHttpClientSerializer>()
+                .AddTransient<INpmJsRegistryHttpClient, NpmJsRegistryHttpClient>();
+
+
+            return services;
+        }
+    }
+}

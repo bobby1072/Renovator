@@ -2,3 +2,7 @@ obj/
 debug/
 .vs/
 bin/
+
+.idea/
+
+*.sln.DotSettings.user
