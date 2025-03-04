@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Npm.Renovator.NpmHttpClient\Npm.Renovator.NpmHttpClient.csproj" />
+    <ProjectReference Include="..\Npm.Renovator.RepoReader\Npm.Renovator.RepoReader.csproj" />
   </ItemGroup>
 
 </Project>
