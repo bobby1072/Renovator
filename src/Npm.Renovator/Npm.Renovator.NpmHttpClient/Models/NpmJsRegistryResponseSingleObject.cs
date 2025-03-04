@@ -1,6 +1,6 @@
-using Npm.Renovator.ConsoleApp.NpmHttpClient.Models;
+using Npm.Renovator.NpmHttpClient.Models;
 
-namespace Npm.Renovator.ConsoleApp.NpmHttpClient
+namespace Npm.Renovator.NpmHttpClient
 {
     public record NpmJsRegistryResponseSingleObject
     {

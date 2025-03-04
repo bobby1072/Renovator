@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npm.Renovator.ConsoleApp", "Npm.Renovator.ConsoleApp\Npm.Renovator.ConsoleApp.csproj", "{66C043D5-5DB4-4EB6-991B-826654B2F1E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.ConsoleApp", "Npm.Renovator.ConsoleApp\Npm.Renovator.ConsoleApp.csproj", "{66C043D5-5DB4-4EB6-991B-826654B2F1E9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", "{09422590-0827-401B-9EF0-73021D43B12C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.Polly", "..\Submodules\BT\src\BT.Common\BT.Common.Polly\BT.Common.Polly.csproj", "{148862EA-10A8-4293-8EC4-5E0259295248}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.Polly", "..\Submodules\BT\src\BT.Common\BT.Common.Polly\BT.Common.Polly.csproj", "{148862EA-10A8-4293-8EC4-5E0259295248}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.HttpClient", "..\Submodules\BT\src\BT.Common\BT.Common.HttpClient\BT.Common.HttpClient.csproj", "{69A1B312-366D-421D-9151-C152D77EA3B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.HttpClient", "..\Submodules\BT\src\BT.Common\BT.Common.HttpClient\BT.Common.HttpClient.csproj", "{69A1B312-366D-421D-9151-C152D77EA3B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.FastArray", "..\Submodules\BT\src\BT.Common\BT.Common.FastArray\BT.Common.FastArray.csproj", "{22CB3F75-3ACA-45D9-9603-4A7302B5DD6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.FastArray", "..\Submodules\BT\src\BT.Common\BT.Common.FastArray\BT.Common.FastArray.csproj", "{22CB3F75-3ACA-45D9-9603-4A7302B5DD6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.OperationTimer", "..\Submodules\BT\src\BT.Common\BT.Common.OperationTimer\BT.Common.OperationTimer.csproj", "{85D563CD-8765-4BA9-B9C3-837DABD57EFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.OperationTimer", "..\Submodules\BT\src\BT.Common\BT.Common.OperationTimer\BT.Common.OperationTimer.csproj", "{85D563CD-8765-4BA9-B9C3-837DABD57EFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npm.Renovator.ConsoleApp.NpmHttpClient", "Npm.Renovator.ConsoleApp.NpmHttpClient\Npm.Renovator.ConsoleApp.NpmHttpClient.csproj", "{F00AEAF3-13AA-4005-99B5-E062B673C6B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.NpmHttpClient", "Npm.Renovator.NpmHttpClient\Npm.Renovator.NpmHttpClient.csproj", "{F00AEAF3-13AA-4005-99B5-E062B673C6B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,13 +51,13 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {256D8D51-8095-48EC-B38C-8F8DE4969BFA}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{148862EA-10A8-4293-8EC4-5E0259295248} = {09422590-0827-401B-9EF0-73021D43B12C}
 		{69A1B312-366D-421D-9151-C152D77EA3B8} = {09422590-0827-401B-9EF0-73021D43B12C}
 		{22CB3F75-3ACA-45D9-9603-4A7302B5DD6D} = {09422590-0827-401B-9EF0-73021D43B12C}
 		{85D563CD-8765-4BA9-B9C3-837DABD57EFD} = {09422590-0827-401B-9EF0-73021D43B12C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {256D8D51-8095-48EC-B38C-8F8DE4969BFA}
 	EndGlobalSection
 EndGlobal
