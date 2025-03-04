@@ -6,16 +6,19 @@ using Npm.Renovator.NpmHttpClient.Abstract;
 using Npm.Renovator.NpmHttpClient.Configuration;
 using Npm.Renovator.NpmHttpClient.Models.Request;
 using Npm.Renovator.NpmHttpClient.Models.Response;
+using Npm.Renovator.NpmHttpClient.Serializers.Abstract;
 
 namespace Npm.Renovator.NpmHttpClient.Concrete
 {
     internal class NpmJsRegistryHttpClient : INpmJsRegistryHttpClient
     {
         private readonly NpmJsRegistryHttpClientSettingsConfiguration _configurations;
-
-        public NpmJsRegistryHttpClient(IOptionsSnapshot<NpmJsRegistryHttpClientSettingsConfiguration> configurations)
+        private readonly INpmJsRegistryHttpClientSerializer _jsonSerializer;
+        public NpmJsRegistryHttpClient(IOptionsSnapshot<NpmJsRegistryHttpClientSettingsConfiguration> configurations,
+            INpmJsRegistryHttpClientSerializer jsonSerilizer)
         {
             _configurations = configurations.Value;
+            _jsonSerializer = jsonSerilizer;
         }
 
 
@@ -27,6 +30,7 @@ namespace Npm.Renovator.NpmHttpClient.Concrete
                 .AppendPathSegment("search")
                 .AppendQueryParam("text", requestBody.Text)
                 .AppendQueryParam("size", requestBody.Size)
+                .WithSettings(x => x.JsonSerializer = _jsonSerializer)
                 .GetJsonAsync<NpmJsRegistryResponse>(_configurations, token);
 
             return response;

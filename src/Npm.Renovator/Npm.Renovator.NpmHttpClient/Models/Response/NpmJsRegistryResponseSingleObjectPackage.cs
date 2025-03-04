@@ -5,8 +5,8 @@ namespace Npm.Renovator.NpmHttpClient.Models.Response
         public required string Name { get; init; }
         public required string Version { get; init; }
         public string? Description { get; init; }
-        public IReadOnlyCollection<string> Keywords { get; init; } = [];
         public string? License { get; init; }
+        public IReadOnlyCollection<string> Keywords { get; init; } = [];
         public DateTime Date { get; init; }
         public required NpmJsRegistryResponseSingleObjectUser Publisher { get; init; }
         public IReadOnlyCollection<NpmJsRegistryResponseSingleObjectUser> Maintainers { get; init; } = [];

@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Npm.Renovator.NpmHttpClient.Abstract;
 using Npm.Renovator.NpmHttpClient.Concrete;
 using Npm.Renovator.NpmHttpClient.Configuration;
+using Npm.Renovator.NpmHttpClient.Serializers.Abstract;
+using Npm.Renovator.NpmHttpClient.Serializers.Concrete;
 
 namespace Npm.Renovator.NpmHttpClient.Extensions
 {
@@ -20,7 +22,9 @@ namespace Npm.Renovator.NpmHttpClient.Extensions
 
             services.Configure<NpmJsRegistryHttpClientSettingsConfiguration>(npmApiHttpSettingsSection);
 
-            services.AddTransient<INpmJsRegistryHttpClient, NpmJsRegistryHttpClient>();
+            services
+                .AddSingleton<INpmJsRegistryHttpClientSerializer, NpmJsRegistryHttpClientSerializer>()
+                .AddTransient<INpmJsRegistryHttpClient, NpmJsRegistryHttpClient>();
 
 
             return services;
