@@ -1,6 +1,7 @@
 obj/
 debug/
 .vs/
+.vscode/
 bin/
 
 .idea/

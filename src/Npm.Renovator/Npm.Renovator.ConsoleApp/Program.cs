@@ -16,8 +16,9 @@ public static class Program
 
         serviceCollection
             .AddRenovatorApplication(configurationManager)
+            .AddLogging()
             .AddSingleton<IConfigurationManager>(configurationManager)
-            .AddTransient<IConsoleApp, Concrete.ConsoleApp>();
+            .AddScoped<IConsoleApp, Concrete.ConsoleApp>();
 
         await using var scope = serviceCollection.BuildServiceProvider();
         

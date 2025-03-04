@@ -24,7 +24,7 @@ namespace Npm.Renovator.NpmHttpClient.Extensions
 
             services
                 .AddSingleton<INpmJsRegistryHttpClientSerializer, NpmJsRegistryHttpClientSerializer>()
-                .AddTransient<INpmJsRegistryHttpClient, NpmJsRegistryHttpClient>();
+                .AddScoped<INpmJsRegistryHttpClient, NpmJsRegistryHttpClient>();
 
 
             return services;
