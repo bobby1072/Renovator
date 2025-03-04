@@ -22,7 +22,7 @@ public static class Program
         
         await using var scope = serviceCollection.BuildServiceProvider();
         
-        await using var asyncScope =  scope.CreateAsyncScope();
+        await using var asyncScope = scope.CreateAsyncScope();
         
         
         await asyncScope.ServiceProvider.GetRequiredService<IConsoleApp>().ExecuteAsync();
