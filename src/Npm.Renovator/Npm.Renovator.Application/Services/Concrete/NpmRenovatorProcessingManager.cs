@@ -20,7 +20,7 @@ internal class NpmRenovatorProcessingManager: INpmRenovatorProcessingManager
         _logger = logger;
     }
 
-    public async Task<CurrentPackageVersionsAndPotentialUpgradesView> GetCurrentPackageVersionAndPotentialUpgradesView(string filePath, CancellationToken cancellationToken = default)
+    public Task<CurrentPackageVersionsAndPotentialUpgradesView> GetCurrentPackageVersionAndPotentialUpgradesView(string filePath, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
