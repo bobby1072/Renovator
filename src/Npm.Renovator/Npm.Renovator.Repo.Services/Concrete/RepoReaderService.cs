@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
-using Npm.Renovator.RepoReader.Abstract;
-using Npm.Renovator.RepoReader.Models;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using Npm.Renovator.Repo.Services.Abstract;
+using Npm.Renovator.Repo.Services.Models;
 
-namespace Npm.Renovator.RepoReader.Concrete
+namespace Npm.Renovator.Repo.Services.Concrete
 {
     internal class RepoReaderService: IRepoReaderService
     {

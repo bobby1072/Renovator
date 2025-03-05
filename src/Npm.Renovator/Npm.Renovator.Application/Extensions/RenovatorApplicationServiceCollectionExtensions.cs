@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Npm.Renovator.Application.Services.Abstract;
 using Npm.Renovator.Application.Services.Concrete;
 using Npm.Renovator.NpmHttpClient.Extensions;
-using Npm.Renovator.RepoReader.Extensions;
+using Npm.Renovator.Repo.Services.Extensions;
 
 namespace Npm.Renovator.Application.Extensions
 {
@@ -13,7 +13,7 @@ namespace Npm.Renovator.Application.Extensions
         {
             serviceCollection
                 .AddNpmHttpClient(configManager)
-                .AddRepoReader()
+                .AddRepoServices()
                 .AddScoped<INpmRenovatorProcessingManager, NpmRenovatorProcessingManager>();
 
             return serviceCollection;

@@ -6,7 +6,7 @@ using Npm.Renovator.Application.Services.Abstract;
 using Npm.Renovator.NpmHttpClient.Abstract;
 using Npm.Renovator.NpmHttpClient.Models.Request;
 using Npm.Renovator.NpmHttpClient.Models.Response;
-using Npm.Renovator.RepoReader.Abstract;
+using Npm.Renovator.Repo.Services.Abstract;
 using System.Text.Json;
 
 namespace Npm.Renovator.Application.Services.Concrete;

@@ -4,9 +4,9 @@ using Npm.Renovator.Repo.Services.Concrete;
 
 namespace Npm.Renovator.Repo.Services.Extensions;
 
-public static class RepoReaderServiceCollectionExtensions
+public static class RepoServicesServiceCollectionExtensions
 {
-    public static IServiceCollection AddRepoReader(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddRepoServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IRepoReaderService, RepoReaderService>();
         

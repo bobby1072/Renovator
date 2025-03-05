@@ -1,6 +1,5 @@
-﻿namespace Npm.Renovator.RepoReader.Abstract;
+﻿namespace Npm.Renovator.Repo.Services.Abstract;
 
 public class INpmCommandService
 {
-    
 }
