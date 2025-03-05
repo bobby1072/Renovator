@@ -31,30 +31,44 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 
     public async Task<RenovatorOutcome<NpmCommandResults>> AttemptToRenovateRepoAsync(DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken = default)
     {
+        PackageJsonDependencies? analysedDependencies = null;
         try
         {
-            var analysedDependencies = await _reader.AnalysePackageJsonDependenciesAsync(upgradeBuilder.FilePath, cancellationToken);
+            analysedDependencies = await _reader.AnalysePackageJsonDependenciesAsync(upgradeBuilder.FilePath, cancellationToken);
 
             var upgradedDepends = await Task.WhenAll(UpgradeDependencyDict(analysedDependencies.Dependencies, upgradeBuilder, cancellationToken),
                 UpgradeDependencyDict(analysedDependencies.DevDependencies, upgradeBuilder, cancellationToken));
 
-            analysedDependencies.Dependencies = upgradedDepends.First();
-            analysedDependencies.DevDependencies = upgradedDepends.Last();
-            
-            await _reader.UpdateExistingPackageJsonDependenciesAsync(analysedDependencies, upgradeBuilder.FilePath, cancellationToken);
+            var newDependencies = new PackageJsonDependencies
+            {
+                Dependencies = upgradedDepends.First(),
+                DevDependencies = upgradedDepends.Last()
+            };            
+            await _reader.UpdateExistingPackageJsonDependenciesAsync(newDependencies, upgradeBuilder.FilePath, cancellationToken);
             
             var npmIResult = await _npmCommandService.RunNpmInstallAsync(upgradeBuilder.FilePath, cancellationToken);
 
-            return new RenovatorOutcome<NpmCommandResults>
+            var modelToReturn = new RenovatorOutcome<NpmCommandResults>
             {
                 RenovatorException = string.IsNullOrEmpty(npmIResult.Exception)
                     ? null
                     : new RenovatorException(npmIResult.Exception),
                 Data = npmIResult
             };
+
+            if (!modelToReturn.IsSuccess)
+            {
+                await AttemptToRollbackRepo(upgradeBuilder.FilePath, analysedDependencies, cancellationToken);
+            }
+            
+            return modelToReturn; 
         }
         catch (Exception ex)
         {
+            if (analysedDependencies is not null)
+            {
+                await AttemptToRollbackRepo(upgradeBuilder.FilePath, analysedDependencies, cancellationToken);
+            }
             return new RenovatorOutcome<NpmCommandResults>
             {
                 RenovatorException = GetRenovatorException(nameof(AttemptToRenovateRepoAsync), ex)
@@ -106,30 +120,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         return finishedJobs.FastArrayWhere(x => x is not null).SelectMany(x => x!.Objects).ToArray();
     }
 
-    private static RenovatorException GetRenovatorException(string opName, Exception? innerException = null)
-    {
-        return new RenovatorException($"Exception occured during execution of {opName}",
-            innerException);
-    }
-    private static IEnumerable<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage> GetListOfPotentialNewPackages(Dictionary<string, string> dependencyList, IReadOnlyCollection<NpmJsRegistryResponseSingleObject> foundPackagesFromRegistry)
-    {
-        foreach (var package in dependencyList)
-        {
-            yield return new CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage
-            {
-                NameOnNpm = package.Key,
-                CurrentVersion = package.Value,
-                PotentialNewVersions = foundPackagesFromRegistry
-                    .FastArrayWhere(x => x.Package.Name == package.Key)
-                    .Select(x => new CurrentPackageVersionsAndPotentialUpgradesViewPotentialNewVersion
-                    {
-                        CurrentVersion = x.Package.Version,
-                        ReleaseDate = x.Updated
-                    })
-                    .ToArray()
-            };
-        }
-    }
+
 
     private async Task<Dictionary<string, string>> UpgradeDependencyDict(Dictionary<string, string> dependencyDict, DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken)
     {
@@ -158,5 +149,44 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         }
         
         return dupedDict;
+    }
+
+    private async Task AttemptToRollbackRepo(string filePath, PackageJsonDependencies originalDependencies,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            _logger.LogDebug("Attempting to rollback repo at {FilePath}", filePath);
+            await _reader.UpdateExistingPackageJsonDependenciesAsync(originalDependencies, filePath, cancellationToken);
+            await _npmCommandService.RunNpmInstallAsync(filePath, cancellationToken);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "Failed to rollback repo at {FilePath}", filePath);
+        }
+    }
+    private static RenovatorException GetRenovatorException(string opName, Exception? innerException = null)
+    {
+        return new RenovatorException($"Exception occured during execution of {opName}",
+            innerException);
+    }
+    private static IEnumerable<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage> GetListOfPotentialNewPackages(Dictionary<string, string> dependencyList, IReadOnlyCollection<NpmJsRegistryResponseSingleObject> foundPackagesFromRegistry)
+    {
+        foreach (var package in dependencyList)
+        {
+            yield return new CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage
+            {
+                NameOnNpm = package.Key,
+                CurrentVersion = package.Value,
+                PotentialNewVersions = foundPackagesFromRegistry
+                    .FastArrayWhere(x => x.Package.Name == package.Key)
+                    .Select(x => new CurrentPackageVersionsAndPotentialUpgradesViewPotentialNewVersion
+                    {
+                        CurrentVersion = x.Package.Version,
+                        ReleaseDate = x.Updated
+                    })
+                    .ToArray()
+            };
+        }
     }
 }

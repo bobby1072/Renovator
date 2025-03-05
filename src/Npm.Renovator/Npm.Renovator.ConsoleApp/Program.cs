@@ -19,14 +19,14 @@ public static class Program
             .AddRenovatorApplication(configurationManager)
             .AddLogging()
             .AddSingleton<IConfigurationManager>(configurationManager)
-            .AddScoped<IConsoleApp, Concrete.ConsoleApp>();
+            .AddScoped<IConsoleApplicationService, Concrete.ConsoleApplicationService>();
 
-        await using var scope = serviceCollection.BuildServiceProvider();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
         
-        await using var asyncScope = scope.CreateAsyncScope();
+        await using var asyncScope = serviceProvider.CreateAsyncScope();
         
         
-        await asyncScope.ServiceProvider.GetRequiredService<IConsoleApp>().ExecuteAsync();
+        await asyncScope.ServiceProvider.GetRequiredService<IConsoleApplicationService>().ExecuteAsync();
     }
 }
 
