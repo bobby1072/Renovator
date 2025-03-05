@@ -13,7 +13,7 @@ public static class DomainServicesServiceCollectionExtensions
         serviceCollection
             .AddNpmHttpClient(configurationManager)
             .AddScoped<INpmCommandService, NpmCommandService>()
-            .AddScoped<INpmRenovatorProcessingManager, INpmRenovatorProcessingManager>()
+            .AddScoped<INpmRenovatorProcessingManager, NpmRenovatorProcessingManager>()
             .AddScoped<IRepoReaderService, RepoReaderService>();
         
         return serviceCollection;

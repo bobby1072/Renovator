@@ -2,7 +2,7 @@
 
 namespace Npm.Renovator.Domain.Services.Abstract;
 
-public interface INpmCommandService
+internal interface INpmCommandService
 {
-    Task<NpmCommandResultsView> RunNpmInstall(string filePath);
+    Task<NpmCommandResults> RunNpmInstallAsync(string filePath, CancellationToken cancellationToken = default);
 }

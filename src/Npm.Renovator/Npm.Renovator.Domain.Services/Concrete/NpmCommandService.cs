@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
 
@@ -7,7 +8,13 @@ namespace Npm.Renovator.Domain.Services.Concrete;
 
 internal class NpmCommandService: INpmCommandService
 {
-    public async Task<NpmCommandResultsView> RunNpmInstall(string filePath)
+    private readonly ILogger<NpmCommandService> _logger;
+
+    public NpmCommandService(ILogger<NpmCommandService> logger)
+    {
+        _logger = logger;
+    }
+    public async Task<NpmCommandResults> RunNpmInstallAsync(string filePath, CancellationToken cancellationToken  = default)
     {
         var fullPath = Path.GetFullPath(filePath) ?? throw new InvalidOperationException("Unable to find json file");
         
@@ -22,11 +29,18 @@ internal class NpmCommandService: INpmCommandService
 
         await process.WaitForExitAsync();
 
-        return new NpmCommandResultsView
+        var resultsView = new NpmCommandResults
         {
             Output = result.First(),
-            Error = result.Last()
+            Exception = result.Last()
         };
+
+        if (!string.IsNullOrEmpty(resultsView.Exception))
+        {
+            _logger.LogError("Npm install failed: {Error}", resultsView.Exception);
+        }
+        
+        return resultsView;
     }
 
     

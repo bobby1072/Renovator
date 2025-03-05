@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using Npm.Renovator.Common.Extensions;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
 
@@ -54,7 +55,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             var jsonObject = JsonNode.Parse(fileText.FileText)!.AsObject()
                                   ?? throw new InvalidOperationException("Unable to parse file content");
             
-            var updatedJsonObject = UpdateProperties(jsonObject, newPackageJsonDependencies);
+            var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies);
 
             await File.WriteAllTextAsync(updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
                 fileText.FullFilePath, cancellationToken);
@@ -82,18 +83,6 @@ namespace Npm.Renovator.Domain.Services.Concrete
             
             return (fileText, fullPath);
         }
-        private static JsonObject UpdateProperties<T>(JsonObject jsonObject, T objectToUpdateWith) where T : class
-        {
-            var typeProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            foreach (var property in typeProperties)
-            {
-                var propertyName = property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? property.Name;
-                
-                jsonObject[propertyName] = JsonSerializer.Serialize(property.GetValue(objectToUpdateWith), _jsonSerializerOptionsForPackageJsonWrite);
-            }
-            
-            return jsonObject;
-        }
     }
 }

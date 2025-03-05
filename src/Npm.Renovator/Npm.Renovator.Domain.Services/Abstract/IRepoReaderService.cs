@@ -2,7 +2,7 @@
 
 namespace Npm.Renovator.Domain.Services.Abstract
 {
-    public interface IRepoReaderService
+    internal interface IRepoReaderService
     {
         /// <summary>
         /// Get dependencies from package json file

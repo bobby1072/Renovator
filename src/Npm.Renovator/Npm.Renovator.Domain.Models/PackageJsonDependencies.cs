@@ -4,8 +4,8 @@ namespace Npm.Renovator.Domain.Models
 {
     public sealed record PackageJsonDependencies : IEquatable<PackageJsonDependencies>
     {
-        public Dictionary<string, string> DevDependencies { get; init; } = [];
-        public Dictionary<string, string> Dependencies { get; init; } = [];
+        public Dictionary<string, string> DevDependencies { get; set; } = [];
+        public Dictionary<string, string> Dependencies { get; set; } = [];
 
         public bool Equals(PackageJsonDependencies? other)
         {

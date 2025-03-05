@@ -1,7 +1,7 @@
 ﻿namespace Npm.Renovator.Domain.Models.Views;
 
-public sealed record NpmCommandResultsView
+public record NpmCommandResults
 {
     public string? Output { get; init; }
-    public string? Error { get; init; }
+    public string? Exception { get; init; }
 }
