@@ -1,4 +1,4 @@
-﻿using Npm.Renovator.Application.Models;
+﻿using Npm.Renovator.Domain.Models.Views;
 
 namespace Npm.Renovator.Application.Services.Abstract;
 

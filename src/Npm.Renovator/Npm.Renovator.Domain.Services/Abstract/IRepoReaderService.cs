@@ -1,6 +1,6 @@
-﻿using Npm.Renovator.Repo.Services.Models;
+﻿using Npm.Renovator.Domain.Models;
 
-namespace Npm.Renovator.Repo.Services.Abstract
+namespace Npm.Renovator.Domain.Services.Abstract
 {
     public interface IRepoReaderService
     {

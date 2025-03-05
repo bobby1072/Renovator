@@ -1,13 +1,13 @@
 ﻿using BT.Common.FastArray.Proto;
 using BT.Common.OperationTimer.Proto;
 using Microsoft.Extensions.Logging;
-using Npm.Renovator.Application.Models;
 using Npm.Renovator.Application.Services.Abstract;
 using Npm.Renovator.NpmHttpClient.Abstract;
 using Npm.Renovator.NpmHttpClient.Models.Request;
 using Npm.Renovator.NpmHttpClient.Models.Response;
-using Npm.Renovator.Repo.Services.Abstract;
+using Npm.Renovator.Domain.Services.Abstract;
 using System.Text.Json;
+using Npm.Renovator.Domain.Models.Views;
 
 namespace Npm.Renovator.Application.Services.Concrete;
 

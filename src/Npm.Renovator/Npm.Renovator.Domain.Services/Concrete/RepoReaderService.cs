@@ -3,10 +3,10 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
-using Npm.Renovator.Repo.Services.Abstract;
-using Npm.Renovator.Repo.Services.Models;
+using Npm.Renovator.Domain.Models;
+using Npm.Renovator.Domain.Services.Abstract;
 
-namespace Npm.Renovator.Repo.Services.Concrete
+namespace Npm.Renovator.Domain.Services.Concrete
 {
     internal class RepoReaderService: IRepoReaderService
     {

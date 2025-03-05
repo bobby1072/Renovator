@@ -1,4 +1,4 @@
-﻿namespace Npm.Renovator.Application.Models;
+﻿namespace Npm.Renovator.Domain.Models.Views;
 
 public sealed record CurrentPackageVersionsAndPotentialUpgradesViewPotentialNewVersion
 {

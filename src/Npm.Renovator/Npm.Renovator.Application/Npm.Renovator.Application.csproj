@@ -15,7 +15,7 @@
     <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.FastArray\BT.Common.FastArray.csproj" />
     <ProjectReference Include="..\Npm.Renovator.Common\Npm.Renovator.Common.csproj" />
     <ProjectReference Include="..\Npm.Renovator.NpmHttpClient\Npm.Renovator.NpmHttpClient.csproj" />
-    <ProjectReference Include="..\Npm.Renovator.Repo.Services\Npm.Renovator.Repo.Services.csproj" />
+    <ProjectReference Include="..\Npm.Renovator.Domain.Services\Npm.Renovator.Domain.Services.csproj" />
   </ItemGroup>
 
 </Project>

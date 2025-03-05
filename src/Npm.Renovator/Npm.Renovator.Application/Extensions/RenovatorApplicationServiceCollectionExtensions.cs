@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Npm.Renovator.Application.Services.Abstract;
 using Npm.Renovator.Application.Services.Concrete;
 using Npm.Renovator.NpmHttpClient.Extensions;
-using Npm.Renovator.Repo.Services.Extensions;
+using Npm.Renovator.Domain.Services.Extensions;
 
 namespace Npm.Renovator.Application.Extensions
 {
