@@ -2,13 +2,17 @@
 
 public sealed class DependencyUpgradeBuilder
 {
-    private string _filePath;
-    public string FilePath
+    private string _localSystemFilePathToJson;
+    public string LocalSystemFilePathToJson
     {
-        get => _filePath;
-        set => _filePath = Path.GetFullPath(value);
+        get => _localSystemFilePathToJson;
+        set => _localSystemFilePathToJson = Path.GetFullPath(value);
     }
     private readonly Dictionary<string, string?> _packagesToUpgrade = [];
+    private DependencyUpgradeBuilder(string localSystemFilePathToJson)
+    {
+        _localSystemFilePathToJson = localSystemFilePathToJson;
+    }
 
     public DependencyUpgradeBuilder AddUpgrade(string packageName, string? newVersion = null)
     {
@@ -22,13 +26,9 @@ public sealed class DependencyUpgradeBuilder
         return _packagesToUpgrade.FirstOrDefault(pair => pair.Key == packageName);
     }
 
-    private DependencyUpgradeBuilder(string filePath)
+    public static DependencyUpgradeBuilder Create(string localSystemFilePathToJson, params string[] packagesToUpgrade)
     {
-        _filePath = filePath;
-    }
-    public static DependencyUpgradeBuilder Create(string filePath, params string[] packagesToUpgrade)
-    {
-        var newUpgrader = new DependencyUpgradeBuilder(filePath);
+        var newUpgrader = new DependencyUpgradeBuilder(localSystemFilePathToJson);
 
         foreach (var package in packagesToUpgrade)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
-using Npm.Renovator.Domain.Models.Views;
+using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
 
 namespace Npm.Renovator.Domain.Services.Concrete;
@@ -14,9 +14,9 @@ internal class NpmCommandService: INpmCommandService
     {
         _logger = logger;
     }
-    public async Task<NpmCommandResults> RunNpmInstallAsync(string filePath, CancellationToken cancellationToken  = default)
+    public async Task<NpmCommandResults> RunNpmInstallAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken  = default)
     {
-        var fullPath = Path.GetFullPath(filePath) ?? throw new InvalidOperationException("Unable to find json file");
+        var fullPath = Path.GetFullPath(localSystemFilePathToPackageJson) ?? throw new InvalidOperationException("Unable to find json file");
         
         using var process = new Process(); 
         process.StartInfo = GetProcessStartInfo(fullPath);

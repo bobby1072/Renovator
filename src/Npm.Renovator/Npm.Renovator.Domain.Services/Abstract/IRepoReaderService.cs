@@ -7,15 +7,15 @@ namespace Npm.Renovator.Domain.Services.Abstract
         /// <summary>
         /// Get dependencies from package json file
         /// </summary>
-        /// <param name="filePath">
+        /// <param name="localSystemFilePathToPackageJson">
         ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
         /// </param>
-        Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string filePath,
+        Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson,
             CancellationToken cancellationToken = default);
         /// <summary>
         /// Update dependencies from package json file
         /// </summary>
-        /// <param name="filePath">
+        /// <param name="localSystemFilePathToPackageJson">
         ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
         /// </param>
         /// <param name="newPackageJsonDependencies">
@@ -23,7 +23,7 @@ namespace Npm.Renovator.Domain.Services.Abstract
         /// </param>
         Task<PackageJsonDependencies> UpdateExistingPackageJsonDependenciesAsync(
             PackageJsonDependencies newPackageJsonDependencies, 
-            string filePath,
+            string localSystemFilePathToPackageJson,
             CancellationToken cancellationToken = default);
     }
 }

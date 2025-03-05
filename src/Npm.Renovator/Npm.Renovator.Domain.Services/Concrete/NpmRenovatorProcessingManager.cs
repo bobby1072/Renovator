@@ -8,6 +8,7 @@ using Npm.Renovator.Domain.Services.Abstract;
 using System.Text.Json;
 using Npm.Renovator.Common.Exceptions;
 using Npm.Renovator.Domain.Models;
+using Npm.Renovator.Domain.Models.Extensions;
 using Npm.Renovator.Domain.Models.Views;
 
 namespace Npm.Renovator.Domain.Services.Concrete;
@@ -29,12 +30,12 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         _npmCommandService = npmCommandService;
     }
 
-    public async Task<RenovatorOutcome<NpmCommandResults>> AttemptToRenovateRepoAsync(DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken = default)
+    public async Task<RenovatorOutcome<NpmCommandResults>> AttemptToRenovateLocalSystemRepoAsync(DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken = default)
     {
         PackageJsonDependencies? analysedDependencies = null;
         try
         {
-            analysedDependencies = await _reader.AnalysePackageJsonDependenciesAsync(upgradeBuilder.FilePath, cancellationToken);
+            analysedDependencies = await _reader.AnalysePackageJsonDependenciesAsync(upgradeBuilder.LocalSystemFilePathToJson, cancellationToken);
 
             var upgradedDepends = await Task.WhenAll(UpgradeDependencyDict(analysedDependencies.Dependencies, upgradeBuilder, cancellationToken),
                 UpgradeDependencyDict(analysedDependencies.DevDependencies, upgradeBuilder, cancellationToken));
@@ -44,9 +45,9 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
                 Dependencies = upgradedDepends.First(),
                 DevDependencies = upgradedDepends.Last()
             };            
-            await _reader.UpdateExistingPackageJsonDependenciesAsync(newDependencies, upgradeBuilder.FilePath, cancellationToken);
+            await _reader.UpdateExistingPackageJsonDependenciesAsync(newDependencies, upgradeBuilder.LocalSystemFilePathToJson, cancellationToken);
             
-            var npmIResult = await _npmCommandService.RunNpmInstallAsync(upgradeBuilder.FilePath, cancellationToken);
+            var npmIResult = await _npmCommandService.RunNpmInstallAsync(upgradeBuilder.GetFolderSpaceFromFilePath(), cancellationToken);
 
             var modelToReturn = new RenovatorOutcome<NpmCommandResults>
             {
@@ -58,7 +59,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 
             if (!modelToReturn.IsSuccess)
             {
-                await AttemptToRollbackRepo(upgradeBuilder.FilePath, analysedDependencies, cancellationToken);
+                await AttemptToRollbackRepo(upgradeBuilder.LocalSystemFilePathToJson, analysedDependencies, cancellationToken);
             }
             
             return modelToReturn; 
@@ -67,19 +68,19 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         {
             if (analysedDependencies is not null)
             {
-                await AttemptToRollbackRepo(upgradeBuilder.FilePath, analysedDependencies, cancellationToken);
+                await AttemptToRollbackRepo(upgradeBuilder.LocalSystemFilePathToJson, analysedDependencies, cancellationToken);
             }
             return new RenovatorOutcome<NpmCommandResults>
             {
-                RenovatorException = GetRenovatorException(nameof(AttemptToRenovateRepoAsync), ex)
+                RenovatorException = GetRenovatorException(nameof(AttemptToRenovateLocalSystemRepoAsync), ex)
             };
         }
     }
-    public async Task<RenovatorOutcome<CurrentPackageVersionsAndPotentialUpgradesView>> GetCurrentPackageVersionAndPotentialUpgradesViewAsync(string filePath, CancellationToken cancellationToken = default)
+    public async Task<RenovatorOutcome<CurrentPackageVersionsAndPotentialUpgradesView>> GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
     {
         try
         {
-            var currentPackages = await _reader.AnalysePackageJsonDependenciesAsync(filePath, cancellationToken);
+            var currentPackages = await _reader.AnalysePackageJsonDependenciesAsync(localSystemFilePathToPackageJson, cancellationToken);
 
 
             var potentialNewPackages = await GetPotentialNewPackagesFromRegistry(currentPackages.Dependencies
@@ -99,7 +100,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             return new RenovatorOutcome<CurrentPackageVersionsAndPotentialUpgradesView>
             {
                 RenovatorException = GetRenovatorException(
-                    nameof(GetCurrentPackageVersionAndPotentialUpgradesViewAsync),
+                    nameof(GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync),
                     ex)
             };
         }

@@ -26,12 +26,12 @@ namespace Npm.Renovator.Domain.Services.Concrete
         /// <summary>
         /// Get dependencies from package json file
         /// </summary>
-        /// <param name="filePath">
+        /// <param name="localSystemFilePathToPackageJson">
         ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
         /// </param>
-        public async Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string filePath, CancellationToken cancellationToken = default)
+        public async Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
         {
-            var fileText = await ReadJsonFile(filePath, cancellationToken);
+            var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);
             
             var parsedPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(fileText.FileText)
                 ?? throw new InvalidOperationException("Unable to parse file content");
@@ -44,13 +44,13 @@ namespace Npm.Renovator.Domain.Services.Concrete
         /// <param name="newPackageJsonDependencies">
         ///     Pass in updated dependencies. This will replace the existing values completely.
         /// </param>
-        /// <param name="filePath">
+        /// <param name="localSystemFilePathToPackageJson">
         ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
         /// </param>
         public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependenciesAsync(
-            PackageJsonDependencies newPackageJsonDependencies, string filePath, CancellationToken cancellationToken = default)
+            PackageJsonDependencies newPackageJsonDependencies, string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
         {
-            var fileText = await ReadJsonFile(filePath, cancellationToken);
+            var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);
 
             var jsonObject = JsonNode.Parse(fileText.FileText)!.AsObject()
                                   ?? throw new InvalidOperationException("Unable to parse file content");
@@ -61,7 +61,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 fileText.FullFilePath, cancellationToken);
 
             
-            return await AnalysePackageJsonDependenciesAsync(filePath, cancellationToken);
+            return await AnalysePackageJsonDependenciesAsync(localSystemFilePathToPackageJson, cancellationToken);
         }
 
         private async Task<(string FileText, string FullFilePath)> ReadJsonFile(string filePath, CancellationToken cancellationToken)

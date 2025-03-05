@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Npm.Renovator.Common.Exceptions;
 
-namespace Npm.Renovator.Domain.Models.Views;
+namespace Npm.Renovator.Domain.Models;
 
 public record RenovatorOutcome
 {
