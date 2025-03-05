@@ -40,11 +40,11 @@ namespace Npm.Renovator.RepoReader.Concrete
         /// <summary>
         /// Update dependencies from package json file
         /// </summary>
-        /// <param name="filePath">
-        ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
-        /// </param>
         /// <param name="newPackageJsonDependencies">
         ///     Pass in updated dependencies. This will replace the existing values completely.
+        /// </param>
+        /// <param name="filePath">
+        ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
         /// </param>
         public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependenciesAsync(
             PackageJsonDependencies newPackageJsonDependencies, string filePath, CancellationToken cancellationToken = default)

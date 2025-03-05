@@ -1,6 +1,6 @@
 ﻿using Npm.Renovator.Common.Extensions;
 
-namespace Npm.Renovator.RepoReader.Models
+namespace Npm.Renovator.Repo.Services.Models
 {
     public sealed record PackageJsonDependencies: IEquatable<PackageJsonDependencies>
     {
