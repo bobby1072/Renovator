@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Npm.Renovator.Application.Extensions;
 using Npm.Renovator.ConsoleApp.Abstract;
+using Npm.Renovator.Domain.Services.Extensions;
+
 namespace Npm.Renovator.ConsoleApp;
 
 public static class Program

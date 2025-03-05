@@ -1,6 +1,6 @@
 ﻿using Npm.Renovator.Domain.Models.Views;
 
-namespace Npm.Renovator.Application.Services.Abstract;
+namespace Npm.Renovator.Domain.Services.Abstract;
 
 public interface INpmRenovatorProcessingManager
 {

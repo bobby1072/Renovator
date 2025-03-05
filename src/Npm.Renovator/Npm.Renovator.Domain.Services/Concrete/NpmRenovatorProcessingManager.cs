@@ -1,7 +1,6 @@
 ﻿using BT.Common.FastArray.Proto;
 using BT.Common.OperationTimer.Proto;
 using Microsoft.Extensions.Logging;
-using Npm.Renovator.Application.Services.Abstract;
 using Npm.Renovator.NpmHttpClient.Abstract;
 using Npm.Renovator.NpmHttpClient.Models.Request;
 using Npm.Renovator.NpmHttpClient.Models.Response;
@@ -9,14 +8,14 @@ using Npm.Renovator.Domain.Services.Abstract;
 using System.Text.Json;
 using Npm.Renovator.Domain.Models.Views;
 
-namespace Npm.Renovator.Application.Services.Concrete;
+namespace Npm.Renovator.Domain.Services.Concrete;
 
-internal class NpmRenovatorProcessingManager: INpmRenovatorProcessingManager
+internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 {
     private readonly INpmJsRegistryHttpClient _npmJsRegistryHttpClient;
     private readonly IRepoReaderService _reader;
     private readonly ILogger<NpmRenovatorProcessingManager> _logger;
-    
+
     public NpmRenovatorProcessingManager(INpmJsRegistryHttpClient npmJsRegistryHttpClient, IRepoReaderService reader,
         ILogger<NpmRenovatorProcessingManager> logger)
     {
@@ -54,7 +53,7 @@ internal class NpmRenovatorProcessingManager: INpmRenovatorProcessingManager
     }
     private static IEnumerable<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage> GetListOfPotentialNewPackages(Dictionary<string, string> dependencyList, IReadOnlyCollection<NpmJsRegistryResponseSingleObject> foundPackagesFromRegistry)
     {
-        foreach(var package in dependencyList)
+        foreach (var package in dependencyList)
         {
             yield return new CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage
             {

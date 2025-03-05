@@ -14,15 +14,16 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Npm.Renovator.Application\Npm.Renovator.Application.csproj" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <None Update="appsettings.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
 </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Npm.Renovator.Domain.Services\Npm.Renovator.Domain.Services.csproj" />
+  </ItemGroup>
 
 </Project>

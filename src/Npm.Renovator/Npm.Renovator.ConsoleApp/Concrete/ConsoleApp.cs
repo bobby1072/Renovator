@@ -1,5 +1,5 @@
-﻿using Npm.Renovator.Application.Services.Abstract;
-using Npm.Renovator.ConsoleApp.Abstract;
+﻿using Npm.Renovator.ConsoleApp.Abstract;
+using Npm.Renovator.Domain.Services.Abstract;
 
 namespace Npm.Renovator.ConsoleApp.Concrete;
 

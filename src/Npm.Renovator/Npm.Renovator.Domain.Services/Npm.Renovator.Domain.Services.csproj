@@ -12,12 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.FastArray\BT.Common.FastArray.csproj" />
     <ProjectReference Include="..\Npm.Renovator.Common\Npm.Renovator.Common.csproj" />
     <ProjectReference Include="..\Npm.Renovator.Domain.Models\Npm.Renovator.Domain.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
+    <ProjectReference Include="..\Npm.Renovator.NpmHttpClient\Npm.Renovator.NpmHttpClient.csproj" />
   </ItemGroup>
 
 </Project>
