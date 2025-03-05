@@ -28,7 +28,7 @@ namespace Npm.Renovator.RepoReader.Concrete
         /// <param name="filePath">
         ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
         /// </param>
-        public async Task<PackageJsonDependencies> AnalysePackageJsonDependencies(string filePath, CancellationToken cancellationToken = default)
+        public async Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string filePath, CancellationToken cancellationToken = default)
         {
             var fileText = await ReadJsonFile(filePath, cancellationToken);
             
@@ -46,7 +46,7 @@ namespace Npm.Renovator.RepoReader.Concrete
         /// <param name="newPackageJsonDependencies">
         ///     Pass in updated dependencies. This will replace the existing values completely.
         /// </param>
-        public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependencies(
+        public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependenciesAsync(
             PackageJsonDependencies newPackageJsonDependencies, string filePath, CancellationToken cancellationToken = default)
         {
             var fileText = await ReadJsonFile(filePath, cancellationToken);
@@ -60,7 +60,7 @@ namespace Npm.Renovator.RepoReader.Concrete
                 fileText.FullFilePath, cancellationToken);
 
             
-            return await AnalysePackageJsonDependencies(filePath, cancellationToken);
+            return await AnalysePackageJsonDependenciesAsync(filePath, cancellationToken);
         }
 
         private async Task<(string FileText, string FullFilePath)> ReadJsonFile(string filePath, CancellationToken cancellationToken)

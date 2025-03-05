@@ -1,6 +1,6 @@
 namespace Npm.Renovator.NpmHttpClient.Models.Response
 {
-    public record NpmJsRegistryResponseSingleObject
+    public sealed record NpmJsRegistryResponseSingleObject
     {
         public required long Dependents { get; init; }
         public required DateTime Updated { get; init; }
@@ -8,5 +8,6 @@ namespace Npm.Renovator.NpmHttpClient.Models.Response
         public required NpmJsRegistryResponseSingleObjectPackage Package { get; init; }
         public required NpmJsRegistryResponseSingleObjectDownloads Downloads { get; init; }
         public required NpmJsRegistryResponseSingleObjectScore Score { get; init; }
+        public Dictionary<string, string> Flags { get; init; } = [];
     }
 }

@@ -1,11 +1,14 @@
-﻿using Npm.Renovator.ConsoleApp.Abstract;
+﻿using Npm.Renovator.Application.Services.Abstract;
+using Npm.Renovator.ConsoleApp.Abstract;
 
 namespace Npm.Renovator.ConsoleApp.Concrete;
 
 internal class ConsoleApp: IConsoleApp
 {
-    public ConsoleApp()
+    private readonly INpmRenovatorProcessingManager _processingManager;
+    public ConsoleApp(INpmRenovatorProcessingManager processingManager)
     {
+        _processingManager = processingManager;
     }
     public async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

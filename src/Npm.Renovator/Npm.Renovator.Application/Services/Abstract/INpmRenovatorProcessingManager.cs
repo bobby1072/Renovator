@@ -4,6 +4,6 @@ namespace Npm.Renovator.Application.Services.Abstract;
 
 public interface INpmRenovatorProcessingManager
 {
-    Task<CurrentPackageVersionsAndPotentialUpgradesView> GetCurrentPackageVersionAndPotentialUpgradesView(
+    Task<CurrentPackageVersionsAndPotentialUpgradesView> GetCurrentPackageVersionAndPotentialUpgradesViewAsync(
         string filePath, CancellationToken cancellationToken = default);
 }

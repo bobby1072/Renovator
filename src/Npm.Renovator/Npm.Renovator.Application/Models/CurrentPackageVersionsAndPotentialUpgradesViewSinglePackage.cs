@@ -1,6 +1,6 @@
 ﻿namespace Npm.Renovator.Application.Models;
 
-public record CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage
+public sealed record CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage
 {
     public required string NameOnNpm { get; init; }
     

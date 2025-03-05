@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npm.Renovator.Application.Services.Abstract;
+using Npm.Renovator.Application.Services.Concrete;
 using Npm.Renovator.NpmHttpClient.Extensions;
 using Npm.Renovator.RepoReader.Extensions;
 
@@ -11,7 +13,8 @@ namespace Npm.Renovator.Application.Extensions
         {
             serviceCollection
                 .AddNpmHttpClient(configManager)
-                .AddRepoReader();
+                .AddRepoReader()
+                .AddScoped<INpmRenovatorProcessingManager, NpmRenovatorProcessingManager>();
 
             return serviceCollection;
         }
