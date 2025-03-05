@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
-using Npm.Renovator.RepoReader.Abstract;
-using Npm.Renovator.RepoReader.Models;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using Npm.Renovator.Common.Extensions;
+using Npm.Renovator.Domain.Models;
+using Npm.Renovator.Domain.Services.Abstract;
 
-namespace Npm.Renovator.RepoReader.Concrete
+namespace Npm.Renovator.Domain.Services.Concrete
 {
     internal class RepoReaderService: IRepoReaderService
     {
@@ -28,7 +29,7 @@ namespace Npm.Renovator.RepoReader.Concrete
         /// <param name="filePath">
         ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
         /// </param>
-        public async Task<PackageJsonDependencies> AnalysePackageJsonDependencies(string filePath, CancellationToken cancellationToken = default)
+        public async Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string filePath, CancellationToken cancellationToken = default)
         {
             var fileText = await ReadJsonFile(filePath, cancellationToken);
             
@@ -40,13 +41,13 @@ namespace Npm.Renovator.RepoReader.Concrete
         /// <summary>
         /// Update dependencies from package json file
         /// </summary>
-        /// <param name="filePath">
-        ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
-        /// </param>
         /// <param name="newPackageJsonDependencies">
         ///     Pass in updated dependencies. This will replace the existing values completely.
         /// </param>
-        public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependencies(
+        /// <param name="filePath">
+        ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
+        /// </param>
+        public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependenciesAsync(
             PackageJsonDependencies newPackageJsonDependencies, string filePath, CancellationToken cancellationToken = default)
         {
             var fileText = await ReadJsonFile(filePath, cancellationToken);
@@ -54,13 +55,13 @@ namespace Npm.Renovator.RepoReader.Concrete
             var jsonObject = JsonNode.Parse(fileText.FileText)!.AsObject()
                                   ?? throw new InvalidOperationException("Unable to parse file content");
             
-            var updatedJsonObject = UpdateProperties(jsonObject, newPackageJsonDependencies);
+            var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies);
 
             await File.WriteAllTextAsync(updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
                 fileText.FullFilePath, cancellationToken);
 
             
-            return await AnalysePackageJsonDependencies(filePath, cancellationToken);
+            return await AnalysePackageJsonDependenciesAsync(filePath, cancellationToken);
         }
 
         private async Task<(string FileText, string FullFilePath)> ReadJsonFile(string filePath, CancellationToken cancellationToken)
@@ -82,18 +83,6 @@ namespace Npm.Renovator.RepoReader.Concrete
             
             return (fileText, fullPath);
         }
-        private static JsonObject UpdateProperties<T>(JsonObject jsonObject, T objectToUpdateWith) where T : class
-        {
-            var typeProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            foreach (var property in typeProperties)
-            {
-                var propertyName = property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? property.Name;
-                
-                jsonObject[propertyName] = JsonSerializer.Serialize(property.GetValue(objectToUpdateWith), _jsonSerializerOptionsForPackageJsonWrite);
-            }
-            
-            return jsonObject;
-        }
     }
 }
