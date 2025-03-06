@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using Npm.Renovator.Common.Exceptions;
+﻿using Npm.Renovator.Common.Exceptions;
+using System.Text.Json.Serialization;
 
 namespace Npm.Renovator.Domain.Models;
 

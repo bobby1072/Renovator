@@ -1,15 +1,15 @@
 ﻿using BT.Common.FastArray.Proto;
 using BT.Common.OperationTimer.Proto;
 using Microsoft.Extensions.Logging;
-using Npm.Renovator.NpmHttpClient.Abstract;
-using Npm.Renovator.NpmHttpClient.Models.Request;
-using Npm.Renovator.NpmHttpClient.Models.Response;
-using Npm.Renovator.Domain.Services.Abstract;
-using System.Text.Json;
 using Npm.Renovator.Common.Exceptions;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Models.Extensions;
 using Npm.Renovator.Domain.Models.Views;
+using Npm.Renovator.Domain.Services.Abstract;
+using Npm.Renovator.NpmHttpClient.Abstract;
+using Npm.Renovator.NpmHttpClient.Models.Request;
+using Npm.Renovator.NpmHttpClient.Models.Response;
+using System.Text.Json;
 
 namespace Npm.Renovator.Domain.Services.Concrete;
 

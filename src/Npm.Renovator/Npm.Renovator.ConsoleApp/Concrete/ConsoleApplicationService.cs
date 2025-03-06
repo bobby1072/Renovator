@@ -1,13 +1,11 @@
-﻿using System;
-using System.Text;
-using System.Xml;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Npm.Renovator.ConsoleApp.Abstract;
 using Npm.Renovator.ConsoleApp.Exception;
 using Npm.Renovator.ConsoleApp.Models;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
+using System.Text;
 
 namespace Npm.Renovator.ConsoleApp.Concrete;
 
