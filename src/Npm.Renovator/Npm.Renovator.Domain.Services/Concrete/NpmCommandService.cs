@@ -24,10 +24,10 @@ internal class NpmCommandService: INpmCommandService
         await process.StandardInput.WriteLineAsync("npm install");
         await process.StandardInput.WriteLineAsync("exit");
 
-        var result = await Task.WhenAll(process.StandardOutput.ReadToEndAsync(),
-            process.StandardError.ReadToEndAsync());
+        var result = await Task.WhenAll(process.StandardOutput.ReadToEndAsync(cancellationToken),
+            process.StandardError.ReadToEndAsync(cancellationToken));
 
-        await process.WaitForExitAsync();
+        await process.WaitForExitAsync(cancellationToken);
 
         var resultsView = new NpmCommandResults
         {

@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Extensions;
 using Npm.Renovator.Domain.Models;
@@ -33,7 +31,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
         {
             var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);
             
-            var parsedPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(fileText.FileText)
+            var parsedPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(fileText.FileText, _jsonSerializerOptionsForPackageJsonWrite)
                 ?? throw new InvalidOperationException("Unable to parse file content");
             
             return parsedPackageJsonDependencies;
@@ -55,7 +53,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             var jsonObject = JsonNode.Parse(fileText.FileText)!.AsObject()
                                   ?? throw new InvalidOperationException("Unable to parse file content");
             
-            var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies);
+            var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies, _jsonSerializerOptionsForPackageJsonWrite);
 
             await File.WriteAllTextAsync(updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
                 fileText.FullFilePath, cancellationToken);

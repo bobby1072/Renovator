@@ -1,4 +1,5 @@
 ﻿using Npm.Renovator.Common.Extensions;
+using System.Text.Json.Serialization;
 
 namespace Npm.Renovator.Domain.Models
 {

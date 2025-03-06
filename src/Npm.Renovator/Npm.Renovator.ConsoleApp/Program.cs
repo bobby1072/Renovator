@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Npm.Renovator.ConsoleApp.Abstract;
 using Npm.Renovator.Domain.Services.Extensions;
 
@@ -17,7 +18,10 @@ public static class Program
 
         serviceCollection
             .AddRenovatorApplication(configurationManager)
-            .AddLogging()
+            .AddLogging(opts =>
+            {
+                opts.SetMinimumLevel(LogLevel.None);
+            })
             .AddSingleton<IConfigurationManager>(configurationManager)
             .AddScoped<IConsoleApplicationService, Concrete.ConsoleApplicationService>();
 

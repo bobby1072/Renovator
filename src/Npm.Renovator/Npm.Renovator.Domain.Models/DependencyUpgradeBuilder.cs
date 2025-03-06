@@ -2,16 +2,11 @@
 
 public sealed class DependencyUpgradeBuilder
 {
-    private string _localSystemFilePathToJson;
-    public string LocalSystemFilePathToJson
-    {
-        get => _localSystemFilePathToJson;
-        set => _localSystemFilePathToJson = Path.GetFullPath(value);
-    }
+    public string LocalSystemFilePathToJson {  get; init; }
     private readonly Dictionary<string, string?> _packagesToUpgrade = [];
     private DependencyUpgradeBuilder(string localSystemFilePathToJson)
     {
-        _localSystemFilePathToJson = localSystemFilePathToJson;
+        LocalSystemFilePathToJson = localSystemFilePathToJson;
     }
 
     public DependencyUpgradeBuilder AddUpgrade(string packageName, string? newVersion = null)

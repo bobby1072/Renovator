@@ -8,6 +8,6 @@ namespace Npm.Renovator.NpmHttpClient.Models.Response
         public required NpmJsRegistryResponseSingleObjectPackage Package { get; init; }
         public required NpmJsRegistryResponseSingleObjectDownloads Downloads { get; init; }
         public required NpmJsRegistryResponseSingleObjectScore Score { get; init; }
-        public Dictionary<string, string> Flags { get; init; } = [];
+        public Dictionary<string, object> Flags { get; init; } = [];
     }
 }
