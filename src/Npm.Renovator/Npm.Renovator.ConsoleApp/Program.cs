@@ -23,7 +23,7 @@ public static class Program
                 opts.SetMinimumLevel(LogLevel.None);
             })
             .AddSingleton<IConfigurationManager>(configurationManager)
-            .AddScoped<IConsoleApplicationService, Concrete.ConsoleApplicationService>();
+            .AddTransient<IConsoleApplicationService, Concrete.ConsoleApplicationService>();
 
         await using var serviceProvider = serviceCollection.BuildServiceProvider();
         
