@@ -2,5 +2,5 @@
 
 internal record ConsoleJourneyState
 {
-    public required Func<CancellationToken,Task<ConsoleJourneyState>> NextMove { get; set; }
+    public Func<CancellationToken,Task<ConsoleJourneyState>>? NextMove { get; set; }
 }
