@@ -57,6 +57,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             {
                 Console.WriteLine($"{NewConsoleLines()}An unexpected exception occurred...{NewConsoleLines()}");
                 await Task.Delay(5000);
+                throw;
             }
         }
     }
