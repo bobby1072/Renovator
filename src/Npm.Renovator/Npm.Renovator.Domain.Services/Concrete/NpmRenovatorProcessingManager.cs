@@ -180,7 +180,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
                 NameOnNpm = package.Key,
                 CurrentVersion = package.Value,
                 PotentialNewVersions = foundPackagesFromRegistry
-                    .FastArrayWhere(x => x.Package.Name == package.Key)
+                    .FastArrayWhere(x => x.Package.Name == package.Key && x.Package.Version != package.Value)
                     .Select(x => new CurrentPackageVersionsAndPotentialUpgradesViewPotentialNewVersion
                     {
                         CurrentVersion = x.Package.Version,
