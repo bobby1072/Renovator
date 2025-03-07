@@ -1,6 +1,6 @@
 ﻿namespace Npm.Renovator.ConsoleApp.Models;
 
-internal record ConsoleJourneyState
+internal sealed record ConsoleJourneyState
 {
-    public Func<CancellationToken,Task<ConsoleJourneyState>>? NextMove { get; set; }
+    public Func<CancellationToken, Task<ConsoleJourneyState>>? NextMove { get; set; }
 }

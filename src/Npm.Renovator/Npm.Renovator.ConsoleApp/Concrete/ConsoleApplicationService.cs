@@ -1,10 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using BT.Common.FastArray.Proto;
+using Microsoft.Extensions.DependencyInjection;
+using Npm.Renovator.Common.Extensions;
 using Npm.Renovator.ConsoleApp.Abstract;
 using Npm.Renovator.ConsoleApp.Exception;
 using Npm.Renovator.ConsoleApp.Models;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
+using System.Data;
 using System.Text;
 
 namespace Npm.Renovator.ConsoleApp.Concrete;
@@ -34,7 +37,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
                 };
                 while (!cancelTokenSource.IsCancellationRequested)
                 {
-                    if(consoleJourneyState.NextMove is null)
+                    if (consoleJourneyState.NextMove is null)
                     {
                         break;
                     }
@@ -44,7 +47,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             catch (OperationCanceledException)
             {
                 Console.WriteLine($"{NewConsoleLines()}Operation has been cancelled...{NewConsoleLines()}");
-                throw;
+                return;
             }
             catch (ConsoleException ex)
             {
@@ -55,7 +58,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             {
                 Console.WriteLine($"{NewConsoleLines()}An unexpected exception occurred...{NewConsoleLines()}");
                 await Task.Delay(5000);
-                throw;
+                return;
             }
         }
     }
@@ -64,24 +67,18 @@ internal class ConsoleApplicationService : IConsoleApplicationService
     {
         Console.Clear();
         Console.WriteLine($"{NewConsoleLines()}Welcome to the Npm.Renovator.ConsoleApp...{NewConsoleLines()}");
-        Console.WriteLine($"This app can be used to renovate your Node.JS projects.{NewConsoleLines(2)}");
-        Console.WriteLine($"1. View potential package upgrades {NewConsoleLines()}");
-        Console.WriteLine($"2. Attempt to renovate project within your local file system. {NewConsoleLines(2)}");
-        Console.WriteLine($"Please choose an option: {NewConsoleLines()}");
+        Console.WriteLine($"This app can be used to renovate your Node.JS projects.{NewConsoleLines()}");
+        
+        var consoleChoice = GetChoice([
+            $"1. View potential package upgrades {NewConsoleLines()}",
+            $"2. Attempt to renovate project within your local file system. {NewConsoleLines()}"
+        ]).ToString();
 
-        var consoleChoice = Console.ReadLine();
-
-        if (consoleChoice != "1" && consoleChoice != "2")
-        {
-            throw new ConsoleException($"{NewConsoleLines()}Please choose a valid option.{NewConsoleLines()}");
-        }
-
-        Console.WriteLine($"{NewConsoleLines(2
-            )}Please enter the local file system path to your package json: {NewConsoleLines()}");
+        Console.WriteLine($"{NewConsoleLines()}Please enter the local file system path to your package json (relative/full): {NewConsoleLines()}");
 
         var localFilePath = Console.ReadLine();
 
-        if (string.IsNullOrWhiteSpace(localFilePath) || string.IsNullOrEmpty(localFilePath))
+        if (string.IsNullOrEmpty(localFilePath))
         {
             throw new ConsoleException($"{NewConsoleLines()}Please enter a valid file system path.{NewConsoleLines()}");
         }
@@ -100,41 +97,150 @@ internal class ConsoleApplicationService : IConsoleApplicationService
     private async Task<ConsoleJourneyState> GetCurrentPackageVersionAndPotentialUpgradesViewJourney(DependencyUpgradeBuilder upgradeBuilder, CancellationToken token)
     {
         Console.Clear();
-        var potentialUpgradesViewJob = _processingManager
-            .GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
-                upgradeBuilder.LocalSystemFilePathToJson, token);
         Console.WriteLine($"{NewConsoleLines()}Getting view. Please wait...{NewConsoleLines()}");
 
-        var potentialUpgradesView = await potentialUpgradesViewJob;
+        var potentialUpgradesView = await _processingManager
+            .GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
+                upgradeBuilder.LocalSystemFilePathToJson, token);
 
         if (!potentialUpgradesView.IsSuccess || potentialUpgradesView.Data is null)
         {
             throw new ConsoleException($"{NewConsoleLines()}Failed to retrieve potential upgrades view.{NewConsoleLines()}");
         }
 
+
         DisplayCurrentPackageVersionsAndPotentialUpgradesView(potentialUpgradesView.Data);
 
 
-        Console.WriteLine($"{NewConsoleLines(2)}Do you want to return to the main menu (y/n)?{NewConsoleLines()}");
+        Console.WriteLine($"{NewConsoleLines()}Do you want to return to the main menu (y/n)?{NewConsoleLines()}");
 
-        var choice = Console.ReadLine();
+        var choice = GetYNChoice();
 
-        if (choice == "n")
+        if (choice == YNEnum.N)
         {
             throw new OperationCanceledException();
         }
 
         return new ConsoleJourneyState();
-
     }
-    private static Task<ConsoleJourneyState> AttemptToRenovateRepoJourney(DependencyUpgradeBuilder upgradeBuilder, CancellationToken token)
+    private async Task<ConsoleJourneyState> AttemptToRenovateRepoJourney(DependencyUpgradeBuilder upgradeBuilder, CancellationToken token)
     {
-        return Task.FromResult(new ConsoleJourneyState());
-    }
+        Console.Clear();
+        Console.WriteLine($"{NewConsoleLines()}Getting view. Please wait...{NewConsoleLines()}");
 
+        var potentialUpgradesView = await _processingManager
+            .GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
+                upgradeBuilder.LocalSystemFilePathToJson, token);
+
+        if (!potentialUpgradesView.IsSuccess || potentialUpgradesView.Data is null)
+        {
+            throw new ConsoleException($"{NewConsoleLines()}Failed to retrieve potential upgrades view.{NewConsoleLines()}");
+        }
+
+
+        Dictionary<string, (string CurrentVersion, string NewVersion)> potentialUpgradeCandidates = potentialUpgradesView.Data.AllPackages
+            .SelectMany(x => x.PotentialNewVersions
+                .FastArraySelect(y => new KeyValuePair<string, (string CurrentVersion, string NewVersion)>(x.NameOnNpm, (x.CurrentVersion, y.CurrentVersion)))).ToDictionary();
+        Console.Clear();
+        if (potentialUpgradeCandidates.Count < 1)
+        {
+            Console.WriteLine($"{NewConsoleLines()}No packages to upgrade...{NewConsoleLines()}");
+        }
+        else
+        {
+            Console.WriteLine($"{NewConsoleLines()}Please choose the upgrade(s) you want to try and renovate from this list of potential upgrades...{NewConsoleLines()}");
+
+
+            bool exitRequested = false;
+            while (!exitRequested)
+            {
+                if (upgradeBuilder.HasAnyUpgrades())
+                {
+                    Console.WriteLine($"{NewConsoleLines()}Current upgrades to try:{NewConsoleLines()}");
+                    foreach(var upgradesToTry in upgradeBuilder.ReadonlyUpgradesView)
+                    {
+                        Console.WriteLine($"    {upgradesToTry.Key}: {upgradesToTry.Value}");
+                    }
+                    Console.WriteLine();
+                }
+                var upgradeListWithExit = potentialUpgradeCandidates.FastArraySelect(x => $"{x.Key}: {x.Value.CurrentVersion} -> {x.Value.NewVersion}{NewConsoleLines()}")
+                    .Append(
+                    $"Stop adding upgrades{NewConsoleLines()}"
+                );
+
+                var chosenOption = GetChoice(upgradeListWithExit);
+                Console.Clear();
+                if (chosenOption == upgradeListWithExit.Count())
+                {
+                    exitRequested = true;
+                    continue;
+                }
+                else
+                {
+                    var chosenUpgrade = potentialUpgradeCandidates.ElementAt(chosenOption - 1);
+                    upgradeBuilder.AddUpgrade(chosenUpgrade.Key, chosenUpgrade.Value.NewVersion);
+
+                    potentialUpgradeCandidates.Remove(chosenUpgrade.Key);
+                }
+            }
+
+            var renovateResult = await _processingManager.AttemptToRenovateLocalSystemRepoAsync(upgradeBuilder, token);
+
+
+        }
+
+        return new ConsoleJourneyState();
+    }
+    private static int GetChoice(IEnumerable<string> options)
+    {
+        int selectedIndex = 0;
+        int optionsCount = options.Count();
+        ConsoleKey key;
+
+        do
+        {
+            Console.WriteLine();
+
+            for (int i = 0; i < optionsCount; i++)
+            {
+                if (i == selectedIndex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("> " + options.ElementAt(i));
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine("  " + options.ElementAt(i));
+                }
+            }
+
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+            key = keyInfo.Key;
+
+            if (key == ConsoleKey.UpArrow && selectedIndex > 0)
+            {
+                selectedIndex--;
+            }
+            else if (key == ConsoleKey.DownArrow && selectedIndex < optionsCount - 1)
+            {
+                selectedIndex++;
+            }
+            Console.Clear();
+        } while (key != ConsoleKey.Enter);
+
+        if(selectedIndex > optionsCount || selectedIndex < 0)
+        {
+            throw new ConsoleException("Please choose a valid option");
+        }
+
+        return selectedIndex + 1;
+    }
     private static void DisplayCurrentPackageVersionsAndPotentialUpgradesView(
         CurrentPackageVersionsAndPotentialUpgradesView view)
     {
+        Console.Clear();
+        Console.WriteLine();
         foreach (var upg in view.AllPackages)
         {
             Console.WriteLine($"Package name: {upg.NameOnNpm}");
@@ -154,16 +260,23 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             Console.WriteLine(NewConsoleLines());
         }
     }
-    private static string GetYNChoice()
+    private static YNEnum GetYNChoice()
     {
         var choice = Console.ReadLine()?.ToLower();
 
-        if (choice != "n" && choice != "y")
+        if(choice == YNEnum.N.GetDisplayName())
+        {
+            return YNEnum.N;
+        }
+
+        if (choice == YNEnum.Y.GetDisplayName())
+        {
+            return YNEnum.Y;
+        }
+        else
         {
             throw new ConsoleException($"{NewConsoleLines()}Please enter y or n...{NewConsoleLines()}");
         }
-
-        return choice;
     }
     private static string NewConsoleLines(int numberOf = 1)
     {
@@ -176,4 +289,5 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
         return newLineBuilder.ToString();
     }
+
 }

@@ -9,6 +9,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
 {
     internal class RepoReaderService: IRepoReaderService
     {
+        private static readonly JsonNodeOptions _jsonNodeOptions = new() { PropertyNameCaseInsensitive = true };
         private static readonly JsonSerializerOptions _jsonSerializerOptionsForPackageJsonWrite = new()
         {
             WriteIndented = true,
@@ -50,10 +51,10 @@ namespace Npm.Renovator.Domain.Services.Concrete
         {
             var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);
 
-            var jsonObject = JsonNode.Parse(fileText.FileText)!.AsObject()
+            var jsonObject = JsonNode.Parse(fileText.FileText, _jsonNodeOptions)!.AsObject()
                                   ?? throw new InvalidOperationException("Unable to parse file content");
             
-            var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies, _jsonSerializerOptionsForPackageJsonWrite);
+            var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies, _jsonSerializerOptionsForPackageJsonWrite, _jsonNodeOptions);
 
             await File.WriteAllTextAsync(updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
                 fileText.FullFilePath, cancellationToken);
