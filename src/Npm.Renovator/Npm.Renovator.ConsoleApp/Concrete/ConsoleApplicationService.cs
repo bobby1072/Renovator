@@ -260,7 +260,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             Console.WriteLine($"Potential upgrades:");
             foreach (var newPackage in upg.PotentialNewVersions)
             {
-                Console.WriteLine($"    Version: {newPackage.CurrentVersion}");
+                Console.WriteLine($"{NewConsoleLines()}    Version: {newPackage.CurrentVersion}");
                 Console.WriteLine($"    Published: {newPackage.ReleaseDate}");
             }
 
