@@ -182,7 +182,14 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
                     potentialUpgradeCandidates.Remove(chosenUpgrade.Key);
                 }
+                if(upgradeListWithExit.Count() == 1)
+                {
+                    exitRequested = true;
+                    continue;
+                }
             }
+
+            Console.WriteLine($"{NewConsoleLines()}Attempting to renovate repo. Please wait...{NewConsoleLines()}");
 
             var renovateResult = await _processingManager.AttemptToRenovateLocalSystemRepoAsync(upgradeBuilder, token);
 

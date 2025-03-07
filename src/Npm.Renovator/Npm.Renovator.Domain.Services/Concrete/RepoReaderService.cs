@@ -56,8 +56,8 @@ namespace Npm.Renovator.Domain.Services.Concrete
             
             var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies, _jsonSerializerOptionsForPackageJsonWrite, _jsonNodeOptions);
 
-            await File.WriteAllTextAsync(updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
-                fileText.FullFilePath, cancellationToken);
+            await File.WriteAllTextAsync(fileText.FullFilePath, updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
+                 cancellationToken);
 
             
             return await AnalysePackageJsonDependenciesAsync(localSystemFilePathToPackageJson, cancellationToken);
