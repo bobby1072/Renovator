@@ -1,4 +1,4 @@
-﻿namespace Npm.Renovator.Domain.Models.Views;
+﻿namespace Npm.Renovator.Domain.Models;
 
 public record NpmCommandResults
 {

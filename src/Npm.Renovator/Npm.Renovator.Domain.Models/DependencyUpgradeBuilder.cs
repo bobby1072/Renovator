@@ -1,15 +1,17 @@
-﻿namespace Npm.Renovator.Domain.Models;
+﻿using Npm.Renovator.Common.Extensions;
+
+namespace Npm.Renovator.Domain.Models;
 
 public sealed class DependencyUpgradeBuilder
 {
-    private string _filePath;
-    public string FilePath
-    {
-        get => _filePath;
-        set => _filePath = Path.GetFullPath(value);
-    }
+    public string LocalSystemFilePathToJson {  get; init; }
+    public IReadOnlyDictionary<string, string?> ReadonlyUpgradesView { get => _packagesToUpgrade.Clone(); }
     private readonly Dictionary<string, string?> _packagesToUpgrade = [];
-
+    private DependencyUpgradeBuilder(string localSystemFilePathToJson)
+    {
+        LocalSystemFilePathToJson = localSystemFilePathToJson;
+    }
+    public bool HasAnyUpgrades() => _packagesToUpgrade.Count != 0;
     public DependencyUpgradeBuilder AddUpgrade(string packageName, string? newVersion = null)
     {
         _packagesToUpgrade.Add(packageName, newVersion);  
@@ -22,13 +24,9 @@ public sealed class DependencyUpgradeBuilder
         return _packagesToUpgrade.FirstOrDefault(pair => pair.Key == packageName);
     }
 
-    private DependencyUpgradeBuilder(string filePath)
+    public static DependencyUpgradeBuilder Create(string localSystemFilePathToJson, params string[] packagesToUpgrade)
     {
-        _filePath = filePath;
-    }
-    public static DependencyUpgradeBuilder Create(string filePath, params string[] packagesToUpgrade)
-    {
-        var newUpgrader = new DependencyUpgradeBuilder(filePath);
+        var newUpgrader = new DependencyUpgradeBuilder(localSystemFilePathToJson);
 
         foreach (var package in packagesToUpgrade)
         {

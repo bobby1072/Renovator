@@ -1,16 +1,15 @@
-﻿using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Extensions;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
     internal class RepoReaderService: IRepoReaderService
     {
+        private static readonly JsonNodeOptions _jsonNodeOptions = new() { PropertyNameCaseInsensitive = true };
         private static readonly JsonSerializerOptions _jsonSerializerOptionsForPackageJsonWrite = new()
         {
             WriteIndented = true,
@@ -26,14 +25,14 @@ namespace Npm.Renovator.Domain.Services.Concrete
         /// <summary>
         /// Get dependencies from package json file
         /// </summary>
-        /// <param name="filePath">
+        /// <param name="localSystemFilePathToPackageJson">
         ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
         /// </param>
-        public async Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string filePath, CancellationToken cancellationToken = default)
+        public async Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
         {
-            var fileText = await ReadJsonFile(filePath, cancellationToken);
+            var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);
             
-            var parsedPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(fileText.FileText)
+            var parsedPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(fileText.FileText, _jsonSerializerOptionsForPackageJsonWrite)
                 ?? throw new InvalidOperationException("Unable to parse file content");
             
             return parsedPackageJsonDependencies;
@@ -44,24 +43,24 @@ namespace Npm.Renovator.Domain.Services.Concrete
         /// <param name="newPackageJsonDependencies">
         ///     Pass in updated dependencies. This will replace the existing values completely.
         /// </param>
-        /// <param name="filePath">
+        /// <param name="localSystemFilePathToPackageJson">
         ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
         /// </param>
         public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependenciesAsync(
-            PackageJsonDependencies newPackageJsonDependencies, string filePath, CancellationToken cancellationToken = default)
+            PackageJsonDependencies newPackageJsonDependencies, string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
         {
-            var fileText = await ReadJsonFile(filePath, cancellationToken);
+            var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);
 
-            var jsonObject = JsonNode.Parse(fileText.FileText)!.AsObject()
+            var jsonObject = JsonNode.Parse(fileText.FileText, _jsonNodeOptions)!.AsObject()
                                   ?? throw new InvalidOperationException("Unable to parse file content");
             
-            var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies);
+            var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies, _jsonSerializerOptionsForPackageJsonWrite, _jsonNodeOptions);
 
-            await File.WriteAllTextAsync(updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
-                fileText.FullFilePath, cancellationToken);
+            await File.WriteAllTextAsync(fileText.FullFilePath, updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
+                 cancellationToken);
 
             
-            return await AnalysePackageJsonDependenciesAsync(filePath, cancellationToken);
+            return await AnalysePackageJsonDependenciesAsync(localSystemFilePathToPackageJson, cancellationToken);
         }
 
         private async Task<(string FileText, string FullFilePath)> ReadJsonFile(string filePath, CancellationToken cancellationToken)

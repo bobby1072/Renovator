@@ -13,4 +13,9 @@ public static class DictionaryExtensions
         
         return true;
     }
+
+    public static Dictionary<TKey, TValue> Clone<TKey, TValue>(this Dictionary<TKey, TValue> dict) where TKey : notnull
+    {
+        return dict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+    }
 }

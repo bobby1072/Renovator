@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Npm.Renovator.ConsoleApp.Abstract;
 using Npm.Renovator.Domain.Services.Extensions;
 
@@ -17,16 +18,19 @@ public static class Program
 
         serviceCollection
             .AddRenovatorApplication(configurationManager)
-            .AddLogging()
+            .AddLogging(opts =>
+            {
+                opts.SetMinimumLevel(LogLevel.None);
+            })
             .AddSingleton<IConfigurationManager>(configurationManager)
-            .AddScoped<IConsoleApp, Concrete.ConsoleApp>();
+            .AddTransient<IConsoleApplicationService, Concrete.ConsoleApplicationService>();
 
-        await using var scope = serviceCollection.BuildServiceProvider();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
         
-        await using var asyncScope = scope.CreateAsyncScope();
+        await using var asyncScope = serviceProvider.CreateAsyncScope();
         
         
-        await asyncScope.ServiceProvider.GetRequiredService<IConsoleApp>().ExecuteAsync();
+        await asyncScope.ServiceProvider.GetRequiredService<IConsoleApplicationService>().ExecuteAsync();
     }
 }
 
