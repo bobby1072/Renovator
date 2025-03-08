@@ -2,6 +2,7 @@
 using BT.Common.OperationTimer.Proto;
 using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Exceptions;
+using Npm.Renovator.Common.Extensions;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Models.Extensions;
 using Npm.Renovator.Domain.Models.Views;
@@ -47,7 +48,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             };            
             await _reader.UpdateExistingPackageJsonDependenciesAsync(newDependencies, upgradeBuilder.LocalSystemFilePathToJson, cancellationToken);
             
-            var npmIResult = await _npmCommandService.RunNpmInstallAsync(upgradeBuilder.GetFolderSpaceFromFilePath(), cancellationToken);
+            var npmIResult = await _npmCommandService.RunNpmInstallAsync(upgradeBuilder.LocalSystemFilePathToJson.GetFolderSpaceFromFilePath(), cancellationToken);
 
             var modelToReturn = new RenovatorOutcome<NpmCommandResults>
             {

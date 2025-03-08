@@ -4,5 +4,5 @@ namespace Npm.Renovator.Domain.Services.Abstract;
 
 internal interface INpmCommandService
 {
-    Task<NpmCommandResults> RunNpmInstallAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default);
+    Task<NpmCommandResults> RunNpmInstallAsync(string workingDirectory, CancellationToken cancellationToken = default);
 }

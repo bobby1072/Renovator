@@ -2,6 +2,7 @@
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Npm.Renovator.Domain.Services.Concrete;
 
@@ -13,15 +14,16 @@ internal class NpmCommandService: INpmCommandService
     {
         _logger = logger;
     }
-    public async Task<NpmCommandResults> RunNpmInstallAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken  = default)
+    public async Task<NpmCommandResults> RunNpmInstallAsync(string workingDirectory, CancellationToken cancellationToken  = default)
     {
-        var fullPath = Path.GetFullPath(localSystemFilePathToPackageJson) ?? throw new InvalidOperationException("Unable to find json file");
-        
         using var process = new Process(); 
-        process.StartInfo = GetProcessStartInfo(fullPath);
-        
+        process.StartInfo = GetProcessStartInfo(workingDirectory);
+        process.Start();
+
         await process.StandardInput.WriteLineAsync("npm install");
-        await process.StandardInput.WriteLineAsync("exit");
+        
+        await process.StandardInput.FlushAsync();
+        process.StandardInput.Close();
 
         var result = await Task.WhenAll(process.StandardOutput.ReadToEndAsync(cancellationToken),
             process.StandardError.ReadToEndAsync(cancellationToken));
@@ -43,16 +45,19 @@ internal class NpmCommandService: INpmCommandService
     }
 
     
-    private static ProcessStartInfo GetProcessStartInfo(string fullPath)
+    private static ProcessStartInfo GetProcessStartInfo(string workingDirectory)
     {
+        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        var shell = isWindows ? "cmd.exe" : "/bin/bash";
         return new ProcessStartInfo
         {
+            FileName = shell,
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            UseShellExecute = true,
+            UseShellExecute = false,
             CreateNoWindow = true,
-            WorkingDirectory = fullPath
+            WorkingDirectory = workingDirectory
         };
     }
 }

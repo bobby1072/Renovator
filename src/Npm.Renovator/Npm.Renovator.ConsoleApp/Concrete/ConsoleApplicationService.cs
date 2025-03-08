@@ -7,7 +7,6 @@ using Npm.Renovator.ConsoleApp.Models;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
-using System.Data;
 using System.Text;
 
 namespace Npm.Renovator.ConsoleApp.Concrete;
@@ -52,12 +51,12 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             catch (ConsoleException ex)
             {
                 Console.WriteLine(ex.Message);
-                await Task.Delay(5000);
+                await Task.Delay(6000);
             }
             catch (System.Exception)
             {
                 Console.WriteLine($"{NewConsoleLines()}An unexpected exception occurred...{NewConsoleLines()}");
-                await Task.Delay(5000);
+                await Task.Delay(6000);
                 return;
             }
         }
@@ -144,7 +143,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         Console.Clear();
         if (potentialUpgradeCandidates.Count < 1)
         {
-            Console.WriteLine($"{NewConsoleLines()}No packages to upgrade...{NewConsoleLines()}");
+            throw new ConsoleException($"{NewConsoleLines()}No packages to upgrade...{NewConsoleLines()}");
         }
         else
         {
@@ -189,11 +188,27 @@ internal class ConsoleApplicationService : IConsoleApplicationService
                 }
             }
 
-            Console.WriteLine($"{NewConsoleLines()}Attempting to renovate repo. Please wait...{NewConsoleLines()}");
+            Console.WriteLine($"{NewConsoleLines()}Attempting to renovate repo. This may take a minute, please wait...{NewConsoleLines()}");
 
             var renovateResult = await _processingManager.AttemptToRenovateLocalSystemRepoAsync(upgradeBuilder, token);
 
 
+            Console.Clear();
+            if(!renovateResult.IsSuccess || !string.IsNullOrEmpty(renovateResult.ExceptionMessage) ||
+                !string.IsNullOrEmpty(renovateResult.Data?.Exception))
+            {
+                throw new ConsoleException($"{NewConsoleLines()}Failed to update repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.Exception ?? "None"}");
+            }
+
+            Console.WriteLine($"{NewConsoleLines()}Successfully renovated repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.Output ?? "None"}{NewConsoleLines()}");
+        }
+        Console.WriteLine($"{NewConsoleLines()}Do you want to return to the main menu (y/n)?{NewConsoleLines()}");
+
+        var choice = GetYNChoice();
+
+        if (choice == YNEnum.N)
+        {
+            throw new OperationCanceledException();
         }
 
         return new ConsoleJourneyState();
