@@ -11,7 +11,7 @@ namespace Npm.Renovator.NpmHttpClient.Extensions
     public static class NpmHttpClientServiceCollectionExtensions
     {
         public static IServiceCollection AddNpmHttpClient(this IServiceCollection services,
-            IConfigurationManager configManager) 
+            IConfiguration configManager) 
         {
             var npmApiHttpSettingsSection = configManager.GetSection(NpmJsRegistryHttpClientSettingsConfiguration.Key);
 

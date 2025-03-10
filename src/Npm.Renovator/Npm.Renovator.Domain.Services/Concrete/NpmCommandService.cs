@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Npm.Renovator.Common.Helpers;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
 using System.Diagnostics;
@@ -17,12 +18,12 @@ internal class NpmCommandService: INpmCommandService
     public async Task<NpmCommandResults> RunNpmInstallAsync(string workingDirectory, CancellationToken cancellationToken  = default)
     {
         using var process = new Process(); 
-        process.StartInfo = GetProcessStartInfo(workingDirectory);
+        process.StartInfo = ProcessHelper.GetProcessStartInfo(workingDirectory);
         process.Start();
 
         await process.StandardInput.WriteLineAsync("npm install");
         
-        await process.StandardInput.FlushAsync();
+        await process.StandardInput.FlushAsync(cancellationToken);
         process.StandardInput.Close();
 
         var result = await Task.WhenAll(process.StandardOutput.ReadToEndAsync(cancellationToken),
@@ -42,22 +43,5 @@ internal class NpmCommandService: INpmCommandService
         }
         
         return resultsView;
-    }
-
-    
-    private static ProcessStartInfo GetProcessStartInfo(string workingDirectory)
-    {
-        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-        var shell = isWindows ? "cmd.exe" : "/bin/bash";
-        return new ProcessStartInfo
-        {
-            FileName = shell,
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            WorkingDirectory = workingDirectory
-        };
     }
 }
