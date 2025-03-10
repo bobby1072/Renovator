@@ -14,7 +14,7 @@ namespace Npm.Renovator.Tests.NpmHttpClientTests
 {
     public class NpmJsRegistryHttpClientTests: IDisposable
     {
-        private static readonly JsonSerializerOptions _serialiserOpts = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        private static readonly JsonSerializerOptions _serialiserOpts = new (){ PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         private static readonly Fixture _fixture = new();
         private readonly Mock<ILogger<NpmJsRegistryHttpClient>> _mockLogger = new();
         private readonly NpmJsRegistryHttpClientSerializer _serialiser = new();
