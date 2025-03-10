@@ -30,7 +30,9 @@ public static class Program
 
         await host.StartAsync();
 
-        await host.Services.GetRequiredService<IConsoleApplicationService>().ExecuteAsync();
+        await using var asyncScope = host.Services.CreateAsyncScope();
+
+        await asyncScope.ServiceProvider.GetRequiredService<IConsoleApplicationService>().ExecuteAsync();
 
         await host.StopAsync();
     }
