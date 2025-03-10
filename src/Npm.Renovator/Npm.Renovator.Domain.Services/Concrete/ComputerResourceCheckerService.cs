@@ -5,11 +5,11 @@ using System.Diagnostics;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
-    internal class ResourceCheckerService: IHostedService
+    internal class ComputerResourceCheckerService: IHostedService
     {
-        private readonly ILogger<ResourceCheckerService> _logger;
+        private readonly ILogger<ComputerResourceCheckerService> _logger;
 
-        public ResourceCheckerService(ILogger<ResourceCheckerService> logger)
+        public ComputerResourceCheckerService(ILogger<ComputerResourceCheckerService> logger)
         {
             _logger = logger;
         }
