@@ -3,7 +3,6 @@ using Npm.Renovator.Common.Helpers;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace Npm.Renovator.Domain.Services.Concrete;
 
@@ -18,7 +17,7 @@ internal class NpmCommandService: INpmCommandService
     public async Task<NpmCommandResults> RunNpmInstallAsync(string workingDirectory, CancellationToken cancellationToken  = default)
     {
         using var process = new Process(); 
-        process.StartInfo = ProcessHelper.GetProcessStartInfo(workingDirectory);
+        process.StartInfo = ProcessHelper.GetDefaultProcessStartInfo(workingDirectory);
         process.Start();
 
         await process.StandardInput.WriteLineAsync("npm install");
@@ -39,7 +38,7 @@ internal class NpmCommandService: INpmCommandService
 
         if (!string.IsNullOrEmpty(resultsView.Exception))
         {
-            _logger.LogError("Npm install failed: {Error}", resultsView.Exception);
+            _logger.LogError("Npm install failed with exception: {Error}", resultsView.Exception);
         }
         
         return resultsView;

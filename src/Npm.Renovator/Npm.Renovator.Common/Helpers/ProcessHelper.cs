@@ -5,7 +5,7 @@ namespace Npm.Renovator.Common.Helpers
 {
     public static class ProcessHelper
     {
-        public static ProcessStartInfo GetProcessStartInfo(string? workingDirectory = null)
+        public static ProcessStartInfo GetDefaultProcessStartInfo(string? workingDirectory = null)
         {
             var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
             var shell = isWindows ? "cmd.exe" : "/bin/bash";

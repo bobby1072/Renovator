@@ -272,7 +272,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
                 Console.WriteLine(NewConsoleLines());
                 continue;
             }
-            Console.WriteLine($"Potential upgrades:");
+            Console.WriteLine($"Potential upgrades: ");
             foreach (var newPackage in upg.PotentialNewVersions)
             {
                 Console.WriteLine($"{NewConsoleLines()}    Version: {newPackage.CurrentVersion}");
@@ -290,8 +290,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         {
             return YNEnum.N;
         }
-
-        if (choice == YNEnum.Y.GetDisplayName())
+        else if (choice == YNEnum.Y.GetDisplayName())
         {
             return YNEnum.Y;
         }

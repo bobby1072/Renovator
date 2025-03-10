@@ -17,6 +17,9 @@ stages:
       - job: build_backend
         displayName: "Build backend"
         steps:
+          - checkout: self
+            submodules: recursive
+
           - task: UseDotNet@2
             displayName: "Install .NET SDK"
             inputs:

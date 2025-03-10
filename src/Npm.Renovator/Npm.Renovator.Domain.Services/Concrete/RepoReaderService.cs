@@ -21,31 +21,15 @@ namespace Npm.Renovator.Domain.Services.Concrete
         {
             _logger = logger;
         }
-
-        /// <summary>
-        /// Get dependencies from package json file
-        /// </summary>
-        /// <param name="localSystemFilePathToPackageJson">
-        ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
-        /// </param>
         public async Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
         {
             var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);
-            
+
             var parsedPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(fileText.FileText, _jsonSerializerOptionsForPackageJsonWrite)
                 ?? throw new InvalidOperationException("Unable to parse file content");
-            
+
             return parsedPackageJsonDependencies;
         }
-        /// <summary>
-        /// Update dependencies from package json file
-        /// </summary>
-        /// <param name="newPackageJsonDependencies">
-        ///     Pass in updated dependencies. This will replace the existing values completely.
-        /// </param>
-        /// <param name="localSystemFilePathToPackageJson">
-        ///     Pass in any file path (including %FileName%.json at the end) and we will analyse dependencies. File does not need to be named "package.json" 
-        /// </param>
         public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependenciesAsync(
             PackageJsonDependencies newPackageJsonDependencies, string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
         {
@@ -78,7 +62,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 throw new InvalidOperationException("Json file could not be read");
             }
             
-            _logger.LogDebug("Successfully read package json dependencies: {Dependencies}", fileText);
+            _logger.LogDebug("Successfully read package json: {PackageJson}", fileText);
             
             return (fileText, fullPath);
         }

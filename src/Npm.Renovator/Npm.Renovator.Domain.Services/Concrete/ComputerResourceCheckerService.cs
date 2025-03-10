@@ -5,11 +5,11 @@ using System.Diagnostics;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
-    public class ResourceCheckerService: IHostedService
+    internal class ComputerResourceCheckerService: IHostedService
     {
-        private readonly ILogger<ResourceCheckerService> _logger;
+        private readonly ILogger<ComputerResourceCheckerService> _logger;
 
-        public ResourceCheckerService(ILogger<ResourceCheckerService> logger)
+        public ComputerResourceCheckerService(ILogger<ComputerResourceCheckerService> logger)
         {
             _logger = logger;
         }
@@ -18,7 +18,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             try
             {
                 using var process = new Process();
-                process.StartInfo = ProcessHelper.GetProcessStartInfo();
+                process.StartInfo = ProcessHelper.GetDefaultProcessStartInfo();
                 process.Start();
 
                 await process.StandardInput.WriteLineAsync("npm -v");
@@ -32,8 +32,12 @@ namespace Npm.Renovator.Domain.Services.Concrete
 
                 await process.WaitForExitAsync(cancellationToken);
 
-                if (!string.IsNullOrEmpty(result.Last()))
+                var errors = result.Last();
+
+                if (!string.IsNullOrEmpty(errors))
                 {
+                    _logger.LogError("Exception occurred during execution of ResourceCheckerService. Errors: {Errors}", errors);
+
                     throw new InvalidProgramException("This system does not have the resources required to run the app...");
                 }
             }

@@ -11,7 +11,7 @@ public static class Program
 {
     public static async Task Main()
     {
-        var host = Host.CreateDefaultBuilder()
+        using var host = Host.CreateDefaultBuilder()
             .ConfigureAppConfiguration(config =>
             {
                 config.AddJsonFile(Path.GetFullPath("appsettings.json"));
@@ -30,7 +30,7 @@ public static class Program
 
         await host.StartAsync();
 
-        await (host.Services.GetRequiredService<IConsoleApplicationService>()).ExecuteAsync();
+        await host.Services.GetRequiredService<IConsoleApplicationService>().ExecuteAsync();
 
         await host.StopAsync();
     }
