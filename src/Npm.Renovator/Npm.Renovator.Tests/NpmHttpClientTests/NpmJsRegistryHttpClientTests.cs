@@ -8,11 +8,13 @@ using Npm.Renovator.NpmHttpClient.Configuration;
 using Npm.Renovator.NpmHttpClient.Models.Request;
 using Npm.Renovator.NpmHttpClient.Models.Response;
 using Npm.Renovator.NpmHttpClient.Serializers.Concrete;
+using System.Text.Json;
 
 namespace Npm.Renovator.Tests.NpmHttpClientTests
 {
     public class NpmJsRegistryHttpClientTests: IDisposable
     {
+        private static readonly JsonSerializerOptions _serialiserOpts = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         private static readonly Fixture _fixture = new();
         private readonly Mock<ILogger<NpmJsRegistryHttpClient>> _mockLogger = new();
         private readonly NpmJsRegistryHttpClientSerializer _serialiser = new();
@@ -20,6 +22,9 @@ namespace Npm.Renovator.Tests.NpmHttpClientTests
         private readonly NpmJsRegistryHttpClientSettingsConfiguration _settings = _fixture
             .Build<NpmJsRegistryHttpClientSettingsConfiguration>()
             .With(x => x.BaseUrl, _baseURl)
+            .With(x => x.DelayBetweenAttemptsInSeconds, 0)
+            .With(x => x.TimeoutInSeconds, 2)
+            .With(x => x.TotalAttempts, 1)
             .Create();
         private readonly NpmJsRegistryHttpClient _httpClient;
         private readonly HttpTest _httpTest = new();
@@ -43,14 +48,17 @@ namespace Npm.Renovator.Tests.NpmHttpClientTests
         public async Task Client_Builds_Request_Correctly()
         {
             //Arrange
-            var mockedNpmJsRegistryBody = _fixture.Create<NpmJsRegistryRequestBody>();
+            var mockedNpmJsRegistryBody = _fixture
+                .Build<NpmJsRegistryRequestBody>()
+                .With(x => x.Text, "zod")
+                .Create();
 
             var mockedNpmJsRegistryResponse = _fixture.Create<NpmJsRegistryResponse>();
 
             _httpTest
                 .ForCallsTo($"{_baseURl}/-/v1/search?text={mockedNpmJsRegistryBody.Text}&size={mockedNpmJsRegistryBody.Size}")
                 .WithVerb(HttpMethod.Get)
-                .RespondWithJson(mockedNpmJsRegistryResponse);
+                .RespondWith(JsonSerializer.Serialize(mockedNpmJsRegistryResponse, _serialiserOpts));
 
             //Act
             var result = await _httpClient.ExecuteAsync(mockedNpmJsRegistryBody);
@@ -60,8 +68,7 @@ namespace Npm.Renovator.Tests.NpmHttpClientTests
 
             _httpTest
                 .ShouldHaveCalled($"{_baseURl}/-/v1/search?text={mockedNpmJsRegistryBody.Text}&size={mockedNpmJsRegistryBody.Size}")
-                .WithVerb(HttpMethod.Get)
-                .WithRequestJson(mockedNpmJsRegistryBody);
+                .WithVerb(HttpMethod.Get);
         }
     }
 }
