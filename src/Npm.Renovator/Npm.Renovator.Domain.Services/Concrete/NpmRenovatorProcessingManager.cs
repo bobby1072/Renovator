@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Exceptions;
 using Npm.Renovator.Common.Extensions;
 using Npm.Renovator.Domain.Models;
-using Npm.Renovator.Domain.Models.Extensions;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
 using Npm.Renovator.NpmHttpClient.Abstract;
@@ -17,11 +16,11 @@ namespace Npm.Renovator.Domain.Services.Concrete;
 internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 {
     private readonly INpmJsRegistryHttpClient _npmJsRegistryHttpClient;
-    private readonly IRepoReaderService _reader;
+    private readonly IRepoExplorerService _reader;
     private readonly ILogger<NpmRenovatorProcessingManager> _logger;
     private readonly INpmCommandService _npmCommandService;
     public NpmRenovatorProcessingManager(INpmJsRegistryHttpClient npmJsRegistryHttpClient, 
-        IRepoReaderService reader,
+        IRepoExplorerService reader,
         ILogger<NpmRenovatorProcessingManager> logger,
         INpmCommandService npmCommandService)
     {

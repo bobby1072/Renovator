@@ -7,7 +7,7 @@ using System.Text.Json.Nodes;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
-    internal class RepoReaderService: IRepoReaderService
+    internal class RepoExplorerService: IRepoExplorerService
     {
         private static readonly JsonNodeOptions _jsonNodeOptions = new() { PropertyNameCaseInsensitive = true };
         private static readonly JsonSerializerOptions _jsonSerializerOptionsForPackageJsonWrite = new()
@@ -15,9 +15,9 @@ namespace Npm.Renovator.Domain.Services.Concrete
             WriteIndented = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
-        private readonly ILogger<RepoReaderService> _logger;
+        private readonly ILogger<RepoExplorerService> _logger;
 
-        public RepoReaderService(ILogger<RepoReaderService> logger)
+        public RepoExplorerService(ILogger<RepoExplorerService> logger)
         {
             _logger = logger;
         }

@@ -15,7 +15,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddHostedService<ComputerResourceCheckerService>()
             .AddScoped<INpmCommandService, NpmCommandService>()
             .AddScoped<INpmRenovatorProcessingManager, NpmRenovatorProcessingManager>()
-            .AddScoped<IRepoReaderService, RepoReaderService>();
+            .AddScoped<IRepoExplorerService, RepoExplorerService>();
         
         return serviceCollection;
     }

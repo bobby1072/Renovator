@@ -2,7 +2,7 @@
 
 namespace Npm.Renovator.Domain.Services.Abstract
 {
-    internal interface IRepoReaderService
+    internal interface IRepoExplorerService
     {
         Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson,
             CancellationToken cancellationToken = default);

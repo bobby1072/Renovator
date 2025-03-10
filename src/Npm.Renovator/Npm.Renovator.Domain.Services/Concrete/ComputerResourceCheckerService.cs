@@ -23,6 +23,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
 
                 await process.StandardInput.WriteLineAsync("npm -v");
                 await process.StandardInput.WriteLineAsync("node -v");
+                await process.StandardInput.WriteLineAsync("git -v");
 
                 await process.StandardInput.FlushAsync(cancellationToken);
                 process.StandardInput.Close();
