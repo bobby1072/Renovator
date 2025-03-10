@@ -19,9 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.NpmHttpClient
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Common", "Npm.Renovator.Common\Npm.Renovator.Common.csproj", "{CC715FBA-1163-471E-8337-8746CC29ED92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npm.Renovator.Domain.Services", "Npm.Renovator.Domain.Services\Npm.Renovator.Domain.Services.csproj", "{126C3AED-BDCA-48BC-A163-74BA94AF6666}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Domain.Services", "Npm.Renovator.Domain.Services\Npm.Renovator.Domain.Services.csproj", "{126C3AED-BDCA-48BC-A163-74BA94AF6666}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npm.Renovator.Domain.Models", "Npm.Renovator.Domain.Models\Npm.Renovator.Domain.Models.csproj", "{1661F256-9598-4E7F-AB2F-5E4308722451}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Domain.Models", "Npm.Renovator.Domain.Models\Npm.Renovator.Domain.Models.csproj", "{1661F256-9598-4E7F-AB2F-5E4308722451}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6BC6FC11-6757-4F0E-8675-BF6B04FC15F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npm.Renovator.Tests", "Npm.Renovator.Tests\Npm.Renovator.Tests.csproj", "{9A482B9E-2741-4153-AB47-DB8D06D3712E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +69,10 @@ Global
 		{1661F256-9598-4E7F-AB2F-5E4308722451}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1661F256-9598-4E7F-AB2F-5E4308722451}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1661F256-9598-4E7F-AB2F-5E4308722451}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +82,7 @@ Global
 		{69A1B312-366D-421D-9151-C152D77EA3B8} = {09422590-0827-401B-9EF0-73021D43B12C}
 		{22CB3F75-3ACA-45D9-9603-4A7302B5DD6D} = {09422590-0827-401B-9EF0-73021D43B12C}
 		{85D563CD-8765-4BA9-B9C3-837DABD57EFD} = {09422590-0827-401B-9EF0-73021D43B12C}
+		{9A482B9E-2741-4153-AB47-DB8D06D3712E} = {6BC6FC11-6757-4F0E-8675-BF6B04FC15F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {256D8D51-8095-48EC-B38C-8F8DE4969BFA}
