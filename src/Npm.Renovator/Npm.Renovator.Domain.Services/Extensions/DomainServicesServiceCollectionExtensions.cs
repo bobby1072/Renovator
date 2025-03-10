@@ -8,10 +8,11 @@ namespace Npm.Renovator.Domain.Services.Extensions;
 
 public static class DomainServicesServiceCollectionExtensions
 {
-    public static IServiceCollection AddRenovatorApplication(this IServiceCollection serviceCollection, IConfigurationManager configurationManager)
+    public static IServiceCollection AddRenovatorApplication(this IServiceCollection serviceCollection, IConfiguration configurationManager)
     {
         serviceCollection
             .AddNpmHttpClient(configurationManager)
+            .AddHostedService<ResourceCheckerService>()
             .AddScoped<INpmCommandService, NpmCommandService>()
             .AddScoped<INpmRenovatorProcessingManager, NpmRenovatorProcessingManager>()
             .AddScoped<IRepoReaderService, RepoReaderService>();
