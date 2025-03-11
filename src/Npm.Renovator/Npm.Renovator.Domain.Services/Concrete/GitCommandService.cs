@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npm.Renovator.Domain.Models;
+using Npm.Renovator.Domain.Services.Abstract;
 using System.Management.Automation;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
-    internal class GitCommandService
+    internal class GitCommandService: IGitCommandService
     {
         private const string _tempFolderLocalLocation = "TestGitFolders";
         private readonly ILogger<GitCommandService> _logger;
@@ -14,7 +15,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
         }
 
         /// <summary>
-        /// HTTP(s) ONLY NO SSH OR OTHERS
+        /// IMPORTANT HTTP(s) ONLY NO SSH OR OTHERS
         /// </summary>
         public async Task<GitCommandResult<Guid>> CheckoutRemoteRepoToLocalTempStoreAsync(Uri remoteRepoLocation, CancellationToken token = default)
         {
