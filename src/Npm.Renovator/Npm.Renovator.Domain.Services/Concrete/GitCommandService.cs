@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npm.Renovator.Domain.Models;
+using System.Management.Automation;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
@@ -11,10 +12,12 @@ namespace Npm.Renovator.Domain.Services.Concrete
             _logger = logger;
         }
 
-
-        //public async Task<GitCommandResult> CheckoutRemoteRepoToLocalTempStoreAsync(,CancellationToken token = default)
-        //{
-
-        //}
+        /// <summary>
+        /// HTTP(s) ONLY NO SSH OR OTHERS
+        /// </summary>
+        public async Task<GitCommandResult> CheckoutRemoteRepoToLocalTempStoreAsync(Uri remoteRepoLocation, CancellationToken token = default)
+        {
+            using var ps = PowerShell.Create();
+        }
     }
 }
