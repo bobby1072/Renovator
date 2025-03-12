@@ -38,7 +38,7 @@ internal class NpmCommandService: INpmCommandService
 
         if (!string.IsNullOrEmpty(resultsView.ExceptionOutput))
         {
-            _logger.LogError("Npm install failed with exception: {Error}", resultsView.ExceptionOutput);
+            _logger.LogError("Npm install command failed with exception: {Error}", resultsView.ExceptionOutput);
         }
         
         return resultsView;

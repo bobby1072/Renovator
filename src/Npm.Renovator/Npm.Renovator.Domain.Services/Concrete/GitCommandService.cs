@@ -37,11 +37,16 @@ namespace Npm.Renovator.Domain.Services.Concrete
 
             await process.WaitForExitAsync(cancellationToken);
 
+            var errorOutput = result.Last();
+            if (!string.IsNullOrEmpty(errorOutput))
+            {
+                _logger.LogError("Git clone command failed with exception: {Error}", errorOutput);
+            }
 
             return new ProcessCommandResult<TempRepositoryFromGit>
             {
                 Output = result.First(),
-                ExceptionOutput = result.Last(),
+                ExceptionOutput = errorOutput,
                 Data = new TempRepositoryFromGit 
                 {
                     FolderId = tempFolderId,
