@@ -38,6 +38,18 @@ namespace Npm.Renovator.Domain.Services.Concrete
             await process.WaitForExitAsync(cancellationToken);
 
 
+            return new ProcessCommandResult<TempRepositoryFromGit>
+            {
+                Output = result.First(),
+                ExceptionOutput = result.Last(),
+                Data = new TempRepositoryFromGit 
+                {
+                    FolderId = tempFolderId,
+                    FullPathTo = Path.GetFullPath(pathToFolder)
+                }
+            };
+
+
             throw new NotImplementedException();
         }
     }
