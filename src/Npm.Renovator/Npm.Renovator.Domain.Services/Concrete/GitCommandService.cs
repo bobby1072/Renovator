@@ -48,9 +48,6 @@ namespace Npm.Renovator.Domain.Services.Concrete
                     FullPathTo = Path.GetFullPath(pathToFolder)
                 }
             };
-
-
-            throw new NotImplementedException();
         }
     }
 }
