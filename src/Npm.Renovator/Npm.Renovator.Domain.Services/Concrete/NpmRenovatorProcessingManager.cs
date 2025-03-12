@@ -30,7 +30,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         _npmCommandService = npmCommandService;
     }
 
-    public async Task<RenovatorOutcome<NpmCommandResults>> AttemptToRenovateLocalSystemRepoAsync(DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken = default)
+    public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateLocalSystemRepoAsync(DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken = default)
     {
         PackageJsonDependencies? analysedDependencies = null;
         try
@@ -49,11 +49,11 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             
             var npmIResult = await _npmCommandService.RunNpmInstallAsync(upgradeBuilder.LocalSystemFilePathToJson.GetFolderSpaceFromFilePath(), cancellationToken);
 
-            var modelToReturn = new RenovatorOutcome<NpmCommandResults>
+            var modelToReturn = new RenovatorOutcome<ProcessCommandResult>
             {
-                RenovatorException = string.IsNullOrEmpty(npmIResult.Exception)
+                RenovatorException = string.IsNullOrEmpty(npmIResult.ExceptionOutput)
                     ? null
-                    : new RenovatorException(npmIResult.Exception),
+                    : new RenovatorException(npmIResult.ExceptionOutput),
                 Data = npmIResult
             };
 
@@ -70,7 +70,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             {
                 await AttemptToRollbackRepo(upgradeBuilder.LocalSystemFilePathToJson, analysedDependencies, cancellationToken);
             }
-            return new RenovatorOutcome<NpmCommandResults>
+            return new RenovatorOutcome<ProcessCommandResult>
             {
                 RenovatorException = GetRenovatorException(nameof(AttemptToRenovateLocalSystemRepoAsync), ex)
             };

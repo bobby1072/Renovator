@@ -1,6 +1,6 @@
 namespace Npm.Renovator.NpmHttpClient.Models.Response
 {
-    public sealed record NpmJsRegistryResponseSingleObject
+    public record NpmJsRegistryResponseSingleObject
     {
         public required long Dependents { get; init; }
         public required DateTime Updated { get; init; }

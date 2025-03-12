@@ -1,6 +1,6 @@
 namespace Npm.Renovator.NpmHttpClient.Models.Response
 {
-    public sealed record NpmJsRegistryResponse
+    public record NpmJsRegistryResponse
     {
         public IReadOnlyCollection<NpmJsRegistryResponseSingleObject> Objects { get; init; } = [];
         public required long Total { get; init; }

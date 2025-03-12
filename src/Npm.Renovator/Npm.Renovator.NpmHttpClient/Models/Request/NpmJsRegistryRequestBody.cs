@@ -1,8 +1,8 @@
 ﻿namespace Npm.Renovator.NpmHttpClient.Models.Request
 {
-    public sealed record NpmJsRegistryRequestBody
+    public record NpmJsRegistryRequestBody
     {
         public required string Text { get; init; }
-        public required int Size {  get; init; }
+        public required int Size { get; init; }
     }
 }

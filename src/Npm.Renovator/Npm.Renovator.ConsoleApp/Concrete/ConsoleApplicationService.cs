@@ -195,9 +195,9 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
             Console.Clear();
             if(!renovateResult.IsSuccess || !string.IsNullOrEmpty(renovateResult.ExceptionMessage) ||
-                !string.IsNullOrEmpty(renovateResult.Data?.Exception))
+                !string.IsNullOrEmpty(renovateResult.Data?.ExceptionOutput))
             {
-                throw new ConsoleException($"{NewConsoleLines()}Failed to update repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.Exception ?? "None"}");
+                throw new ConsoleException($"{NewConsoleLines()}Failed to update repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.ExceptionOutput ?? "None"}");
             }
 
             Console.WriteLine($"{NewConsoleLines()}Successfully renovated repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.Output ?? "None"}{NewConsoleLines()}");

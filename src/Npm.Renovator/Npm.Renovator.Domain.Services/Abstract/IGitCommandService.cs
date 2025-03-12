@@ -7,6 +7,6 @@ namespace Npm.Renovator.Domain.Services.Abstract
         /// <summary>
         /// IMPORTANT HTTP(s) ONLY NO SSH OR OTHERS
         /// </summary>
-        Task<GitCommandResult<Guid>> CheckoutRemoteRepoToLocalTempStoreAsync(Uri remoteRepoLocation, CancellationToken token = default);
+        Task<ProcessCommandResult<TempRepositoryFromGit>> CheckoutRemoteRepoToLocalTempStoreAsync(Uri remoteRepoLocation, CancellationToken token = default);
     }
 }

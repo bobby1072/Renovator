@@ -2,9 +2,9 @@
 
 namespace Npm.Renovator.Domain.Models;
 
-public sealed class DependencyUpgradeBuilder
+public class DependencyUpgradeBuilder
 {
-    public string LocalSystemFilePathToJson {  get; init; }
+    public string LocalSystemFilePathToJson { get; init; }
     public IReadOnlyDictionary<string, string?> ReadonlyUpgradesView { get => _packagesToUpgrade.Clone(); }
     private readonly Dictionary<string, string?> _packagesToUpgrade = [];
     private DependencyUpgradeBuilder(string localSystemFilePathToJson)
@@ -14,8 +14,8 @@ public sealed class DependencyUpgradeBuilder
     public bool HasAnyUpgrades() => _packagesToUpgrade.Count != 0;
     public DependencyUpgradeBuilder AddUpgrade(string packageName, string? newVersion = null)
     {
-        _packagesToUpgrade.Add(packageName, newVersion);  
-        
+        _packagesToUpgrade.Add(packageName, newVersion);
+
         return this;
     }
 
@@ -32,7 +32,7 @@ public sealed class DependencyUpgradeBuilder
         {
             newUpgrader.AddUpgrade(package);
         }
-        
+
         return newUpgrader;
     }
 }
