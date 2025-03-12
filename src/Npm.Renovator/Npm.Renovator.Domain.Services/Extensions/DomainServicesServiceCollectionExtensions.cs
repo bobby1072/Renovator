@@ -14,6 +14,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddNpmHttpClient(configurationManager)
             .AddHostedService<ComputerResourceCheckerService>()
             .AddScoped<INpmCommandService, NpmCommandService>()
+            .AddScoped<IGitCommandService, GitCommandService>()
             .AddScoped<INpmRenovatorProcessingManager, NpmRenovatorProcessingManager>()
             .AddScoped<IRepoExplorerService, RepoExplorerService>();
         
