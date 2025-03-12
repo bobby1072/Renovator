@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
-using System.Management.Automation;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
@@ -19,17 +18,10 @@ namespace Npm.Renovator.Domain.Services.Concrete
         /// </summary>
         public async Task<GitCommandResult<Guid>> CheckoutRemoteRepoToLocalTempStoreAsync(Uri remoteRepoLocation, CancellationToken token = default)
         {
-            using var ps = PowerShell.Create();
-            var tempRepoId = Guid.NewGuid();
             
-            ps.AddScript($"git clone {remoteRepoLocation} {Path.Combine(".", _tempFolderLocalLocation, tempRepoId.ToString())}");
             
-            ps.AddScript($"cd {_tempFolderLocalLocation}");
-            ps.AddScript($"cd {tempRepoId}");
-
-            var result = await ps.InvokeAsync();
-
             throw new NotImplementedException();
+
         }
     }
 }
