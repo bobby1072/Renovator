@@ -21,6 +21,22 @@ namespace Npm.Renovator.Domain.Services.Concrete
         {
             _logger = logger;
         }
+        public async Task<IReadOnlyCollection<LazyPackageJson>> AnalyseMultiplePackageJsonDependenciesAsync(string fullFilePathToFolder, CancellationToken cancellationToken = default)
+        {
+            var allFiles = Directory.EnumerateFiles(fullFilePathToFolder, "package.json", SearchOption.AllDirectories).ToArray();
+            if(allFiles.Length == 0)
+            {
+                return [];
+            }
+
+            var files = await Task.WhenAll(allFiles.Select(x => ReadJsonFile(x, cancellationToken)));
+            return files.Select(x => new LazyPackageJson
+            {
+                FullLocalPathToPackageJson = x.FullFilePath,
+                FullPackageJson = JsonNode.Parse(x.FileText, _jsonNodeOptions)?.AsObject() ?? throw new InvalidOperationException("Unable to parse file content"),
+                OriginalPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(x.FileText, _jsonSerializerOptionsForPackageJsonWrite) ?? throw new InvalidOperationException("Unable to parse file content")
+            }).ToArray();
+        }
         public async Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
         {
             var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);

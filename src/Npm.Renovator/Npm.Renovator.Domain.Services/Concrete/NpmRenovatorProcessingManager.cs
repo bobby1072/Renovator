@@ -3,6 +3,7 @@ using BT.Common.OperationTimer.Proto;
 using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Exceptions;
 using Npm.Renovator.Common.Extensions;
+using Npm.Renovator.Common.Helpers;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
@@ -72,7 +73,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             }
             return new RenovatorOutcome<ProcessCommandResult>
             {
-                RenovatorException = GetRenovatorException(nameof(AttemptToRenovateLocalSystemRepoAsync), ex)
+                RenovatorException = RenovatorExceptionHelper.CreateRenovatorException(nameof(AttemptToRenovateLocalSystemRepoAsync), ex)
             };
         }
     }
@@ -99,7 +100,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         {
             return new RenovatorOutcome<CurrentPackageVersionsAndPotentialUpgradesView>
             {
-                RenovatorException = GetRenovatorException(
+                RenovatorException = RenovatorExceptionHelper.CreateRenovatorException(
                     nameof(GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync),
                     ex)
             };
@@ -165,11 +166,6 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         {
             _logger.LogError(ex, "Failed to rollback repo at {FilePath}", filePath);
         }
-    }
-    private static RenovatorException GetRenovatorException(string opName, Exception? innerException = null)
-    {
-        return new RenovatorException($"Exception occured during execution of {opName}",
-            innerException);
     }
     private static IEnumerable<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage> GetListOfPotentialNewPackages(Dictionary<string, string> dependencyList, IReadOnlyCollection<NpmJsRegistryResponseSingleObject> foundPackagesFromRegistry)
     {

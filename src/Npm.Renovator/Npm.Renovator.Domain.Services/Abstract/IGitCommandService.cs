@@ -2,7 +2,7 @@
 
 namespace Npm.Renovator.Domain.Services.Abstract
 {
-    public interface IGitCommandService
+    internal interface IGitCommandService
     {
         /// <summary>
         /// IMPORTANT HTTP(s) ONLY NO SSH OR OTHERS

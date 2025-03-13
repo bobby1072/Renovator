@@ -28,6 +28,9 @@ namespace Npm.Renovator.Domain.Services.Concrete
             process.Start();
 
             await process.StandardInput.WriteLineAsync($"git clone {remoteRepoLocation} {pathToFolder}");
+            await process.StandardInput.WriteLineAsync($"cd {_tempFolderLocalLocation}");
+            await process.StandardInput.WriteLineAsync($"cd {tempFolderId}");
+            await process.StandardInput.WriteAsync("git submodule update --recursive --init");
 
             await process.StandardInput.FlushAsync(cancellationToken);
             process.StandardInput.Close();

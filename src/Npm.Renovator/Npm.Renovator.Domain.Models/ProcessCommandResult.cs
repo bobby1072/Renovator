@@ -7,7 +7,15 @@ public record ProcessCommandResult
     public string? ExceptionOutput { get; init; }
 }
 
-public record ProcessCommandResult<T> : ProcessCommandResult
+public record ProcessCommandResult<T> : ProcessCommandResult, IDisposable
 {
     public T? Data { get; init; }
+
+    public void Dispose()
+    {
+        if(Data is IDisposable foundDisposable)
+        {
+            foundDisposable.Dispose();
+        }
+    }
 }
