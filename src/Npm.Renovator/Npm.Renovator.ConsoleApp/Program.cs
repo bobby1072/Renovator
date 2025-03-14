@@ -11,28 +11,41 @@ public static class Program
 {
     public static async Task Main()
     {
-        using var host = Host.CreateDefaultBuilder()
-            .ConfigureAppConfiguration(config =>
-            {
-                config.AddJsonFile(Path.GetFullPath("appsettings.json"));
-            })
-            .ConfigureServices((context, services) =>
-            {
-                services
-                    .AddRenovatorApplication(context.Configuration)
-                    .AddLogging(opts =>
-                    {
-                        opts.SetMinimumLevel(LogLevel.None);
-                    })
-                    .AddTransient<IConsoleApplicationService, Concrete.ConsoleApplicationService>();
-            })
-            .Build();
+        try
+        {
+            using var host = Host.CreateDefaultBuilder()
+                .ConfigureAppConfiguration(config =>
+                {
+                    config.AddJsonFile(Path.GetFullPath("appsettings.json"));
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    services
+                        .AddRenovatorApplication(context.Configuration)
+                        .AddLogging(opts =>
+                        {
+                            opts.SetMinimumLevel(LogLevel.None);
+                        })
+                        .AddTransient<IConsoleApplicationService, Concrete.ConsoleApplicationService>();
+                })
+                .Build();
 
-        await host.StartAsync();
+            await host.StartAsync();
 
-        await host.Services.GetRequiredService<IConsoleApplicationService>().ExecuteAsync();
+            await using var asyncScope = host.Services.CreateAsyncScope();
 
-        await host.StopAsync();
+            await using var consoleApp = asyncScope.ServiceProvider.GetRequiredService<IConsoleApplicationService>();
+
+            await consoleApp.ExecuteAsync();
+
+            await host.StopAsync();
+        }
+        catch(System.Exception e)
+        {
+            Console.Clear();
+            Console.WriteLine($"Exception occured during setup with message: {Environment.NewLine}");
+            Console.WriteLine(e.Message);
+        }
     }
 }
 

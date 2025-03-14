@@ -14,7 +14,7 @@ internal class NpmCommandService: INpmCommandService
     {
         _logger = logger;
     }
-    public async Task<NpmCommandResults> RunNpmInstallAsync(string workingDirectory, CancellationToken cancellationToken  = default)
+    public async Task<ProcessCommandResult> RunNpmInstallAsync(string workingDirectory, CancellationToken cancellationToken  = default)
     {
         using var process = new Process(); 
         process.StartInfo = ProcessHelper.GetDefaultProcessStartInfo(workingDirectory);
@@ -30,15 +30,15 @@ internal class NpmCommandService: INpmCommandService
 
         await process.WaitForExitAsync(cancellationToken);
 
-        var resultsView = new NpmCommandResults
+        var resultsView = new ProcessCommandResult
         {
             Output = result.First(),
-            Exception = result.Last()
+            ExceptionOutput = result.Last()
         };
 
-        if (!string.IsNullOrEmpty(resultsView.Exception))
+        if (!string.IsNullOrEmpty(resultsView.ExceptionOutput))
         {
-            _logger.LogError("Npm install failed with exception: {Error}", resultsView.Exception);
+            _logger.LogError("Npm install command failed with exception: {Error}", resultsView.ExceptionOutput);
         }
         
         return resultsView;

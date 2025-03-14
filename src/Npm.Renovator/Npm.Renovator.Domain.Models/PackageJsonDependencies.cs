@@ -6,7 +6,7 @@ namespace Npm.Renovator.Domain.Models
     {
         public Dictionary<string, string> DevDependencies { get; set; } = [];
         public Dictionary<string, string> Dependencies { get; set; } = [];
-        
+
         public bool Equals(PackageJsonDependencies? other)
         {
             return other is not null &&

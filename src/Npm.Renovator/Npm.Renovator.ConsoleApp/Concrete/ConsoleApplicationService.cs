@@ -14,20 +14,31 @@ namespace Npm.Renovator.ConsoleApp.Concrete;
 internal class ConsoleApplicationService : IConsoleApplicationService
 {
     private readonly IServiceProvider _serviceProvider;
-    private INpmRenovatorProcessingManager _processingManager = null!;
+    private AsyncServiceScope _asyncScope;
+
+    private INpmRenovatorProcessingManager _processingManagerInstance = null!;
+    private IGitNpmRenovatorProcessingManager _gitProcessingManagerInstance = null!;
+    private INpmRenovatorProcessingManager _processingManager
+        => _processingManagerInstance ??= _asyncScope.ServiceProvider.GetRequiredService<INpmRenovatorProcessingManager>();
+    private IGitNpmRenovatorProcessingManager _gitProcessingManager
+        => _gitProcessingManagerInstance ??= _asyncScope.ServiceProvider.GetRequiredService<IGitNpmRenovatorProcessingManager>();
+    
+    
     public ConsoleApplicationService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
+    public ValueTask DisposeAsync() => _asyncScope.DisposeAsync();
     public async Task ExecuteAsync()
     {
         while (true)
         {
             try
             {
-                await using var asyncScope = _serviceProvider.CreateAsyncScope();
+                _processingManagerInstance = null!;
+                _gitProcessingManagerInstance = null!;
+                _asyncScope = _serviceProvider.CreateAsyncScope();
 
-                _processingManager = asyncScope.ServiceProvider.GetRequiredService<INpmRenovatorProcessingManager>();
                 var cancelTokenSource = new CancellationTokenSource();
 
                 var consoleJourneyState = new ConsoleJourneyState
@@ -45,6 +56,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             }
             catch (OperationCanceledException)
             {
+                Console.Clear();
                 Console.WriteLine($"{NewConsoleLines()}Operation has been cancelled...{NewConsoleLines()}");
                 return;
             }
@@ -56,7 +68,6 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             catch (System.Exception)
             {
                 Console.WriteLine($"{NewConsoleLines()}An unexpected exception occurred...{NewConsoleLines()}");
-                await Task.Delay(6000);
                 return;
             }
         }
@@ -195,9 +206,9 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
             Console.Clear();
             if(!renovateResult.IsSuccess || !string.IsNullOrEmpty(renovateResult.ExceptionMessage) ||
-                !string.IsNullOrEmpty(renovateResult.Data?.Exception))
+                !string.IsNullOrEmpty(renovateResult.Data?.ExceptionOutput))
             {
-                throw new ConsoleException($"{NewConsoleLines()}Failed to update repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.Exception ?? "None"}");
+                throw new ConsoleException($"{NewConsoleLines()}Failed to update repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.ExceptionOutput ?? "None"}");
             }
 
             Console.WriteLine($"{NewConsoleLines()}Successfully renovated repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.Output ?? "None"}{NewConsoleLines()}");
