@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using BT.Common.FastArray.Proto;
+using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Extensions;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
@@ -30,7 +31,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             }
 
             var files = await Task.WhenAll(allFiles.Select(x => ReadJsonFile(x, cancellationToken)));
-            return files.Select(x => new LazyPackageJson
+            return files.FastArraySelect(x => new LazyPackageJson
             {
                 FullLocalPathToPackageJson = x.FullFilePath,
                 FullPackageJson = JsonNode.Parse(x.FileText, _jsonNodeOptions)?.AsObject() ?? throw new InvalidOperationException("Unable to parse file content"),

@@ -16,10 +16,10 @@ namespace Npm.Renovator.Domain.Services.Concrete;
 
 internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 {
-    private readonly INpmJsRegistryHttpClient _npmJsRegistryHttpClient;
-    private readonly IRepoExplorerService _reader;
-    private readonly ILogger<NpmRenovatorProcessingManager> _logger;
-    private readonly INpmCommandService _npmCommandService;
+    protected readonly INpmJsRegistryHttpClient _npmJsRegistryHttpClient;
+    protected readonly IRepoExplorerService _reader;
+    protected readonly ILogger<NpmRenovatorProcessingManager> _logger;
+    protected readonly INpmCommandService _npmCommandService;
     public NpmRenovatorProcessingManager(INpmJsRegistryHttpClient npmJsRegistryHttpClient, 
         IRepoExplorerService reader,
         ILogger<NpmRenovatorProcessingManager> logger,
@@ -106,7 +106,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             };
         }
     }
-    private async Task<IReadOnlyCollection<NpmJsRegistryResponseSingleObject>> GetPotentialNewPackagesFromRegistry(Dictionary<string, string> packagesToCheck)
+    protected async Task<IReadOnlyCollection<NpmJsRegistryResponseSingleObject>> GetPotentialNewPackagesFromRegistry(Dictionary<string, string> packagesToCheck)
     {
         var jobList = packagesToCheck.DistinctBy(x => x.Key).FastArraySelect(x => _npmJsRegistryHttpClient.ExecuteAsync(
                 new NpmJsRegistryRequestBody { Text = x.Key, Size = 1 }
@@ -167,7 +167,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             _logger.LogError(ex, "Failed to rollback repo at {FilePath}", filePath);
         }
     }
-    private static IEnumerable<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage> GetListOfPotentialNewPackages(Dictionary<string, string> dependencyList, IReadOnlyCollection<NpmJsRegistryResponseSingleObject> foundPackagesFromRegistry)
+    protected static IEnumerable<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage> GetListOfPotentialNewPackages(Dictionary<string, string> dependencyList, IReadOnlyCollection<NpmJsRegistryResponseSingleObject> foundPackagesFromRegistry)
     {
         foreach (var package in dependencyList)
         {
@@ -177,7 +177,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
                 CurrentVersion = package.Value,
                 PotentialNewVersions = foundPackagesFromRegistry
                     .FastArrayWhere(x => x.Package.Name == package.Key && x.Package.Version != package.Value.Replace("^", ""))
-                    .Select(x => new CurrentPackageVersionsAndPotentialUpgradesViewPotentialNewVersion
+                    .FastArraySelect(x => new CurrentPackageVersionsAndPotentialUpgradesViewPotentialNewVersion
                     {
                         CurrentVersion = x.Package.Version,
                         ReleaseDate = x.Updated
