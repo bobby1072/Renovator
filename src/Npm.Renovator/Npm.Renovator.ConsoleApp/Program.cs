@@ -34,7 +34,9 @@ public static class Program
 
             await using var asyncScope = host.Services.CreateAsyncScope();
 
-            await asyncScope.ServiceProvider.GetRequiredService<IConsoleApplicationService>().ExecuteAsync();
+            await using var consoleApp = asyncScope.ServiceProvider.GetRequiredService<IConsoleApplicationService>();
+
+            await consoleApp.ExecuteAsync();
 
             await host.StopAsync();
         }

@@ -16,6 +16,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<INpmCommandService, NpmCommandService>()
             .AddScoped<IGitCommandService, GitCommandService>()
             .AddScoped<INpmRenovatorProcessingManager, NpmRenovatorProcessingManager>()
+            .AddScoped<IGitNpmRenovatorProcessingManager, GitNpmRenovatorProcessingManager>()
             .AddScoped<IRepoExplorerService, RepoExplorerService>();
         
         return serviceCollection;

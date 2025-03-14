@@ -121,9 +121,6 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 
         return finishedJobs.FastArrayWhere(x => x is not null).SelectMany(x => x!.Objects).ToArray();
     }
-
-
-
     private async Task<Dictionary<string, string>> UpgradeDependencyDict(Dictionary<string, string> dependencyDict, DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken)
     {
         var newVersionJobList = new List<Task<(string Name,string Version)>>();
