@@ -20,7 +20,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
     protected readonly IRepoExplorerService _reader;
     protected readonly ILogger<NpmRenovatorProcessingManager> _logger;
     protected readonly INpmCommandService _npmCommandService;
-    public NpmRenovatorProcessingManager(INpmJsRegistryHttpClient npmJsRegistryHttpClient, 
+    public NpmRenovatorProcessingManager(INpmJsRegistryHttpClient npmJsRegistryHttpClient,
         IRepoExplorerService reader,
         ILogger<NpmRenovatorProcessingManager> logger,
         INpmCommandService npmCommandService)
@@ -45,9 +45,9 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             {
                 Dependencies = upgradedDepends.First(),
                 DevDependencies = upgradedDepends.Last()
-            };            
+            };
             await _reader.UpdateExistingPackageJsonDependenciesAsync(analysedDependencies, upgradeBuilder.LocalSystemFilePathToJson, cancellationToken);
-            
+
             var npmIResult = await _npmCommandService.RunNpmInstallAsync(upgradeBuilder.LocalSystemFilePathToJson.GetFolderSpaceFromFilePath(), cancellationToken);
 
             var modelToReturn = new RenovatorOutcome<ProcessCommandResult>
@@ -62,8 +62,8 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             {
                 await AttemptToRollbackRepo(upgradeBuilder.LocalSystemFilePathToJson, analysedDependencies, cancellationToken);
             }
-            
-            return modelToReturn; 
+
+            return modelToReturn;
         }
         catch (Exception ex)
         {
@@ -86,7 +86,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 
             var potentialNewPackages = await GetPotentialNewPackagesFromRegistry(currentPackages.OriginalPackageJsonDependencies.Dependencies
                 .Union(currentPackages.OriginalPackageJsonDependencies.DevDependencies).ToDictionary());
-            
+
             var potentialUpgradesViewList = new List<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage>()
                 .Union(GetListOfPotentialNewPackages(currentPackages.OriginalPackageJsonDependencies.Dependencies, potentialNewPackages))
                 .Union(GetListOfPotentialNewPackages(currentPackages.OriginalPackageJsonDependencies.DevDependencies, potentialNewPackages)).ToArray();
@@ -123,8 +123,8 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
     }
     private async Task<Dictionary<string, string>> UpgradeDependencyDict(Dictionary<string, string> dependencyDict, DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken)
     {
-        var newVersionJobList = new List<Task<(string Name,string Version)>>();
-        
+        var newVersionJobList = new List<Task<(string Name, string Version)>>();
+
         foreach (var dept in dependencyDict)
         {
             var foundUpgrade = upgradeBuilder.GetUpgradeFor(dept.Key);
@@ -132,7 +132,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             {
                 continue;
             }
-            var newVersionJob = async () => string.IsNullOrEmpty(foundUpgrade.Value.Value) ? (dept.Key,(await
+            var newVersionJob = async () => string.IsNullOrEmpty(foundUpgrade.Value.Value) ? (dept.Key, (await
                         _npmJsRegistryHttpClient
                             .ExecuteAsync(new NpmJsRegistryRequestBody { Text = dept.Key, Size = 1 }, cancellationToken))?.Objects
                     .FirstOrDefault()?.Package.Version ?? dept.Value) : (dept.Key, foundUpgrade.Value.Value);
@@ -140,13 +140,13 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             newVersionJobList.Add(newVersionJob.Invoke());
         }
         var versionJobResult = await Task.WhenAll(newVersionJobList);
-        
+
         var dupedDict = dependencyDict.ToDictionary();
         foreach (var vers in versionJobResult)
         {
             dupedDict[vers.Name] = vers.Version;
         }
-        
+
         return dupedDict;
     }
 
@@ -159,7 +159,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             await _reader.UpdateExistingPackageJsonDependenciesAsync(originalDependencies, filePath, cancellationToken);
             await _npmCommandService.RunNpmInstallAsync(filePath, cancellationToken);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to rollback repo at {FilePath}", filePath);
         }
