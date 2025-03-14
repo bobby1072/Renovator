@@ -15,8 +15,15 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 {
     private readonly IServiceProvider _serviceProvider;
     private AsyncServiceScope _asyncScope;
-    private INpmRenovatorProcessingManager _processingManager { get => _asyncScope.ServiceProvider.GetRequiredService<INpmRenovatorProcessingManager>(); }
-    private IGitNpmRenovatorProcessingManager _gitProcessingManager { get => _asyncScope.ServiceProvider.GetRequiredService<IGitNpmRenovatorProcessingManager>(); }
+
+    private INpmRenovatorProcessingManager _processingManagerInstance = null!;
+    private IGitNpmRenovatorProcessingManager _gitProcessingManagerInstance = null!;
+    private INpmRenovatorProcessingManager _processingManager
+        => _processingManagerInstance ??= _asyncScope.ServiceProvider.GetRequiredService<INpmRenovatorProcessingManager>();
+    private IGitNpmRenovatorProcessingManager _gitProcessingManager
+        => _gitProcessingManagerInstance ??= _asyncScope.ServiceProvider.GetRequiredService<IGitNpmRenovatorProcessingManager>();
+    
+    
     public ConsoleApplicationService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
@@ -28,6 +35,8 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         {
             try
             {
+                _processingManagerInstance = null!;
+                _gitProcessingManagerInstance = null!;
                 _asyncScope = _serviceProvider.CreateAsyncScope();
 
                 var cancelTokenSource = new CancellationTokenSource();

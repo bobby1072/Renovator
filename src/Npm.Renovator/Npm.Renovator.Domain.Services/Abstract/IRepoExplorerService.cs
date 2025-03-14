@@ -5,10 +5,10 @@ namespace Npm.Renovator.Domain.Services.Abstract
     internal interface IRepoExplorerService
     {
         Task<IReadOnlyCollection<LazyPackageJson>> AnalyseMultiplePackageJsonDependenciesAsync(string fullFilePathToFolder, CancellationToken cancellationToken = default);
-        Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson,
+        Task<LazyPackageJson> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson,
             CancellationToken cancellationToken = default);
-        Task<PackageJsonDependencies> UpdateExistingPackageJsonDependenciesAsync(
-            PackageJsonDependencies newPackageJsonDependencies, 
+        Task<LazyPackageJson> UpdateExistingPackageJsonDependenciesAsync(
+            LazyPackageJson originalWithNewPackages,
             string localSystemFilePathToPackageJson,
             CancellationToken cancellationToken = default);
     }

@@ -34,36 +34,40 @@ namespace Npm.Renovator.Domain.Services.Concrete
             return files.FastArraySelect(x => new LazyPackageJson
             {
                 FullLocalPathToPackageJson = x.FullFilePath,
-                FullPackageJson = JsonNode.Parse(x.FileText, _jsonNodeOptions)?.AsObject() ?? throw new InvalidOperationException("Unable to parse file content"),
+                FullPackageJson = CreateLazyFullPackageJson(x.FileText, cancellationToken),
                 OriginalPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(x.FileText, _jsonSerializerOptionsForPackageJsonWrite) ?? throw new InvalidOperationException("Unable to parse file content")
             }).ToArray();
         }
-        public async Task<PackageJsonDependencies> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
+        public async Task<LazyPackageJson> AnalysePackageJsonDependenciesAsync(string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
         {
             var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);
 
             var parsedPackageJsonDependencies = JsonSerializer.Deserialize<PackageJsonDependencies>(fileText.FileText, _jsonSerializerOptionsForPackageJsonWrite)
                 ?? throw new InvalidOperationException("Unable to parse file content");
 
-            return parsedPackageJsonDependencies;
+            return new LazyPackageJson
+            {
+                FullLocalPathToPackageJson = localSystemFilePathToPackageJson,
+                FullPackageJson = CreateLazyFullPackageJson(fileText.FileText, cancellationToken),
+                OriginalPackageJsonDependencies = parsedPackageJsonDependencies
+            };
         }
-        public async Task<PackageJsonDependencies> UpdateExistingPackageJsonDependenciesAsync(
-            PackageJsonDependencies newPackageJsonDependencies, string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
+        public async Task<LazyPackageJson> UpdateExistingPackageJsonDependenciesAsync(
+            LazyPackageJson originalWithNewPackages, string localSystemFilePathToPackageJson, CancellationToken cancellationToken = default)
         {
-            var fileText = await ReadJsonFile(localSystemFilePathToPackageJson, cancellationToken);
+            var jsonObject = originalWithNewPackages.FullPackageJson.Value;
 
-            var jsonObject = JsonNode.Parse(fileText.FileText, _jsonNodeOptions)!.AsObject()
-                                  ?? throw new InvalidOperationException("Unable to parse file content");
-            
-            var updatedJsonObject = jsonObject.UpdateProperties(newPackageJsonDependencies, _jsonSerializerOptionsForPackageJsonWrite, _jsonNodeOptions);
+            var updatedJsonObject = jsonObject.UpdateProperties(originalWithNewPackages.PotentialNewPackageJsonDependencies 
+                ?? throw new ArgumentNullException(nameof(originalWithNewPackages.PotentialNewPackageJsonDependencies)),
+                _jsonSerializerOptionsForPackageJsonWrite, 
+                _jsonNodeOptions);
 
-            await File.WriteAllTextAsync(fileText.FullFilePath, updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
+            await File.WriteAllTextAsync(originalWithNewPackages.FullLocalPathToPackageJson, updatedJsonObject.ToJsonString(_jsonSerializerOptionsForPackageJsonWrite),
                  cancellationToken);
 
-            
+
             return await AnalysePackageJsonDependenciesAsync(localSystemFilePathToPackageJson, cancellationToken);
         }
-
         private async Task<(string FileText, string FullFilePath)> ReadJsonFile(string filePath, CancellationToken cancellationToken)
         {
             var fullPath = Path.GetFullPath(filePath) ?? throw new InvalidOperationException("Unable to find json file");
@@ -83,6 +87,8 @@ namespace Npm.Renovator.Domain.Services.Concrete
             
             return (fileText, fullPath);
         }
+
+        private static Lazy<JsonObject> CreateLazyFullPackageJson(string fileText, CancellationToken cancellationToken) => new Lazy<JsonObject>(() => JsonNode.Parse(fileText, _jsonNodeOptions)?.AsObject() ?? throw new InvalidOperationException("Unable to parse file content"));
 
     }
 }
