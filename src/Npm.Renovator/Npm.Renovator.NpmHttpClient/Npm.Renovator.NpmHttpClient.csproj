@@ -17,6 +17,7 @@
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.HttpClient\BT.Common.HttpClient.csproj" />
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.OperationTimer\BT.Common.OperationTimer.csproj" />
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Polly\BT.Common.Polly.csproj" />
+      <ProjectReference Include="..\Npm.Renovator.Common\Npm.Renovator.Common.csproj" />
     </ItemGroup>
 
 </Project>

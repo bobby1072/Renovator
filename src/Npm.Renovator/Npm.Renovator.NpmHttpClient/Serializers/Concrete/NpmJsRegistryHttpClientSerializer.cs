@@ -1,19 +1,23 @@
-﻿using Npm.Renovator.NpmHttpClient.Serializers.Abstract;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using System.Text.Json;
+using Npm.Renovator.Common;
+using Npm.Renovator.NpmHttpClient.Serializers.Abstract;
 
 namespace Npm.Renovator.NpmHttpClient.Serializers.Concrete
 {
     internal class NpmJsRegistryHttpClientSerializer : INpmJsRegistryHttpClientSerializer
     {
-        private static readonly JsonSerializerOptions _jsonOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
+        private static readonly JsonSerializerOptions _jsonOptions =
+            RenovatorConstants.CamelCaseSerializerOptions;
+
         public string Serialize(object obj) => JsonSerializer.Serialize(obj, _jsonOptions);
-        public T Deserialize<T>(string s) => JsonSerializer.Deserialize<T>(s, _jsonOptions)
+
+        public T Deserialize<T>(string s) =>
+            JsonSerializer.Deserialize<T>(s, _jsonOptions)
             ?? throw new SerializationException($"Failed to deserialize json to {typeof(T).Name}");
-        public T Deserialize<T>(Stream stream) => JsonSerializer.Deserialize<T>(stream, _jsonOptions)
+
+        public T Deserialize<T>(Stream stream) =>
+            JsonSerializer.Deserialize<T>(stream, _jsonOptions)
             ?? throw new SerializationException($"Failed to deserialize json to {typeof(T).Name}");
     }
 }
