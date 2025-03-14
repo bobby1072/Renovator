@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Domain.Models
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6BC6FC11-6757-4F0E-8675-BF6B04FC15F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npm.Renovator.Tests", "Npm.Renovator.Tests\Npm.Renovator.Tests.csproj", "{9A482B9E-2741-4153-AB47-DB8D06D3712E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Tests", "Npm.Renovator.Tests\Npm.Renovator.Tests.csproj", "{9A482B9E-2741-4153-AB47-DB8D06D3712E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npm.Renovator.GithubGqlClient", "Npm.Renovator.GithubGqlClient\Npm.Renovator.GithubGqlClient.csproj", "{EFB519DE-BF39-49DE-B80C-0275E714D1A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFB519DE-BF39-49DE-B80C-0275E714D1A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFB519DE-BF39-49DE-B80C-0275E714D1A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFB519DE-BF39-49DE-B80C-0275E714D1A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFB519DE-BF39-49DE-B80C-0275E714D1A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

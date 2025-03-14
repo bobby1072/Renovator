@@ -39,7 +39,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
                 _gitProcessingManagerInstance = null!;
                 _asyncScope = _serviceProvider.CreateAsyncScope();
 
-                var cancelTokenSource = new CancellationTokenSource();
+                using var cancelTokenSource = new CancellationTokenSource();
 
                 var consoleJourneyState = new ConsoleJourneyState
                 {
@@ -80,7 +80,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         Console.WriteLine($"This app can be used to renovate your Node.JS projects.{NewConsoleLines()}");
         
         var consoleChoice = GetChoice([
-            $"1. View potential package upgrades {NewConsoleLines()}",
+            $"1. View potential package upgrades. {NewConsoleLines()}",
             $"2. Attempt to renovate project within your local file system. {NewConsoleLines()}"
         ]).ToString();
 
