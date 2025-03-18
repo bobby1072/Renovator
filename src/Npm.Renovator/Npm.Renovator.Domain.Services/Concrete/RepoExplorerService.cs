@@ -88,7 +88,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             return (fileText, fullPath);
         }
 
-        private static Lazy<JsonObject> CreateLazyFullPackageJson(string fileText, CancellationToken cancellationToken) => new Lazy<JsonObject>(() => JsonNode.Parse(fileText, _jsonNodeOptions)?.AsObject() ?? throw new InvalidOperationException("Unable to parse file content"));
+        private static Lazy<JsonObject> CreateLazyFullPackageJson(string fileText, CancellationToken cancellationToken) => new(() => JsonNode.Parse(fileText, _jsonNodeOptions)?.AsObject() ?? throw new InvalidOperationException("Unable to parse file content"));
 
     }
 }

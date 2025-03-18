@@ -18,7 +18,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 {
     protected readonly INpmJsRegistryHttpClient _npmJsRegistryHttpClient;
     protected readonly IRepoExplorerService _reader;
-    protected readonly ILogger<NpmRenovatorProcessingManager> _logger;
+    private readonly ILogger<NpmRenovatorProcessingManager> _logger;
     protected readonly INpmCommandService _npmCommandService;
     public NpmRenovatorProcessingManager(INpmJsRegistryHttpClient npmJsRegistryHttpClient,
         IRepoExplorerService reader,
@@ -71,9 +71,14 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             {
                 await AttemptToRollbackRepo(upgradeBuilder.LocalSystemFilePathToJson, analysedDependencies, cancellationToken);
             }
+
+            var renovatorException = RenovatorExceptionHelper.CreateRenovatorException(nameof(AttemptToRenovateLocalSystemRepoAsync), ex);
+
+            LogRenovatorException(renovatorException);
+            
             return new RenovatorOutcome<ProcessCommandResult>
             {
-                RenovatorException = RenovatorExceptionHelper.CreateRenovatorException(nameof(AttemptToRenovateLocalSystemRepoAsync), ex)
+                RenovatorException = renovatorException
             };
         }
     }
@@ -98,11 +103,15 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         }
         catch (Exception ex)
         {
+            var renovatorException = RenovatorExceptionHelper.CreateRenovatorException(
+                    nameof(GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync),
+                    ex);
+
+            LogRenovatorException(renovatorException);
+
             return new RenovatorOutcome<CurrentPackageVersionsAndPotentialUpgradesView>
             {
-                RenovatorException = RenovatorExceptionHelper.CreateRenovatorException(
-                    nameof(GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync),
-                    ex)
+                RenovatorException = renovatorException
             };
         }
     }
@@ -120,6 +129,11 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 
 
         return finishedJobs.FastArrayWhere(x => x is not null).SelectMany(x => x!.Objects).ToArray();
+    }
+    protected virtual void LogRenovatorException(RenovatorException ex)
+    {
+        _logger.LogError(ex, "NpmRenovatorProcessingManager caught an exception with the inner message: {InnerMessage}",
+            ex.InnerException?.Message);
     }
     private async Task<Dictionary<string, string>> UpgradeDependencyDict(Dictionary<string, string> dependencyDict, DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken)
     {

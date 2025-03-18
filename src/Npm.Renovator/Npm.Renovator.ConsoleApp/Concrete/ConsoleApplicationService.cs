@@ -28,7 +28,11 @@ internal class ConsoleApplicationService : IConsoleApplicationService
     {
         _serviceProvider = serviceProvider;
     }
-    public ValueTask DisposeAsync() => _asyncScope.DisposeAsync();
+    public async ValueTask DisposeAsync()
+    {
+        _gitProcessingManager?.Dispose();
+        await _asyncScope.DisposeAsync();
+    }
     public async Task ExecuteAsync()
     {
         while (true)

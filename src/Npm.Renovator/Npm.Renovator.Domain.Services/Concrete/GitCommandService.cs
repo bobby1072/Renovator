@@ -53,7 +53,8 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 Data = new TempRepositoryFromGit 
                 {
                     FolderId = tempFolderId,
-                    FullPathTo = Path.GetFullPath(pathToFolder)
+                    FullPathTo = Path.GetFullPath(pathToFolder),
+                    GitRepoLocation = remoteRepoLocation
                 }
             };
         }
