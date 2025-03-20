@@ -97,7 +97,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             throw new ConsoleException($"{NewConsoleLines()}Please enter a valid file system path.{NewConsoleLines()}");
         }
 
-        var upgradeBuilder = DependencyUpgradeBuilder.Create(localFilePath);
+        var upgradeBuilder = LocalDependencyUpgradeBuilder.Create(localFilePath);
 
         return Task.FromResult(new ConsoleJourneyState
         {
@@ -108,7 +108,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         });
     }
 
-    private async Task<ConsoleJourneyState> GetCurrentPackageVersionAndPotentialUpgradesViewJourney(DependencyUpgradeBuilder upgradeBuilder, CancellationToken token)
+    private async Task<ConsoleJourneyState> GetCurrentPackageVersionAndPotentialUpgradesViewJourney(LocalDependencyUpgradeBuilder upgradeBuilder, CancellationToken token)
     {
         Console.Clear();
         Console.WriteLine($"{NewConsoleLines()}Getting view. Please wait...{NewConsoleLines()}");
@@ -137,7 +137,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
         return new ConsoleJourneyState();
     }
-    private async Task<ConsoleJourneyState> AttemptToRenovateRepoJourney(DependencyUpgradeBuilder upgradeBuilder, CancellationToken token)
+    private async Task<ConsoleJourneyState> AttemptToRenovateRepoJourney(LocalDependencyUpgradeBuilder upgradeBuilder, CancellationToken token)
     {
         Console.Clear();
         Console.WriteLine($"{NewConsoleLines()}Getting view. Please wait...{NewConsoleLines()}");

@@ -1,38 +1,23 @@
-﻿using Npm.Renovator.Common.Extensions;
+﻿
+using Npm.Renovator.Common.Extensions;
 
-namespace Npm.Renovator.Domain.Models;
-
-public class DependencyUpgradeBuilder
+namespace Npm.Renovator.Domain.Models
 {
-    public string LocalSystemFilePathToJson { get; init; }
-    public IReadOnlyDictionary<string, string?> ReadonlyUpgradesView { get => _packagesToUpgrade.Clone(); }
-    private readonly Dictionary<string, string?> _packagesToUpgrade = [];
-    private DependencyUpgradeBuilder(string localSystemFilePathToJson)
+    public class DependencyUpgradeBuilder
     {
-        LocalSystemFilePathToJson = localSystemFilePathToJson;
-    }
-    public bool HasAnyUpgrades() => _packagesToUpgrade.Count != 0;
-    public DependencyUpgradeBuilder AddUpgrade(string packageName, string? newVersion = null)
-    {
-        _packagesToUpgrade.Add(packageName, newVersion);
-
-        return this;
-    }
-
-    public KeyValuePair<string, string?>? GetUpgradeFor(string packageName)
-    {
-        return _packagesToUpgrade.FirstOrDefault(pair => pair.Key == packageName);
-    }
-
-    public static DependencyUpgradeBuilder Create(string localSystemFilePathToJson, params string[] packagesToUpgrade)
-    {
-        var newUpgrader = new DependencyUpgradeBuilder(localSystemFilePathToJson);
-
-        foreach (var package in packagesToUpgrade)
+        public IReadOnlyDictionary<string, string?> ReadonlyUpgradesView { get => _packagesToUpgrade.Clone(); }
+        private readonly Dictionary<string, string?> _packagesToUpgrade = [];
+        public bool HasAnyUpgrades() => _packagesToUpgrade.Count != 0;
+        public DependencyUpgradeBuilder AddUpgrade(string packageName, string? newVersion = null)
         {
-            newUpgrader.AddUpgrade(package);
+            _packagesToUpgrade.Add(packageName, newVersion);
+
+            return this;
         }
 
-        return newUpgrader;
+        public KeyValuePair<string, string?>? GetUpgradeFor(string packageName)
+        {
+            return _packagesToUpgrade.FirstOrDefault(pair => pair.Key == packageName);
+        }
     }
 }

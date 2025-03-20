@@ -6,6 +6,7 @@ using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
 using Npm.Renovator.NpmHttpClient.Abstract;
+using System.Threading;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
@@ -83,6 +84,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 };
             }
         }
+
         public async Task<RenovatorOutcome<IReadOnlyCollection<LazyPackageJson>>> FindAllPackageJsonsInTempRepo(
             Uri gitRepoUri,
             CancellationToken cancellationToken = default)
@@ -109,6 +111,39 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 return new RenovatorOutcome<IReadOnlyCollection<LazyPackageJson>>
                 {
                     RenovatorException = renException
+                };
+            }
+        }
+        public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateTempRepo(GitDependencyUpgradeBuilder upgradeBuilder, CancellationToken token = default)
+        {
+            try
+            {
+                var tempRepo = await GetTempRepo(upgradeBuilder.RemoteRepoLocation, token);
+
+                var allPackageJsons = await _reader.AnalyseMultiplePackageJsonDependenciesAsync(tempRepo.FullPathTo, token);
+
+                var analysedDependencies
+                    = FindPackageJsonByPropertyWithin(allPackageJsons, ("name", upgradeBuilder.NameInPackageJson))
+                        ?? throw new InvalidOperationException("Could not find package json in the temp repo with that applictaion name");
+
+                var localUpgradeBuilder = LocalDependencyUpgradeBuilder.Create(analysedDependencies.FullLocalPathToPackageJson);
+                
+                foreach (var upgs in upgradeBuilder.ReadonlyUpgradesView)
+                {
+                    localUpgradeBuilder.AddUpgrade(upgs.Key, upgs.Value);
+                }
+                
+                return await AttemptToRenovateLocalSystemRepoAsync(localUpgradeBuilder, token);
+            }
+            catch (Exception ex)
+            {
+                var renovatorException = RenovatorExceptionHelper.CreateRenovatorException(nameof(AttemptToRenovateTempRepo), ex);
+
+                LogRenovatorException(renovatorException);
+
+                return new RenovatorOutcome<ProcessCommandResult>
+                {
+                    RenovatorException = renovatorException
                 };
             }
         }
@@ -144,6 +179,17 @@ namespace Npm.Renovator.Domain.Services.Concrete
 
             return _tempRepoInstance;
         }
+        private static LazyPackageJson? FindPackageJsonByPropertyWithin(IReadOnlyCollection<LazyPackageJson> lazyPackages, (string Key, string Value) keyValue)
+        {
+            foreach(var lazyPack in lazyPackages)
+            {
+                 if(lazyPack.FullPackageJson.Value.Any(x => x.Key == keyValue.Key && x.Value?.ToString() == keyValue.Value))
+                 {
+                    return lazyPack;
+                 }
+            }
 
+            return null;
+        }
     }
 }

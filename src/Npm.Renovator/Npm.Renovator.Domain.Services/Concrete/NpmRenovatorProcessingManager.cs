@@ -31,7 +31,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         _npmCommandService = npmCommandService;
     }
 
-    public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateLocalSystemRepoAsync(DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken = default)
+    public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateLocalSystemRepoAsync(LocalDependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken = default)
     {
         LazyPackageJson? analysedDependencies = null;
         try
@@ -135,7 +135,21 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         _logger.LogError(ex, "NpmRenovatorProcessingManager caught an exception with the inner message: {InnerMessage}",
             ex.InnerException?.Message);
     }
-    private async Task<Dictionary<string, string>> UpgradeDependencyDict(Dictionary<string, string> dependencyDict, DependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken)
+    protected async Task AttemptToRollbackRepo(string filePath, LazyPackageJson originalDependencies,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            _logger.LogDebug("Attempting to rollback repo at {FilePath}", filePath);
+            await _reader.UpdateExistingPackageJsonDependenciesAsync(originalDependencies, filePath, cancellationToken);
+            await _npmCommandService.RunNpmInstallAsync(filePath, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to rollback repo at {FilePath}", filePath);
+        }
+    }
+    private async Task<Dictionary<string, string>> UpgradeDependencyDict(Dictionary<string, string> dependencyDict, LocalDependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken)
     {
         var newVersionJobList = new List<Task<(string Name, string Version)>>();
 
@@ -164,20 +178,6 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         return dupedDict;
     }
 
-    private async Task AttemptToRollbackRepo(string filePath, LazyPackageJson originalDependencies,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            _logger.LogDebug("Attempting to rollback repo at {FilePath}", filePath);
-            await _reader.UpdateExistingPackageJsonDependenciesAsync(originalDependencies, filePath, cancellationToken);
-            await _npmCommandService.RunNpmInstallAsync(filePath, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to rollback repo at {FilePath}", filePath);
-        }
-    }
     protected static IEnumerable<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage> GetListOfPotentialNewPackages(Dictionary<string, string> dependencyList, IReadOnlyCollection<NpmJsRegistryResponseSingleObject> foundPackagesFromRegistry)
     {
         foreach (var package in dependencyList)
