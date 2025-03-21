@@ -12,7 +12,7 @@ public static class DomainServicesServiceCollectionExtensions
     {
         serviceCollection
             .AddNpmHttpClient(configurationManager)
-            .AddHostedService<ComputerResourceCheckerService>()
+            .AddScoped<IComputerResourceCheckerService, ComputerResourceCheckerService>()
             .AddScoped<INpmCommandService, NpmCommandService>()
             .AddScoped<IGitCommandService, GitCommandService>()
             .AddScoped<INpmRenovatorProcessingManager, NpmRenovatorProcessingManager>()

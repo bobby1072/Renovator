@@ -17,7 +17,7 @@ public static class Program
             using var host = Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration(config =>
                 {
-                    config.AddJsonFile(Path.GetFullPath("appsettings.json"));
+                    config.AddJsonFile(Path.GetFullPath("appsettings.json"), false);
                 })
                 .ConfigureServices((context, services) =>
                 {
@@ -27,13 +27,14 @@ public static class Program
                         {
                             opts.SetMinimumLevel(LogLevel.None);
                         })
-                        .AddTransient<IConsoleApplicationService, Concrete.ConsoleApplicationService>()
+                        .AddTransient<IConsoleApplicationService, ConsoleApplicationService>()
                         .AddHostedService<ConsoleRunnerService>();
                 })
                 .Build();
 
 
-            await host.RunAsync();
+            await host.StartAsync();
+            await host.StopAsync();
         }
         catch(System.Exception e)
         {

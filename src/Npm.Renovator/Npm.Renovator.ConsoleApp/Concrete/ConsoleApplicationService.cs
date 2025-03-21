@@ -43,7 +43,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
                 _gitProcessingManagerInstance = null!;
                 _asyncScope = _serviceProvider.CreateAsyncScope();
 
-                var cancelTokenSource = new CancellationTokenSource();
+                using var cancelTokenSource = new CancellationTokenSource();
 
                 var consoleJourneyState = new ConsoleJourneyState
                 {
@@ -85,18 +85,24 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         
         var consoleChoice = GetChoice([
             $"1. View potential package upgrades {NewConsoleLines()}",
-            $"2. Attempt to renovate project within your local file system. {NewConsoleLines()}"
+            $"2. Attempt to renovate project within your local file system {NewConsoleLines()}",
+            $"2. Exit {NewConsoleLines()}"
         ]).ToString();
 
-        Console.WriteLine($"{NewConsoleLines()}Please enter the local file system path to your package json (relative/full): {NewConsoleLines()}");
 
+
+        if(consoleChoice == "3")
+        {
+            throw new OperationCanceledException();
+        }
+
+        Console.WriteLine($"{NewConsoleLines()}Please enter the local file system path to your package json (relative/full): {NewConsoleLines()}");
         var localFilePath = Console.ReadLine();
 
         if (string.IsNullOrEmpty(localFilePath))
         {
             throw new ConsoleException($"{NewConsoleLines()}Please enter a valid file system path.{NewConsoleLines()}");
         }
-
         var upgradeBuilder = DependencyUpgradeBuilder.Create(localFilePath);
 
         return Task.FromResult(new ConsoleJourneyState
