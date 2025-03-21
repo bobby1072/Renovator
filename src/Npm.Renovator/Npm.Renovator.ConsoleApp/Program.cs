@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npm.Renovator.ConsoleApp.Abstract;
+using Npm.Renovator.ConsoleApp.Concrete;
 using Npm.Renovator.Domain.Services.Extensions;
 
 namespace Npm.Renovator.ConsoleApp;
@@ -26,19 +27,13 @@ public static class Program
                         {
                             opts.SetMinimumLevel(LogLevel.None);
                         })
-                        .AddTransient<IConsoleApplicationService, Concrete.ConsoleApplicationService>();
+                        .AddTransient<IConsoleApplicationService, Concrete.ConsoleApplicationService>()
+                        .AddHostedService<ConsoleRunnerService>();
                 })
                 .Build();
 
-            await host.StartAsync();
 
-            await using var asyncScope = host.Services.CreateAsyncScope();
-
-            await using var consoleApp = asyncScope.ServiceProvider.GetRequiredService<IConsoleApplicationService>();
-
-            await consoleApp.ExecuteAsync();
-
-            await host.StopAsync();
+            await host.RunAsync();
         }
         catch(System.Exception e)
         {
