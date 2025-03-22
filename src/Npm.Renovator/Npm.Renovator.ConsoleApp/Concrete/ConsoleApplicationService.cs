@@ -34,6 +34,9 @@ internal class ConsoleApplicationService : IConsoleApplicationService
     {
         _gitProcessingManager?.Dispose();
         await _asyncScope.DisposeAsync();
+
+        _processingManagerInstance = null!;
+        _gitProcessingManagerInstance = null!;
     }
 
     public async Task ExecuteAsync()
@@ -42,8 +45,10 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         {
             try
             {
-                _processingManagerInstance = null!;
-                _gitProcessingManagerInstance = null!;
+                if (!_asyncScope.Equals(default(AsyncServiceScope)))
+                {
+                    await DisposeAsync();
+                }
                 _asyncScope = _serviceProvider.CreateAsyncScope();
 
                 using var cancelTokenSource = new CancellationTokenSource();
@@ -300,42 +305,46 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         int selectedIndex = 0;
         int optionsCount = options.Count();
         ConsoleKey key;
-
-        do
+        while (true)
         {
-            Console.WriteLine();
-
-            for (int i = 0; i < optionsCount; i++)
+            do
             {
-                if (i == selectedIndex)
+                Console.WriteLine();
+
+                for (int i = 0; i < optionsCount; i++)
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("> " + options.ElementAt(i));
-                    Console.ResetColor();
+                    if (i == selectedIndex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("> " + options.ElementAt(i));
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.WriteLine("  " + options.ElementAt(i));
+                    }
                 }
-                else
+
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                key = keyInfo.Key;
+
+                if (key == ConsoleKey.UpArrow && selectedIndex > 0)
                 {
-                    Console.WriteLine("  " + options.ElementAt(i));
+                    selectedIndex--;
                 }
-            }
+                else if (key == ConsoleKey.DownArrow && selectedIndex < optionsCount - 1)
+                {
+                    selectedIndex++;
+                }
+                Console.Clear();
+            } while (key != ConsoleKey.Enter);
 
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-            key = keyInfo.Key;
-
-            if (key == ConsoleKey.UpArrow && selectedIndex > 0)
+            if (selectedIndex > optionsCount || selectedIndex < 0)
             {
-                selectedIndex--;
+                Console.WriteLine($"{NewConsoleLines()}Please choose a valid option{NewConsoleLines()}");
+                continue;
             }
-            else if (key == ConsoleKey.DownArrow && selectedIndex < optionsCount - 1)
-            {
-                selectedIndex++;
-            }
-            Console.Clear();
-        } while (key != ConsoleKey.Enter);
-
-        if (selectedIndex > optionsCount || selectedIndex < 0)
-        {
-            throw new ConsoleException("Please choose a valid option");
+            break;
         }
 
         return selectedIndex + 1;
