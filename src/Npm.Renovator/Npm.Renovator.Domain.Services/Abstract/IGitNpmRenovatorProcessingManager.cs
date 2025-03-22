@@ -5,6 +5,7 @@ namespace Npm.Renovator.Domain.Services.Abstract
 {
     public interface IGitNpmRenovatorProcessingManager: IDisposable
     {
+        Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateTempRepo(GitDependencyUpgradeBuilder upgradeBuilder, CancellationToken token = default);
         Task<RenovatorOutcome<IReadOnlyCollection<CurrentPackageVersionsAndPotentialUpgradesViewWithFullPath>>> GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesView(
             Uri gitRepoUri,
             CancellationToken cancellationToken = default
