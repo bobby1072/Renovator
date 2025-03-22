@@ -6,7 +6,7 @@ namespace Npm.Renovator.Common.Helpers
     {
         public static RenovatorException CreateRenovatorException(string opName, Exception ex)
         {
-            return new RenovatorException($"Exception occured during execution of {opName}",
+            return new RenovatorException($"Exception occured during execution of {opName}. See inner exception for details",
                 ex);
         }
     }

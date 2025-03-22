@@ -1,10 +1,12 @@
 ﻿using BT.Common.FastArray.Proto;
 using Microsoft.Extensions.Logging;
+using Npm.Renovator.Common.Exceptions;
 using Npm.Renovator.Common.Helpers;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
 using Npm.Renovator.NpmHttpClient.Abstract;
+using System.Threading;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
@@ -12,7 +14,9 @@ namespace Npm.Renovator.Domain.Services.Concrete
     {
         private readonly ILogger<GitNpmRenovatorProcessingManager> _logger;
         private readonly IGitCommandService _gitCommandService;
-        public GitNpmRenovatorProcessingManager(IGitCommandService gitCommandService, ILogger<GitNpmRenovatorProcessingManager> logger,
+        private TempRepositoryFromGit? _tempRepoInstance;
+        public GitNpmRenovatorProcessingManager(IGitCommandService gitCommandService,
+            ILogger<GitNpmRenovatorProcessingManager> logger,
             INpmJsRegistryHttpClient npmJsRegistryHttpClient,
             IRepoExplorerService reader,
             ILogger<NpmRenovatorProcessingManager> baseLogger,
@@ -25,7 +29,10 @@ namespace Npm.Renovator.Domain.Services.Concrete
             _gitCommandService = gitCommandService;
             _logger = logger;
         }
-
+        public void Dispose()
+        {
+            _tempRepoInstance?.Dispose();
+        }
         public async Task<RenovatorOutcome<IReadOnlyCollection<CurrentPackageVersionsAndPotentialUpgradesViewWithFullPath>>> GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesView(
             Uri gitRepoUri,
             CancellationToken cancellationToken = default
@@ -33,18 +40,9 @@ namespace Npm.Renovator.Domain.Services.Concrete
         {
             try
             {
-                using var tempRepo = await _gitCommandService.CheckoutRemoteRepoToLocalTempStoreAsync(gitRepoUri, cancellationToken);
+                var tempRepo = await GetTempRepo(gitRepoUri, cancellationToken);
 
-                if (!tempRepo.IsSuccess || tempRepo.Data is null)
-                {
-                    _logger.LogError("Git clone command failed with error output: {Output} and standard output {StdOutput}",
-                        tempRepo.ExceptionOutput,
-                        tempRepo.Output
-                    );
-                    throw new InvalidOperationException("Failed to clone repo");
-                }
-
-                var allPackageJsons = await _reader.AnalyseMultiplePackageJsonDependenciesAsync(tempRepo.Data.FullPathTo, cancellationToken);
+                var allPackageJsons = await _reader.AnalyseMultiplePackageJsonDependenciesAsync(tempRepo.FullPathTo, cancellationToken);
 
                 var uniquePackageDict =
                     allPackageJsons
@@ -73,14 +71,125 @@ namespace Npm.Renovator.Domain.Services.Concrete
             }
             catch (Exception ex)
             {
+                var renException = RenovatorExceptionHelper.CreateRenovatorException(
+                        nameof(GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesView),
+                        ex);
+
+                LogRenovatorException(renException);
+
+
                 return new RenovatorOutcome<IReadOnlyCollection<CurrentPackageVersionsAndPotentialUpgradesViewWithFullPath>>
                 {
-                    RenovatorException = RenovatorExceptionHelper.CreateRenovatorException(
-                        nameof(GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesView),
-                        ex)
+                    RenovatorException = renException
                 };
             }
         }
 
+        public async Task<RenovatorOutcome<IReadOnlyCollection<LazyPackageJson>>> FindAllPackageJsonsInTempRepo(
+            Uri gitRepoUri,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var tempRepo = await GetTempRepo(gitRepoUri, cancellationToken);
+
+                var allPackageJsons = await _reader.AnalyseMultiplePackageJsonDependenciesAsync(tempRepo.FullPathTo, cancellationToken);
+
+                return new RenovatorOutcome<IReadOnlyCollection<LazyPackageJson>>
+                {
+                    Data = allPackageJsons
+                };
+            }
+            catch (Exception ex)
+            {
+                var renException = RenovatorExceptionHelper.CreateRenovatorException(
+                        nameof(FindAllPackageJsonsInTempRepo),
+                        ex);
+
+                LogRenovatorException(renException);
+
+                return new RenovatorOutcome<IReadOnlyCollection<LazyPackageJson>>
+                {
+                    RenovatorException = renException
+                };
+            }
+        }
+        public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateTempRepo(GitDependencyUpgradeBuilder upgradeBuilder, CancellationToken token = default)
+        {
+            try
+            {
+                var tempRepo = await GetTempRepo(upgradeBuilder.RemoteRepoLocation, token);
+
+                var allPackageJsons = await _reader.AnalyseMultiplePackageJsonDependenciesAsync(tempRepo.FullPathTo, token);
+
+                var analysedDependencies
+                    = FindPackageJsonByPropertyWithin(allPackageJsons, ("name", upgradeBuilder.NameInPackageJson))
+                        ?? throw new InvalidOperationException("Could not find package json in the temp repo with that applictaion name");
+
+                var localUpgradeBuilder = LocalDependencyUpgradeBuilder.Create(analysedDependencies.FullLocalPathToPackageJson);
+                
+                foreach (var upgs in upgradeBuilder.ReadonlyUpgradesView)
+                {
+                    localUpgradeBuilder.AddUpgrade(upgs.Key, upgs.Value);
+                }
+                
+                return await AttemptToRenovateLocalSystemRepoAsync(localUpgradeBuilder, token);
+            }
+            catch (Exception ex)
+            {
+                var renovatorException = RenovatorExceptionHelper.CreateRenovatorException(nameof(AttemptToRenovateTempRepo), ex);
+
+                LogRenovatorException(renovatorException);
+
+                return new RenovatorOutcome<ProcessCommandResult>
+                {
+                    RenovatorException = renovatorException
+                };
+            }
+        }
+        protected override void LogRenovatorException(RenovatorException ex)
+        {
+            _logger.LogError(ex, "GitNpmRenovatorProcessingManager caught an exception with the inner message: {InnerMessage}",
+                ex.InnerException?.Message);
+        } 
+        private async Task<TempRepositoryFromGit> GetTempRepo(
+            Uri gitRepoUri,
+            CancellationToken cancellationToken
+        )
+        {
+            if (gitRepoUri.Equals(_tempRepoInstance?.GitRepoLocation))
+            {
+                return _tempRepoInstance;
+            }
+            _tempRepoInstance?.Dispose();
+            _tempRepoInstance = null;
+
+            var tempRepo = await _gitCommandService.CheckoutRemoteRepoToLocalTempStoreAsync(gitRepoUri, cancellationToken);
+
+            if (!tempRepo.IsSuccess || tempRepo.Data is null)
+            {
+                _logger.LogError("Git clone command failed with error output: {Output} and standard output {StdOutput}",
+                    tempRepo.ExceptionOutput,
+                    tempRepo.Output
+                );
+                throw new InvalidOperationException("Failed to clone repo");
+            }
+
+            _tempRepoInstance = tempRepo.Data;
+
+            return _tempRepoInstance;
+        }
+        private static LazyPackageJson? FindPackageJsonByPropertyWithin(IReadOnlyCollection<LazyPackageJson> lazyPackages, (string Key, string Value) keyValue)
+        {
+            foreach(var lazyPack in lazyPackages)
+            {
+                 if(lazyPack.FullPackageJson.Value.Any(x => x.Key == keyValue.Key && x.Value?.ToString() == keyValue.Value))
+                 {
+                    return lazyPack;
+                 }
+            }
+
+            return null;
+        }
     }
 }

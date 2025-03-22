@@ -9,8 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.Polly", "..\Submodules\BT\src\BT.Common\BT.Common.Polly\BT.Common.Polly.csproj", "{148862EA-10A8-4293-8EC4-5E0259295248}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.HttpClient", "..\Submodules\BT\src\BT.Common\BT.Common.HttpClient\BT.Common.HttpClient.csproj", "{69A1B312-366D-421D-9151-C152D77EA3B8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.FastArray", "..\Submodules\BT\src\BT.Common\BT.Common.FastArray\BT.Common.FastArray.csproj", "{22CB3F75-3ACA-45D9-9603-4A7302B5DD6D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.OperationTimer", "..\Submodules\BT\src\BT.Common\BT.Common.OperationTimer\BT.Common.OperationTimer.csproj", "{85D563CD-8765-4BA9-B9C3-837DABD57EFD}"
@@ -25,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Domain.Models
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6BC6FC11-6757-4F0E-8675-BF6B04FC15F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npm.Renovator.Tests", "Npm.Renovator.Tests\Npm.Renovator.Tests.csproj", "{9A482B9E-2741-4153-AB47-DB8D06D3712E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Tests", "Npm.Renovator.Tests\Npm.Renovator.Tests.csproj", "{9A482B9E-2741-4153-AB47-DB8D06D3712E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.Http", "..\Submodules\BT\src\BT.Common\BT.Common.Http\BT.Common.Http.csproj", "{66D530E6-FEDD-4D71-99D2-DCC6CD5A6C71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,6 @@ Global
 		{148862EA-10A8-4293-8EC4-5E0259295248}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{148862EA-10A8-4293-8EC4-5E0259295248}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{148862EA-10A8-4293-8EC4-5E0259295248}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69A1B312-366D-421D-9151-C152D77EA3B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69A1B312-366D-421D-9151-C152D77EA3B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69A1B312-366D-421D-9151-C152D77EA3B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69A1B312-366D-421D-9151-C152D77EA3B8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22CB3F75-3ACA-45D9-9603-4A7302B5DD6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22CB3F75-3ACA-45D9-9603-4A7302B5DD6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22CB3F75-3ACA-45D9-9603-4A7302B5DD6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -73,16 +69,20 @@ Global
 		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A482B9E-2741-4153-AB47-DB8D06D3712E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66D530E6-FEDD-4D71-99D2-DCC6CD5A6C71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66D530E6-FEDD-4D71-99D2-DCC6CD5A6C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66D530E6-FEDD-4D71-99D2-DCC6CD5A6C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66D530E6-FEDD-4D71-99D2-DCC6CD5A6C71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{148862EA-10A8-4293-8EC4-5E0259295248} = {09422590-0827-401B-9EF0-73021D43B12C}
-		{69A1B312-366D-421D-9151-C152D77EA3B8} = {09422590-0827-401B-9EF0-73021D43B12C}
 		{22CB3F75-3ACA-45D9-9603-4A7302B5DD6D} = {09422590-0827-401B-9EF0-73021D43B12C}
 		{85D563CD-8765-4BA9-B9C3-837DABD57EFD} = {09422590-0827-401B-9EF0-73021D43B12C}
 		{9A482B9E-2741-4153-AB47-DB8D06D3712E} = {6BC6FC11-6757-4F0E-8675-BF6B04FC15F7}
+		{66D530E6-FEDD-4D71-99D2-DCC6CD5A6C71} = {09422590-0827-401B-9EF0-73021D43B12C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {256D8D51-8095-48EC-B38C-8F8DE4969BFA}

@@ -32,7 +32,7 @@ internal class NpmCommandService: INpmCommandService
 
         var resultsView = new ProcessCommandResult
         {
-            Output = result.First(),
+            Output = ProcessHelper.GetInnerStandardOutput(result.First(), "npm install"),
             ExceptionOutput = result.Last()
         };
 
