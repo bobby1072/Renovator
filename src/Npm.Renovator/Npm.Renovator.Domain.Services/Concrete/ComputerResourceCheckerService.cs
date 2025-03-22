@@ -1,11 +1,12 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Helpers;
+using Npm.Renovator.Domain.Services.Abstract;
 using System.Diagnostics;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
-    internal class ComputerResourceCheckerService: IHostedService
+    internal class ComputerResourceCheckerService: IComputerResourceCheckerService
     {
         private readonly ILogger<ComputerResourceCheckerService> _logger;
 
@@ -13,7 +14,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
         {
             _logger = logger;
         }
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public async Task ExecuteAsync(CancellationToken token)
         {
             try
             {
@@ -25,13 +26,13 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 await process.StandardInput.WriteLineAsync("node -v");
                 await process.StandardInput.WriteLineAsync("git -v");
 
-                await process.StandardInput.FlushAsync(cancellationToken);
+                await process.StandardInput.FlushAsync(token);
                 process.StandardInput.Close();
 
-                var result = await Task.WhenAll(process.StandardOutput.ReadToEndAsync(cancellationToken),
-                    process.StandardError.ReadToEndAsync(cancellationToken));
+                var result = await Task.WhenAll(process.StandardOutput.ReadToEndAsync(token),
+                    process.StandardError.ReadToEndAsync(token));
 
-                await process.WaitForExitAsync(cancellationToken);
+                await process.WaitForExitAsync(token);
 
                 var errors = result.Last();
 
@@ -48,10 +49,6 @@ namespace Npm.Renovator.Domain.Services.Concrete
 
                 throw new InvalidProgramException("This system does not have the resources required to run the app...");
             }
-        }
-        public Task StopAsync(CancellationToken token)
-        {
-            return Task.CompletedTask;
         }
     }
 }
