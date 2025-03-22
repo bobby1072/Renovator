@@ -16,14 +16,16 @@ internal class ConsoleApplicationService : IConsoleApplicationService
     private readonly IServiceProvider _serviceProvider;
     private AsyncServiceScope _asyncScope;
 
-    private INpmRenovatorProcessingManager _processingManagerInstance = null!;
-    private IGitNpmRenovatorProcessingManager _gitProcessingManagerInstance = null!;
-    private INpmRenovatorProcessingManager _processingManager =>
+    private INpmRenovatorProcessingManager? _processingManagerInstance = null;
+    private IGitNpmRenovatorProcessingManager? _gitProcessingManagerInstance = null;
+    private INpmRenovatorProcessingManager _processingManager { get =>
         _processingManagerInstance ??=
             _asyncScope.ServiceProvider.GetRequiredService<INpmRenovatorProcessingManager>();
-    private IGitNpmRenovatorProcessingManager _gitProcessingManager =>
+    }
+    private IGitNpmRenovatorProcessingManager _gitProcessingManager { get =>
         _gitProcessingManagerInstance ??=
             _asyncScope.ServiceProvider.GetRequiredService<IGitNpmRenovatorProcessingManager>();
+    }
 
     public ConsoleApplicationService(IServiceProvider serviceProvider)
     {
@@ -35,8 +37,8 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         _gitProcessingManager?.Dispose();
         await _asyncScope.DisposeAsync();
 
-        _processingManagerInstance = null!;
-        _gitProcessingManagerInstance = null!;
+        _processingManagerInstance = null;
+        _gitProcessingManagerInstance = null;
     }
 
     public async Task ExecuteAsync()
