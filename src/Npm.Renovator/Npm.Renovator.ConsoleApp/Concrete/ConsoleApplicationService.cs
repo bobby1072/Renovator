@@ -18,11 +18,15 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
     private INpmRenovatorProcessingManager? _processingManagerInstance = null;
     private IGitNpmRenovatorProcessingManager? _gitProcessingManagerInstance = null;
-    private INpmRenovatorProcessingManager _processingManager { get =>
+    private INpmRenovatorProcessingManager _processingManager
+    {
+        get =>
         _processingManagerInstance ??=
             _asyncScope.ServiceProvider.GetRequiredService<INpmRenovatorProcessingManager>();
     }
-    private IGitNpmRenovatorProcessingManager _gitProcessingManager { get =>
+    private IGitNpmRenovatorProcessingManager _gitProcessingManager
+    {
+        get =>
         _gitProcessingManagerInstance ??=
             _asyncScope.ServiceProvider.GetRequiredService<IGitNpmRenovatorProcessingManager>();
     }
@@ -34,11 +38,10 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
     public async ValueTask DisposeAsync()
     {
-        _gitProcessingManager?.Dispose();
-        await _asyncScope.DisposeAsync();
-
+        _gitProcessingManagerInstance?.Dispose();
         _processingManagerInstance = null;
         _gitProcessingManagerInstance = null;
+        await _asyncScope.DisposeAsync();
     }
 
     public async Task ExecuteAsync()
@@ -102,7 +105,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
         var consoleChoice = GetChoice(
                 [
-                    $"1. View potential package upgrades {NewConsoleLines()}",
+                    $"1. View potential package upgrades for project within your local file system {NewConsoleLines()}",
                     $"2. Attempt to renovate project within your local file system {NewConsoleLines()}",
                     $"2. Exit {NewConsoleLines()}",
                 ]
@@ -114,39 +117,28 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             throw new OperationCanceledException();
         }
 
-        Console.WriteLine(
-            $"{NewConsoleLines()}Please enter the local file system path to your package json (relative/full): {NewConsoleLines()}"
-        );
-        var localFilePath = Console.ReadLine();
-
-        if (string.IsNullOrEmpty(localFilePath))
-        {
-            throw new ConsoleException(
-                $"{NewConsoleLines()}Please enter a valid file system path.{NewConsoleLines()}"
-            );
-        }
-
-        var upgradeBuilder = LocalDependencyUpgradeBuilder.Create(localFilePath);
-
         return Task.FromResult(
             new ConsoleJourneyState
             {
                 NextMove = ct =>
                     consoleChoice == "1"
                         ? GetCurrentPackageVersionAndPotentialUpgradesViewJourney(
-                            upgradeBuilder,
                             ct
                         )
-                        : AttemptToRenovateRepoJourney(upgradeBuilder, ct),
+                        : AttemptToRenovateRepoJourney(ct),
             }
         );
     }
 
     private async Task<ConsoleJourneyState> GetCurrentPackageVersionAndPotentialUpgradesViewJourney(
-        LocalDependencyUpgradeBuilder upgradeBuilder,
         CancellationToken token
     )
     {
+        var localFilePath = GetLocalFilePathToPackageJson();
+
+        var upgradeBuilder = LocalDependencyUpgradeBuilder.Create(localFilePath);
+
+
         Console.Clear();
         Console.WriteLine($"{NewConsoleLines()}Getting view. Please wait...{NewConsoleLines()}");
 
@@ -178,12 +170,28 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
         return new ConsoleJourneyState();
     }
+    private async Task<ConsoleJourneyState> AttemptToRewnovateGitRepoJourney(CancellationToken token)
+    {
 
+
+        Console.WriteLine(
+            $"{NewConsoleLines()}Do you want to return to the main menu (y/n)?{NewConsoleLines()}"
+        );
+        var choice = GetYNChoice();
+        if (choice == YNEnum.N)
+        {
+            throw new OperationCanceledException();
+        }
+        return new ConsoleJourneyState();
+    }
     private async Task<ConsoleJourneyState> AttemptToRenovateRepoJourney(
-        LocalDependencyUpgradeBuilder upgradeBuilder,
         CancellationToken token
     )
     {
+        var localFilePath = GetLocalFilePathToPackageJson();
+
+        var upgradeBuilder = LocalDependencyUpgradeBuilder.Create(localFilePath);
+
         Console.Clear();
         Console.WriteLine($"{NewConsoleLines()}Getting view. Please wait...{NewConsoleLines()}");
 
@@ -301,7 +309,22 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
         return new ConsoleJourneyState();
     }
+    private static string GetLocalFilePathToPackageJson()
+    {
+        Console.WriteLine(
+            $"{NewConsoleLines()}Please enter the local file system path to your package json (relative/full): {NewConsoleLines()}"
+        );
+        var localFilePath = Console.ReadLine();
 
+        if (string.IsNullOrEmpty(localFilePath))
+        {
+            throw new ConsoleException(
+                $"{NewConsoleLines()}Please enter a valid file system path.{NewConsoleLines()}"
+            );
+        }
+
+        return localFilePath;
+    }
     private static int GetChoice(IEnumerable<string> options)
     {
         int selectedIndex = 0;

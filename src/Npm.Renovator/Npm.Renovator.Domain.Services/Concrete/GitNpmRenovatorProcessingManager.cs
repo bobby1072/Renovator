@@ -114,7 +114,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 };
             }
         }
-        public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateTempRepo(GitDependencyUpgradeBuilder upgradeBuilder, CancellationToken token = default)
+        public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateTempRepoAsync(GitDependencyUpgradeBuilder upgradeBuilder, CancellationToken token = default)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             }
             catch (Exception ex)
             {
-                var renovatorException = RenovatorExceptionHelper.CreateRenovatorException(nameof(AttemptToRenovateTempRepo), ex);
+                var renovatorException = RenovatorExceptionHelper.CreateRenovatorException(nameof(AttemptToRenovateTempRepoAsync), ex);
 
                 LogRenovatorException(renovatorException);
 

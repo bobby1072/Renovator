@@ -2,6 +2,6 @@
 {
     public interface IComputerResourceCheckerService
     {
-        Task ExecuteAsync(CancellationToken token = default);
+        Task CheckResourcesAsync(CancellationToken token = default);
     }
 }

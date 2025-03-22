@@ -5,7 +5,7 @@ namespace Npm.Renovator.Domain.Services.Abstract
 {
     public interface IGitNpmRenovatorProcessingManager : IDisposable
     {
-        Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateTempRepo(
+        Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateTempRepoAsync(
             GitDependencyUpgradeBuilder upgradeBuilder,
             CancellationToken token = default
         );
