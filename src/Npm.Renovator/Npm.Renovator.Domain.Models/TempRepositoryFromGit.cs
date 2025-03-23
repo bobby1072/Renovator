@@ -5,7 +5,7 @@ namespace Npm.Renovator.Domain.Models
     public record TempRepositoryFromGit : IDisposable
     {
         public required Uri GitRepoLocation { get; init; }
-        public required Guid FolderId { get; init; }
+        public Guid FolderId { get; init; } = Guid.NewGuid();
         public required string FullPathTo { get; init; }
         public void Dispose()
         {
