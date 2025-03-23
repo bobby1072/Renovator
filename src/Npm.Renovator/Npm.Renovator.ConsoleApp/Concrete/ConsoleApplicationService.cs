@@ -20,14 +20,14 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
     private INpmRenovatorProcessingManager? _processingManagerInstance = null;
     private IGitNpmRenovatorProcessingManager? _gitProcessingManagerInstance = null;
-    private INpmRenovatorProcessingManager _processingManager
+    private INpmRenovatorProcessingManager ProcessingManager
     {
         get =>
         _processingManagerInstance ??=
             _currentAsyncScope.ServiceProvider.GetRequiredService<INpmRenovatorProcessingManager>();
         set => _processingManagerInstance = value;
     }
-    private IGitNpmRenovatorProcessingManager _gitProcessingManager
+    private IGitNpmRenovatorProcessingManager GitProcessingManager
     {
         get =>
         _gitProcessingManagerInstance ??=
@@ -43,8 +43,8 @@ internal class ConsoleApplicationService : IConsoleApplicationService
     public async ValueTask DisposeAsync()
     {
         _gitProcessingManagerInstance?.Dispose();
-        _processingManager = null!;
-        _gitProcessingManager = null!;
+        ProcessingManager = null!;
+        GitProcessingManager = null!;
         await _currentAsyncScope.DisposeAsync();
     }
 
@@ -143,7 +143,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         Console.WriteLine($"{NewConsoleLines()}Getting potential upgrades view. Please wait...{NewConsoleLines()}");
 
         var potentialUpgradesView =
-            await _processingManager.GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
+            await ProcessingManager.GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
                 localFilePath,
                 token
             );
@@ -178,7 +178,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         Console.Clear();
         Console.WriteLine($"{NewConsoleLines()}Cloning repo and analysing package jsons. This may take a minute, please wait...{NewConsoleLines()}");
 
-        var allPackageJsons = await _gitProcessingManager.FindAllPackageJsonsInTempRepoAsync(parsedUri, token);
+        var allPackageJsons = await GitProcessingManager.FindAllPackageJsonsInTempRepoAsync(parsedUri, token);
 
         if(allPackageJsons.Data is null || allPackageJsons.Data.Count == 0)
         {
@@ -206,26 +206,16 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         Console.WriteLine($"{NewConsoleLines()}Getting potential upgrades view. Please wait...{NewConsoleLines()}");
 
         var potentialUpgradesView =
-            await _processingManager.GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
-                chosenLazypackageJson.FullLocalPathToPackageJson,
-                token
-            );
+            await ConsoleGetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(chosenLazypackageJson.FullLocalPathToPackageJson, token);
 
-        if (!potentialUpgradesView.IsSuccess || potentialUpgradesView.Data is null)
-        {
-            throw new ConsoleException(
-                $"{NewConsoleLines()}Failed to retrieve potential upgrades view...{NewConsoleLines()}"
-            );
-        }
-
-        var upradeBuilder = BuildDependencyBuilder(GitDependencyUpgradeBuilder.Create(parsedUri, allNamesInPackageJsons.ElementAt(chosenPackageJsonConsoleChoice - 1).Item1!), potentialUpgradesView.Data);
+        var upradeBuilder = BuildDependencyBuilder(GitDependencyUpgradeBuilder.Create(parsedUri, allNamesInPackageJsons.ElementAt(chosenPackageJsonConsoleChoice - 1).Item1!), potentialUpgradesView);
 
 
         Console.WriteLine(
             $"{NewConsoleLines()}Attempting to renovate repo. This may take a minute, please wait...{NewConsoleLines()}"
         );
 
-        var renovateResult = await _gitProcessingManager.AttemptToRenovateTempRepoAsync(upradeBuilder, token);
+        var renovateResult = await GitProcessingManager.AttemptToRenovateTempRepoAsync(upradeBuilder, token);
 
         DisplayRenovateRepoResult(renovateResult);
 
@@ -243,8 +233,28 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         Console.WriteLine($"{NewConsoleLines()}Getting potential upgrades view. Please wait...{NewConsoleLines()}");
 
         var potentialUpgradesView =
-            await _processingManager.GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
-                upgradeBuilder.LocalSystemFilePathToJson,
+            await ConsoleGetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(upgradeBuilder.LocalSystemFilePathToJson, token);
+
+        upgradeBuilder = BuildDependencyBuilder(upgradeBuilder, potentialUpgradesView);
+
+        Console.WriteLine(
+            $"{NewConsoleLines()}Attempting to renovate repo. This may take a minute, please wait...{NewConsoleLines()}"
+        );
+
+        var renovateResult = await ProcessingManager.AttemptToRenovateLocalSystemRepoAsync(
+            upgradeBuilder,
+            token
+        );
+
+        DisplayRenovateRepoResult(renovateResult);
+        
+        return ReturnToMainMenuChoice();
+    }
+    private async Task<CurrentPackageVersionsAndPotentialUpgradesView> ConsoleGetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(string localFilePathToJson, CancellationToken token)
+    {
+        var potentialUpgradesView =
+            await ProcessingManager.GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
+                localFilePathToJson,
                 token
             );
 
@@ -255,20 +265,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             );
         }
 
-        upgradeBuilder = BuildDependencyBuilder(upgradeBuilder, potentialUpgradesView.Data);
-
-        Console.WriteLine(
-            $"{NewConsoleLines()}Attempting to renovate repo. This may take a minute, please wait...{NewConsoleLines()}"
-        );
-
-        var renovateResult = await _processingManager.AttemptToRenovateLocalSystemRepoAsync(
-            upgradeBuilder,
-            token
-        );
-
-        DisplayRenovateRepoResult(renovateResult);
-        
-        return ReturnToMainMenuChoice();
+        return potentialUpgradesView.Data;
     }
     private static void DisplayRenovateRepoResult(RenovatorOutcome<ProcessCommandResult> renovateResult)
     {
@@ -288,6 +285,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             $"{NewConsoleLines()}Successfully renovated repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.Output}{NewConsoleLines()}"
         );
     }
+
     private static T BuildDependencyBuilder<T>(T upgradeBuilder, CurrentPackageVersionsAndPotentialUpgradesView potentialUpgradesView) where T : DependencyUpgradeBuilder
     {
         Dictionary<string, (string CurrentVersion, string NewVersion)> potentialUpgradeCandidates =
