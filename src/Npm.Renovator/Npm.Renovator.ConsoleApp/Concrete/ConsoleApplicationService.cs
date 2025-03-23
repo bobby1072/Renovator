@@ -125,7 +125,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
                     2 => AttemptToRenovateRepoJourney(ct),
                     3 => AttemptToRenovateGitRepoJourney(ct),
                     4 => throw new OperationCanceledException(),
-                    _ => throw new ConsoleException($"{NewConsoleLines()}Please choose a valid option.{NewConsoleLines()}")
+                    _ => throw new ConsoleException($"{NewConsoleLines()}Please choose a valid option...{NewConsoleLines()}")
                 }
             }
         );
@@ -365,7 +365,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         if (string.IsNullOrEmpty(localFilePath))
         {
             throw new ConsoleException(
-                $"{NewConsoleLines()}Please enter a valid file system path.{NewConsoleLines()}"
+                $"{NewConsoleLines()}Please enter a valid file system path...{NewConsoleLines()}"
             );
         }
 
