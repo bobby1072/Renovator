@@ -9,7 +9,6 @@ using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Models.Extensions;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Npm.Renovator.ConsoleApp.Concrete;
@@ -21,14 +20,14 @@ internal class ConsoleApplicationService : IConsoleApplicationService
 
     private INpmRenovatorProcessingManager? _processingManagerInstance = null;
     private IGitNpmRenovatorProcessingManager? _gitProcessingManagerInstance = null;
-    private INpmRenovatorProcessingManager _processingManager
+    private INpmRenovatorProcessingManager ProcessingManager
     {
         get =>
         _processingManagerInstance ??=
             _currentAsyncScope.ServiceProvider.GetRequiredService<INpmRenovatorProcessingManager>();
         set => _processingManagerInstance = value;
     }
-    private IGitNpmRenovatorProcessingManager _gitProcessingManager
+    private IGitNpmRenovatorProcessingManager GitProcessingManager
     {
         get =>
         _gitProcessingManagerInstance ??=
@@ -44,8 +43,8 @@ internal class ConsoleApplicationService : IConsoleApplicationService
     public async ValueTask DisposeAsync()
     {
         _gitProcessingManagerInstance?.Dispose();
-        _processingManager = null!;
-        _gitProcessingManager = null!;
+        ProcessingManager = null!;
+        GitProcessingManager = null!;
         await _currentAsyncScope.DisposeAsync();
     }
 
@@ -144,7 +143,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         Console.WriteLine($"{NewConsoleLines()}Getting potential upgrades view. Please wait...{NewConsoleLines()}");
 
         var potentialUpgradesView =
-            await _processingManager.GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
+            await ProcessingManager.GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
                 localFilePath,
                 token
             );
@@ -179,7 +178,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         Console.Clear();
         Console.WriteLine($"{NewConsoleLines()}Cloning repo and analysing package jsons. This may take a minute, please wait...{NewConsoleLines()}");
 
-        var allPackageJsons = await _gitProcessingManager.FindAllPackageJsonsInTempRepoAsync(parsedUri, token);
+        var allPackageJsons = await GitProcessingManager.FindAllPackageJsonsInTempRepoAsync(parsedUri, token);
 
         if(allPackageJsons.Data is null || allPackageJsons.Data.Count == 0)
         {
@@ -216,7 +215,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             $"{NewConsoleLines()}Attempting to renovate repo. This may take a minute, please wait...{NewConsoleLines()}"
         );
 
-        var renovateResult = await _gitProcessingManager.AttemptToRenovateTempRepoAsync(upradeBuilder, token);
+        var renovateResult = await GitProcessingManager.AttemptToRenovateTempRepoAsync(upradeBuilder, token);
 
         DisplayRenovateRepoResult(renovateResult);
 
@@ -242,7 +241,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             $"{NewConsoleLines()}Attempting to renovate repo. This may take a minute, please wait...{NewConsoleLines()}"
         );
 
-        var renovateResult = await _processingManager.AttemptToRenovateLocalSystemRepoAsync(
+        var renovateResult = await ProcessingManager.AttemptToRenovateLocalSystemRepoAsync(
             upgradeBuilder,
             token
         );
@@ -254,7 +253,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
     private async Task<CurrentPackageVersionsAndPotentialUpgradesView> ConsoleGetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(string localFilePathToJson, CancellationToken token)
     {
         var potentialUpgradesView =
-            await _processingManager.GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
+            await ProcessingManager.GetCurrentPackageVersionAndPotentialUpgradesViewForLocalSystemRepoAsync(
                 localFilePathToJson,
                 token
             );
