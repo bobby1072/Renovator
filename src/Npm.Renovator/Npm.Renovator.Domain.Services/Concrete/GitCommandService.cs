@@ -3,7 +3,6 @@ using Npm.Renovator.Common.Helpers;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
 using System.Diagnostics;
-using System.Threading;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {

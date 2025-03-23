@@ -7,7 +7,6 @@ using Npm.Renovator.Domain.Models.Extensions;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
 using Npm.Renovator.NpmHttpClient.Abstract;
-using System.Threading;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
