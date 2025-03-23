@@ -3,10 +3,10 @@ using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Exceptions;
 using Npm.Renovator.Common.Helpers;
 using Npm.Renovator.Domain.Models;
+using Npm.Renovator.Domain.Models.Extensions;
 using Npm.Renovator.Domain.Models.Views;
 using Npm.Renovator.Domain.Services.Abstract;
 using Npm.Renovator.NpmHttpClient.Abstract;
-using System.Threading;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
@@ -33,7 +33,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
         {
             _tempRepoInstance?.Dispose();
         }
-        public async Task<RenovatorOutcome<IReadOnlyCollection<CurrentPackageVersionsAndPotentialUpgradesViewWithFullPath>>> GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesView(
+        public async Task<RenovatorOutcome<IReadOnlyCollection<CurrentPackageVersionsAndPotentialUpgradesViewWithFullPath>>> GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesViewAsync(
             Uri gitRepoUri,
             CancellationToken cancellationToken = default
         )
@@ -72,7 +72,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             catch (Exception ex)
             {
                 var renException = RenovatorExceptionHelper.CreateRenovatorException(
-                        nameof(GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesView),
+                        nameof(GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesViewAsync),
                         ex);
 
                 LogRenovatorException(renException);
@@ -85,7 +85,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             }
         }
 
-        public async Task<RenovatorOutcome<IReadOnlyCollection<LazyPackageJson>>> FindAllPackageJsonsInTempRepo(
+        public async Task<RenovatorOutcome<IReadOnlyCollection<LazyPackageJson>>> FindAllPackageJsonsInTempRepoAsync(
             Uri gitRepoUri,
             CancellationToken cancellationToken = default)
         {
@@ -103,7 +103,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             catch (Exception ex)
             {
                 var renException = RenovatorExceptionHelper.CreateRenovatorException(
-                        nameof(FindAllPackageJsonsInTempRepo),
+                        nameof(FindAllPackageJsonsInTempRepoAsync),
                         ex);
 
                 LogRenovatorException(renException);
@@ -114,7 +114,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 };
             }
         }
-        public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateTempRepo(GitDependencyUpgradeBuilder upgradeBuilder, CancellationToken token = default)
+        public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateTempRepoAsync(GitDependencyUpgradeBuilder upgradeBuilder, CancellationToken token = default)
         {
             try
             {
@@ -123,7 +123,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 var allPackageJsons = await _reader.AnalyseMultiplePackageJsonDependenciesAsync(tempRepo.FullPathTo, token);
 
                 var analysedDependencies
-                    = FindPackageJsonByPropertyWithin(allPackageJsons, ("name", upgradeBuilder.NameInPackageJson))
+                    = allPackageJsons.FindPackageJsonByPropertyWithin(("name", upgradeBuilder.NameInPackageJson))
                         ?? throw new InvalidOperationException("Could not find package json in the temp repo with that applictaion name");
 
                 var localUpgradeBuilder = LocalDependencyUpgradeBuilder.Create(analysedDependencies.FullLocalPathToPackageJson);
@@ -137,7 +137,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             }
             catch (Exception ex)
             {
-                var renovatorException = RenovatorExceptionHelper.CreateRenovatorException(nameof(AttemptToRenovateTempRepo), ex);
+                var renovatorException = RenovatorExceptionHelper.CreateRenovatorException(nameof(AttemptToRenovateTempRepoAsync), ex);
 
                 LogRenovatorException(renovatorException);
 
@@ -166,7 +166,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
 
             var tempRepo = await _gitCommandService.CheckoutRemoteRepoToLocalTempStoreAsync(gitRepoUri, cancellationToken);
 
-            if (!tempRepo.IsSuccess || tempRepo.Data is null)
+            if (tempRepo.Data is null)
             {
                 _logger.LogError("Git clone command failed with error output: {Output} and standard output {StdOutput}",
                     tempRepo.ExceptionOutput,
@@ -178,18 +178,6 @@ namespace Npm.Renovator.Domain.Services.Concrete
             _tempRepoInstance = tempRepo.Data;
 
             return _tempRepoInstance;
-        }
-        private static LazyPackageJson? FindPackageJsonByPropertyWithin(IReadOnlyCollection<LazyPackageJson> lazyPackages, (string Key, string Value) keyValue)
-        {
-            foreach(var lazyPack in lazyPackages)
-            {
-                 if(lazyPack.FullPackageJson.Value.Any(x => x.Key == keyValue.Key && x.Value?.ToString() == keyValue.Value))
-                 {
-                    return lazyPack;
-                 }
-            }
-
-            return null;
         }
     }
 }

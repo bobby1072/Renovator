@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
 using Moq;
 
-namespace AiTrainer.Web.TestBase
+namespace Npm.Renovator.Tests
 {
-    public class TestOptionsSnapshot<T>: Mock<IOptionsSnapshot<T>> where T : class
+    public class TestOptionsSnapshot<T> : Mock<IOptionsSnapshot<T>> where T : class
     {
         public TestOptionsSnapshot(T optionsVal)
         {

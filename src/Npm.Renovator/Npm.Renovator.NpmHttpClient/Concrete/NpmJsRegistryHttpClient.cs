@@ -1,7 +1,5 @@
-﻿using BT.Common.Http.Extensions;
-using Flurl;
+﻿using Flurl;
 using Flurl.Http;
-using Flurl.Http.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npm.Renovator.NpmHttpClient.Abstract;
@@ -15,10 +13,10 @@ namespace Npm.Renovator.NpmHttpClient.Concrete
     internal class NpmJsRegistryHttpClient : INpmJsRegistryHttpClient
     {
         private readonly NpmJsRegistryHttpClientSettingsConfiguration _configurations;
-        private readonly ISerializer _jsonSerializer;
+        private readonly INpmJsRegistryHttpClientSerializer _jsonSerializer;
         private readonly ILogger<NpmJsRegistryHttpClient> _logger;
         public NpmJsRegistryHttpClient(IOptionsSnapshot<NpmJsRegistryHttpClientSettingsConfiguration> configurations,
-            ISerializer jsonSerilizer,
+            INpmJsRegistryHttpClientSerializer jsonSerilizer,
             ILogger<NpmJsRegistryHttpClient> logger)
         {
             _configurations = configurations.Value;

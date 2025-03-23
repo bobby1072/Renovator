@@ -3,7 +3,6 @@ using Npm.Renovator.Common.Helpers;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
 using System.Diagnostics;
-using System.Threading;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
@@ -26,8 +25,9 @@ namespace Npm.Renovator.Domain.Services.Concrete
             var tempFolderId = Guid.NewGuid();
             var pathToFolder = Path.Combine(".", _tempFolderLocalLocation, tempFolderId.ToString());
             process.Start();
+            var gitCloneCommand = $"git clone {remoteRepoLocation} {pathToFolder}";
 
-            await process.StandardInput.WriteLineAsync($"git clone {remoteRepoLocation} {pathToFolder}");
+            await process.StandardInput.WriteLineAsync(gitCloneCommand);
             await process.StandardInput.WriteLineAsync($"cd {_tempFolderLocalLocation}");
             await process.StandardInput.WriteLineAsync($"cd {tempFolderId}");
             await process.StandardInput.WriteAsync("git submodule update --recursive --init");
@@ -48,7 +48,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
 
             return new ProcessCommandResult<TempRepositoryFromGit>
             {
-                Output = result.First(),
+                Output = ProcessHelper.GetInnerStandardOutput(result.First(), gitCloneCommand),
                 ExceptionOutput = errorOutput,
                 Data = new TempRepositoryFromGit 
                 {

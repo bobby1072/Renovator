@@ -1,10 +1,10 @@
-﻿using System.Text.Json;
-using System.Text.Json.Nodes;
-using BT.Common.FastArray.Proto;
+﻿using BT.Common.FastArray.Proto;
 using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Extensions;
 using Npm.Renovator.Domain.Models;
 using Npm.Renovator.Domain.Services.Abstract;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
@@ -43,7 +43,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
                 .FastArraySelect(x => new LazyPackageJson
                 {
                     FullLocalPathToPackageJson = x.FullFilePath,
-                    FullPackageJson = CreateLazyFullPackageJson(x.FileText, cancellationToken),
+                    FullPackageJson = CreateLazyFullPackageJson(x.FileText),
                     OriginalPackageJsonDependencies =
                         JsonSerializer.Deserialize<PackageJsonDependencies>(
                             x.FileText,
@@ -69,7 +69,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
             return new LazyPackageJson
             {
                 FullLocalPathToPackageJson = localSystemFilePathToPackageJson,
-                FullPackageJson = CreateLazyFullPackageJson(fileText.FileText, cancellationToken),
+                FullPackageJson = CreateLazyFullPackageJson(fileText.FileText),
                 OriginalPackageJsonDependencies = parsedPackageJsonDependencies,
             };
         }
@@ -131,8 +131,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
         }
 
         private static Lazy<JsonObject> CreateLazyFullPackageJson(
-            string fileText,
-            CancellationToken cancellationToken
+            string fileText
         ) =>
             new(
                 () =>

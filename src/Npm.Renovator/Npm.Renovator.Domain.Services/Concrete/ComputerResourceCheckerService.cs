@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npm.Renovator.Common.Helpers;
 using Npm.Renovator.Domain.Services.Abstract;
@@ -14,7 +13,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
         {
             _logger = logger;
         }
-        public async Task ExecuteAsync(CancellationToken token)
+        public async Task CheckResourcesAsync(CancellationToken token)
         {
             try
             {

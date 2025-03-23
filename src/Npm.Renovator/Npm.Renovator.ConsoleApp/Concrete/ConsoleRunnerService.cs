@@ -16,7 +16,7 @@ namespace Npm.Renovator.ConsoleApp.Concrete
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _computerResourceCheckerService.ExecuteAsync(cancellationToken);
+            await _computerResourceCheckerService.CheckResourcesAsync(cancellationToken);
             await _consoleApplicationService.ExecuteAsync();
         }
         public Task StopAsync(CancellationToken cancellationToken)

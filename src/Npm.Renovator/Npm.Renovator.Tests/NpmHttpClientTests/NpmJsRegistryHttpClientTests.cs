@@ -1,12 +1,9 @@
-﻿using AiTrainer.Web.TestBase;
-using AutoFixture;
-using BT.Common.Http.Serializers;
+﻿using AutoFixture;
 using Flurl.Http.Testing;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Npm.Renovator.NpmHttpClient.Concrete;
 using Npm.Renovator.NpmHttpClient.Configuration;
-using Npm.Renovator.NpmHttpClient.Extensions;
 using Npm.Renovator.NpmHttpClient.Models.Request;
 using Npm.Renovator.NpmHttpClient.Models.Response;
 using System.Text.Json;
@@ -15,10 +12,10 @@ namespace Npm.Renovator.Tests.NpmHttpClientTests
 {
     public class NpmJsRegistryHttpClientTests: IDisposable
     {
-        private static readonly Fixture _fixture = new();
         private static readonly JsonSerializerOptions _serialiserOpts = new (){ PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        private static readonly Fixture _fixture = new();
         private readonly Mock<ILogger<NpmJsRegistryHttpClient>> _mockLogger = new();
-        private readonly DefaultFlurlJsonSerializer _serialiser = NpmHttpClientServiceCollectionExtensions._defaultSerializer;
+        private readonly NpmJsRegistryHttpClientSerializer _serialiser = new();
         private const string _baseURl = "http://localhost:5000";
         private readonly NpmJsRegistryHttpClientSettingsConfiguration _settings = _fixture
             .Build<NpmJsRegistryHttpClientSettingsConfiguration>()
