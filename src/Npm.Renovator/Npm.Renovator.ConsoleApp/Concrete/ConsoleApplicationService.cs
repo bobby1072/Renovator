@@ -218,7 +218,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
             );
         }
 
-        var upradeBuilder = BuildDependencyBuilder(GitDependencyUpgradeBuilder.Create(parsedUri, chosenLazypackageJson.FullLocalPathToPackageJson), potentialUpgradesView.Data);
+        var upradeBuilder = BuildDependencyBuilder(GitDependencyUpgradeBuilder.Create(parsedUri, allNamesInPackageJsons.ElementAt(chosenPackageJsonConsoleChoice - 1).Item1!), potentialUpgradesView.Data);
 
 
         Console.WriteLine(
@@ -280,12 +280,12 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         )
         {
             throw new ConsoleException(
-                $"{NewConsoleLines()}Failed to update repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.ExceptionOutput ?? "None"}{NewConsoleLines()}"
+                $"{NewConsoleLines()}Failed to update repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.ExceptionOutput}{NewConsoleLines()}"
             );
         }
 
         Console.WriteLine(
-            $"{NewConsoleLines()}Successfully renovated repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.Output ?? "None"}{NewConsoleLines()}"
+            $"{NewConsoleLines()}Successfully renovated repo with output: {NewConsoleLines(2)}    {renovateResult.Data?.Output}{NewConsoleLines()}"
         );
     }
     private static T BuildDependencyBuilder<T>(T upgradeBuilder, CurrentPackageVersionsAndPotentialUpgradesView potentialUpgradesView) where T : DependencyUpgradeBuilder

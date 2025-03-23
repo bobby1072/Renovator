@@ -7,10 +7,10 @@
         /// Should reflect the 'name' property in your target package.json
         /// </summary>
         public string NameInPackageJson { get; init; }
-        private GitDependencyUpgradeBuilder(Uri remoteRepoLocation, string localSystemFilePathToJson)
+        private GitDependencyUpgradeBuilder(Uri remoteRepoLocation, string nameInPackageJson)
         {
             RemoteRepoLocation = remoteRepoLocation;
-            NameInPackageJson = localSystemFilePathToJson;
+            NameInPackageJson = nameInPackageJson;
         }
         public static GitDependencyUpgradeBuilder Create(Uri remoteRepoLocation, string localSystemFilePathToJson, params string[] packagesToUpgrade)
         {

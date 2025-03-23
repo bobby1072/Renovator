@@ -167,7 +167,7 @@ namespace Npm.Renovator.Domain.Services.Concrete
 
             var tempRepo = await _gitCommandService.CheckoutRemoteRepoToLocalTempStoreAsync(gitRepoUri, cancellationToken);
 
-            if (!tempRepo.IsSuccess || tempRepo.Data is null)
+            if (tempRepo.Data is null)
             {
                 _logger.LogError("Git clone command failed with error output: {Output} and standard output {StdOutput}",
                     tempRepo.ExceptionOutput,
