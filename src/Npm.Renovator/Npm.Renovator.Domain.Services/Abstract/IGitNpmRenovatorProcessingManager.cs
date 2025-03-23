@@ -13,11 +13,11 @@ namespace Npm.Renovator.Domain.Services.Abstract
             RenovatorOutcome<
                 IReadOnlyCollection<CurrentPackageVersionsAndPotentialUpgradesViewWithFullPath>
             >
-        > GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesView(
+        > GetTempRepoWithCurrentPackageVersionAndPotentialUpgradesViewAsync(
             Uri gitRepoUri,
             CancellationToken cancellationToken = default
         );
-        Task<RenovatorOutcome<IReadOnlyCollection<LazyPackageJson>>> FindAllPackageJsonsInTempRepo(
+        Task<RenovatorOutcome<IReadOnlyCollection<LazyPackageJson>>> FindAllPackageJsonsInTempRepoAsync(
             Uri gitRepoUri,
             CancellationToken cancellationToken = default
         );
