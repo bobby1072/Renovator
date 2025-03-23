@@ -111,24 +111,22 @@ internal class ConsoleApplicationService : IConsoleApplicationService
                 [
                     $"1. View potential package upgrades for project within your local file system. {NewConsoleLines()}",
                     $"2. Attempt to renovate project within your local file system. {NewConsoleLines()}",
-                    $"3. Exit. {NewConsoleLines()}",
+                    $"3. Attempt to renovate public remote git repo. {NewConsoleLines()}",
+                    $"4. Exit. {NewConsoleLines()}",
                 ]
             );
-
-        if (consoleChoice == 3)
-        {
-            throw new OperationCanceledException();
-        }
 
         return Task.FromResult(
             new ConsoleJourneyState
             {
-                NextMove = ct =>
-                    consoleChoice == 1
-                        ? GetCurrentPackageVersionAndPotentialUpgradesViewJourney(
-                            ct
-                        )
-                        : AttemptToRenovateRepoJourney(ct),
+                NextMove = ct => consoleChoice switch
+                {
+                    1 => GetCurrentPackageVersionAndPotentialUpgradesViewJourney(ct),
+                    2 => AttemptToRenovateRepoJourney(ct),
+                    3 => AttemptToRenovateGitRepoJourney(ct),
+                    4 => throw new OperationCanceledException(),
+                    _ => throw new ConsoleException($"{NewConsoleLines()}Please choose a valid option.{NewConsoleLines()}")
+                }
             }
         );
     }
@@ -200,7 +198,7 @@ internal class ConsoleApplicationService : IConsoleApplicationService
         Console.WriteLine($"{NewConsoleLines()}Found {allNamesInPackageJsons.Length} package jsons to renovate...");
         Console.WriteLine($"{NewConsoleLines()}Below are 'name' propeties in each package json found. Please chose one to renovate: {NewConsoleLines()}");
 
-        var chosenPackageJsonConsoleChoice = GetChoice(allNamesInPackageJsons.FastArraySelect(x => $"Name: {x.Item1}"));
+        var chosenPackageJsonConsoleChoice = GetChoice(allNamesInPackageJsons.FastArraySelect(x => $"Name: {x.Item1}{NewConsoleLines()}"));
 
         var chosenLazypackageJson = allNamesInPackageJsons.ElementAt(chosenPackageJsonConsoleChoice - 1).x;
 
