@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using BT.Common.Http.Serializers;
 using Flurl.Http.Testing;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -15,7 +16,7 @@ namespace Npm.Renovator.Tests.NpmHttpClientTests
         private static readonly JsonSerializerOptions _serialiserOpts = new (){ PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         private static readonly Fixture _fixture = new();
         private readonly Mock<ILogger<NpmJsRegistryHttpClient>> _mockLogger = new();
-        private readonly NpmJsRegistryHttpClientSerializer _serialiser = new();
+        private readonly DefaultFlurlJsonSerializer _serialiser = new();
         private const string _baseURl = "http://localhost:5000";
         private readonly NpmJsRegistryHttpClientSettingsConfiguration _settings = _fixture
             .Build<NpmJsRegistryHttpClientSettingsConfiguration>()

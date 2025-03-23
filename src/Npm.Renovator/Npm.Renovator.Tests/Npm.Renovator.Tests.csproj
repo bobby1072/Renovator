@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Http\BT.Common.Http.csproj" />
     <ProjectReference Include="..\Npm.Renovator.Common\Npm.Renovator.Common.csproj" />
     <ProjectReference Include="..\Npm.Renovator.ConsoleApp\Npm.Renovator.ConsoleApp.csproj" />
     <ProjectReference Include="..\Npm.Renovator.Domain.Models\Npm.Renovator.Domain.Models.csproj" />
