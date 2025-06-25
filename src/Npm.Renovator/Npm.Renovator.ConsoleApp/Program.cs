@@ -17,7 +17,9 @@ public static class Program
             using var host = Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration(config =>
                 {
-                    config.AddJsonFile(Path.GetFullPath("appsettings.json"), false);
+                    config
+                        .SetBasePath(Environment.CurrentDirectory)
+                        .AddJsonFile(Path.GetFullPath("appsettings.json"), false);
                 })
                 .ConfigureServices((context, services) =>
                 {

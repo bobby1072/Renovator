@@ -11,6 +11,8 @@ public static class DomainServicesServiceCollectionExtensions
     public static IServiceCollection AddRenovatorApplication(this IServiceCollection serviceCollection, IConfiguration configurationManager)
     {
         serviceCollection
+            .AddLogging()
+            .AddHttpClient()
             .AddNpmHttpClient(configurationManager)
             .AddScoped<IComputerResourceCheckerService, ComputerResourceCheckerService>()
             .AddScoped<INpmCommandService, NpmCommandService>()

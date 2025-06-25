@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -22,7 +22,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Http\BT.Common.Http.csproj" />
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.OperationTimer\BT.Common.OperationTimer.csproj" />
-      <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Polly\BT.Common.Polly.csproj" />
       <ProjectReference Include="..\Npm.Renovator.Common\Npm.Renovator.Common.csproj" />
     </ItemGroup>
 

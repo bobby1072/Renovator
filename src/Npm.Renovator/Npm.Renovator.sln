@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Tests", "Npm.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.Http", "..\Submodules\BT\src\BT.Common\BT.Common.Http\BT.Common.Http.csproj", "{A3CD601D-B89E-4582-B03C-2A2E8D5DA002}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.Http.TestBase", "..\Submodules\BT\src\BT.Common\BT.Common.Http.TestBase\BT.Common.Http.TestBase.csproj", "{09A7F747-286B-40CA-98BA-C641AD3D5C67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{A3CD601D-B89E-4582-B03C-2A2E8D5DA002}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3CD601D-B89E-4582-B03C-2A2E8D5DA002}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3CD601D-B89E-4582-B03C-2A2E8D5DA002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09A7F747-286B-40CA-98BA-C641AD3D5C67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09A7F747-286B-40CA-98BA-C641AD3D5C67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09A7F747-286B-40CA-98BA-C641AD3D5C67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09A7F747-286B-40CA-98BA-C641AD3D5C67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,6 +89,7 @@ Global
 		{85D563CD-8765-4BA9-B9C3-837DABD57EFD} = {09422590-0827-401B-9EF0-73021D43B12C}
 		{9A482B9E-2741-4153-AB47-DB8D06D3712E} = {6BC6FC11-6757-4F0E-8675-BF6B04FC15F7}
 		{A3CD601D-B89E-4582-B03C-2A2E8D5DA002} = {09422590-0827-401B-9EF0-73021D43B12C}
+		{09A7F747-286B-40CA-98BA-C641AD3D5C67} = {09422590-0827-401B-9EF0-73021D43B12C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {256D8D51-8095-48EC-B38C-8F8DE4969BFA}

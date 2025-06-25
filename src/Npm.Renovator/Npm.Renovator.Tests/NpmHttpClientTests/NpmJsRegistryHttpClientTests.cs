@@ -1,73 +1,67 @@
-﻿using AutoFixture;
-using BT.Common.Http.Serializers;
-using Flurl.Http.Testing;
-using Microsoft.Extensions.Logging;
-using Moq;
+﻿using System.Net;
+using AutoFixture;
 using Npm.Renovator.NpmHttpClient.Concrete;
 using Npm.Renovator.NpmHttpClient.Configuration;
 using Npm.Renovator.NpmHttpClient.Models.Request;
 using Npm.Renovator.NpmHttpClient.Models.Response;
-using System.Text.Json;
+using BT.Common.Http.TestBase;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
-namespace Npm.Renovator.Tests.NpmHttpClientTests
+namespace Npm.Renovator.Tests.NpmHttpClientTests;
+
+
+public sealed class NpmJsRegistryHttpClientTests
 {
-    public class NpmJsRegistryHttpClientTests: IDisposable
+    private readonly Fixture _fixture = new();
+    private readonly NpmJsRegistryHttpClientSettingsConfiguration _config;
+    private readonly TestHttpClient _httpClient;
+    private readonly NpmJsRegistryResponse _expectedResponse;
+
+    public NpmJsRegistryHttpClientTests()
     {
-        private static readonly JsonSerializerOptions _serialiserOpts = new (){ PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        private static readonly Fixture _fixture = new();
-        private readonly Mock<ILogger<NpmJsRegistryHttpClient>> _mockLogger = new();
-        private readonly DefaultFlurlJsonSerializer _serialiser = new();
-        private const string _baseURl = "http://localhost:5000";
-        private readonly NpmJsRegistryHttpClientSettingsConfiguration _settings = _fixture
-            .Build<NpmJsRegistryHttpClientSettingsConfiguration>()
-            .With(x => x.BaseUrl, _baseURl)
-            .With(x => x.DelayBetweenAttemptsInSeconds, 0)
-            .With(x => x.TimeoutInSeconds, 2)
-            .With(x => x.TotalAttempts, 1)
-            .Create();
-        private readonly NpmJsRegistryHttpClient _httpClient;
-        private readonly HttpTest _httpTest = new();
-        public NpmJsRegistryHttpClientTests() 
+        _config = new NpmJsRegistryHttpClientSettingsConfiguration
         {
-            _httpClient = new NpmJsRegistryHttpClient(
-                new TestOptionsSnapshot<NpmJsRegistryHttpClientSettingsConfiguration>(_settings).Object,
-                _serialiser,
-                _mockLogger.Object
-            );
-        }
-        public void Dispose()
+            BaseUrl = "https://registry.npmjs.org"
+        };
+
+        _expectedResponse = _fixture.Create<NpmJsRegistryResponse>();
+        _httpClient = new TestHttpClient(
+            new TestStaticJsonHandler<NpmJsRegistryResponse>(
+                _expectedResponse,
+                HttpStatusCode.OK
+            )
+        );
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Should_Build_Request_Correctly_And_Return_Data()
+    {
+        // Arrange
+        var requestBody = new NpmJsRegistryRequestBody
         {
-            _httpTest.Dispose();
-        }
+            Text = "express",
+            Size = 10
+        };
 
+        const string expectedUri = "https://registry.npmjs.org/-/v1/search?text=express&size=10";
 
+        var client = new NpmJsRegistryHttpClient(
+            Options.Create(_config),
+            new NullLogger<NpmJsRegistryHttpClient>(),
+            _httpClient
+        );
 
+        // Act
+        var result = await client.ExecuteAsync(requestBody);
 
-        [Fact]
-        public async Task Client_Builds_Request_Correctly()
-        {
-            //Arrange
-            var mockedNpmJsRegistryBody = _fixture
-                .Build<NpmJsRegistryRequestBody>()
-                .With(x => x.Text, "zod")
-                .Create();
+        // Assert
+        _httpClient.WasExpectedUrlCalled(expectedUri);
+        _httpClient.WasExpectedHttpMethodUsed(HttpMethod.Get);
 
-            var mockedNpmJsRegistryResponse = _fixture.Create<NpmJsRegistryResponse>();
-
-            _httpTest
-                .ForCallsTo($"{_baseURl}/-/v1/search?text={mockedNpmJsRegistryBody.Text}&size={mockedNpmJsRegistryBody.Size}")
-                .WithVerb(HttpMethod.Get)
-                .RespondWith(JsonSerializer.Serialize(mockedNpmJsRegistryResponse, _serialiserOpts));
-
-            //Act
-            var result = await _httpClient.ExecuteAsync(mockedNpmJsRegistryBody);
-
-            //Assert
-            Assert.NotNull(result);
-
-            _httpTest
-                .ShouldHaveCalled($"{_baseURl}/-/v1/search?text={mockedNpmJsRegistryBody.Text}&size={mockedNpmJsRegistryBody.Size}")
-                .WithVerb(HttpMethod.Get);
-        }
+        Assert.NotNull(result);
+        Assert.Equal(_expectedResponse.Total, result!.Total);
+        Assert.Equal(_expectedResponse.Objects.Count, result.Objects.Count);
+        Assert.Equal(_expectedResponse.Time, result.Time);
     }
 }

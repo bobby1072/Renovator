@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Http.TestBase\BT.Common.Http.TestBase.csproj" />
     <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Http\BT.Common.Http.csproj" />
     <ProjectReference Include="..\Npm.Renovator.Common\Npm.Renovator.Common.csproj" />
     <ProjectReference Include="..\Npm.Renovator.ConsoleApp\Npm.Renovator.ConsoleApp.csproj" />
