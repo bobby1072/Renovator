@@ -2,7 +2,7 @@
 
 namespace Renovator.NpmHttpClient.Configuration
 {
-    internal record NpmJsRegistryHttpClientSettingsConfiguration: PollyRetrySettings
+    internal sealed record NpmJsRegistryHttpClientSettingsConfiguration: PollyRetrySettings
     {
         public const string Key = "NpmJsRegistryHttpClientSettings";
         public required string BaseUrl {  get; init; }
