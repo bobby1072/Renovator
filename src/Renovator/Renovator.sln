@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.ConsoleApp", "Npm.Renovator.ConsoleApp\Npm.Renovator.ConsoleApp.csproj", "{66C043D5-5DB4-4EB6-991B-826654B2F1E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Renovator.ConsoleApp", "Renovator.ConsoleApp\Renovator.ConsoleApp.csproj", "{66C043D5-5DB4-4EB6-991B-826654B2F1E9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", "{09422590-0827-401B-9EF0-73021D43B12C}"
 EndProject
@@ -13,17 +13,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.FastArray", "..\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.OperationTimer", "..\Submodules\BT\src\BT.Common\BT.Common.OperationTimer\BT.Common.OperationTimer.csproj", "{85D563CD-8765-4BA9-B9C3-837DABD57EFD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.NpmHttpClient", "Npm.Renovator.NpmHttpClient\Npm.Renovator.NpmHttpClient.csproj", "{F00AEAF3-13AA-4005-99B5-E062B673C6B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Renovator.NpmHttpClient", "Renovator.NpmHttpClient\Renovator.NpmHttpClient.csproj", "{F00AEAF3-13AA-4005-99B5-E062B673C6B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Common", "Npm.Renovator.Common\Npm.Renovator.Common.csproj", "{CC715FBA-1163-471E-8337-8746CC29ED92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Renovator.Common", "Renovator.Common\Renovator.Common.csproj", "{CC715FBA-1163-471E-8337-8746CC29ED92}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Domain.Services", "Npm.Renovator.Domain.Services\Npm.Renovator.Domain.Services.csproj", "{126C3AED-BDCA-48BC-A163-74BA94AF6666}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Renovator.Domain.Services", "Renovator.Domain.Services\Renovator.Domain.Services.csproj", "{126C3AED-BDCA-48BC-A163-74BA94AF6666}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Domain.Models", "Npm.Renovator.Domain.Models\Npm.Renovator.Domain.Models.csproj", "{1661F256-9598-4E7F-AB2F-5E4308722451}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Renovator.Domain.Models", "Renovator.Domain.Models\Renovator.Domain.Models.csproj", "{1661F256-9598-4E7F-AB2F-5E4308722451}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6BC6FC11-6757-4F0E-8675-BF6B04FC15F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Npm.Renovator.Tests", "Npm.Renovator.Tests\Npm.Renovator.Tests.csproj", "{9A482B9E-2741-4153-AB47-DB8D06D3712E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Renovator.Tests", "Renovator.Tests\Renovator.Tests.csproj", "{9A482B9E-2741-4153-AB47-DB8D06D3712E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.Http", "..\Submodules\BT\src\BT.Common\BT.Common.Http\BT.Common.Http.csproj", "{A3CD601D-B89E-4582-B03C-2A2E8D5DA002}"
 EndProject
