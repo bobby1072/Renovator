@@ -1,5 +1,3 @@
 {
-  "ignorePaths": [
-    "src/Npm.Renovator/Npm.Renovator.ConsoleApp/Data/package.json"
-  ]
+  "ignorePaths": ["src/Renovator/Renovator.ConsoleApp/Data/package.json"]
 }
