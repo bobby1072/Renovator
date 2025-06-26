@@ -30,5 +30,5 @@ stages:
             displayName: "Run .NET Unit Tests"
             inputs:
               command: "test"
-              projects: "src/Npm.Renovator/Npm.Renovator.sln"
+              projects: "src/Renovator/Renovator.sln"
               arguments: "-c Release"
