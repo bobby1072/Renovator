@@ -7,3 +7,5 @@ bin/
 .idea/
 
 *.sln.DotSettings.user
+
+.config/
