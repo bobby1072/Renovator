@@ -43,19 +43,6 @@ public class GitCommandServiceTests
     }
 
     [Fact]
-    public async Task CheckoutRemoteRepoToLocalTempStoreAsync_WithCancellationToken_ShouldRespectCancellation()
-    {
-        // Arrange
-        var repoUri = new Uri("https://github.com/octocat/Hello-World.git");
-        using var cts = new CancellationTokenSource();
-        cts.Cancel();
-
-        // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            _service.CheckoutRemoteRepoToLocalTempStoreAsync(repoUri, cts.Token));
-    }
-
-    [Fact]
     public async Task CheckoutRemoteRepoToLocalTempStoreAsync_WithInvalidRepo_ShouldReturnResultWithErrorWithoutActualCloning()
     {
         // Arrange

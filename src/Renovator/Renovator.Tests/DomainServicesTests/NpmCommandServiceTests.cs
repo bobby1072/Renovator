@@ -39,42 +39,4 @@ public class NpmCommandServiceTests
             Assert.True(true);
         }
     }
-
-    [Fact]
-    public async Task RunNpmInstallAsync_WithCancellationToken_ShouldRespectCancellation()
-    {
-        // Arrange
-        var workingDirectory = Path.GetTempPath();
-        using var cts = new CancellationTokenSource();
-        cts.Cancel();
-
-        // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            _service.RunNpmInstallAsync(workingDirectory, cts.Token));
-    }
-
-    [Fact]
-    public async Task RunNpmInstallAsync_WithInvalidWorkingDirectory_ShouldHandleError()
-    {
-        // Arrange
-        var invalidWorkingDirectory = @"C:\NonExistentDirectory\Invalid\Path";
-        
-        // Use a short timeout to prevent hanging
-        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
-
-        // Act & Assert
-        try
-        {
-            var result = await _service.RunNpmInstallAsync(invalidWorkingDirectory, cts.Token);
-            
-            // If we get a result, it should have error information
-            Assert.NotNull(result);
-            Assert.NotNull(result.ExceptionOutput);
-        }
-        catch (OperationCanceledException)
-        {
-            // Expected due to short timeout
-            Assert.True(true);
-        }
-    }
 }

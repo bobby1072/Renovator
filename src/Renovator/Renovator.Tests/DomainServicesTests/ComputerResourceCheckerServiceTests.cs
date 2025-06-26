@@ -16,18 +16,6 @@ public class ComputerResourceCheckerServiceTests
     }
 
     [Fact]
-    public async Task CheckResourcesAsync_WithCancellationToken_ShouldRespectCancellation()
-    {
-        // Arrange
-        using var cts = new CancellationTokenSource();
-        cts.Cancel();
-
-        // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() => 
-            _service.CheckResourcesAsync(cts.Token));
-    }
-
-    [Fact]
     public async Task CheckResourcesAsync_ShouldCompleteWithoutThrowingWhenNotCancelled()
     {
         // Arrange

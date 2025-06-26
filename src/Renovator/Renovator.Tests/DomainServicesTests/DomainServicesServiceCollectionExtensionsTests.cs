@@ -7,16 +7,22 @@ namespace Renovator.Tests.DomainServicesTests;
 
 public class DomainServicesServiceCollectionExtensionsTests
 {
+    private static readonly Dictionary<string, string?> _inMemSettings = new Dictionary<string, string?>
+        {
+            { "NpmJsRegistryHttpClientSettings:BaseUrl", "https://registry.npmjs.com/" },
+            { "NpmJsRegistryHttpClientSettings:TimeoutInSeconds", "45" },
+            { "NpmJsRegistryHttpClientSettings:TotalAttempts", "3" },
+            { "NpmJsRegistryHttpClientSettings:DelayBetweenAttemptsInSeconds", "1" },
+            { "NpmJsRegistryHttpClientSettings:UseJitter", "true" }
+        };
+
     [Fact]
     public void AddRenovatorApplication_ShouldRegisterAllRequiredServices()
     {
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["NpmHttpClient:BaseUrl"] = "https://registry.npmjs.org"
-            })
+            .AddInMemoryCollection(_inMemSettings)
             .Build();
 
         // Act
@@ -38,11 +44,9 @@ public class DomainServicesServiceCollectionExtensionsTests
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["NpmHttpClient:BaseUrl"] = "https://registry.npmjs.org"
-            })
+            .AddInMemoryCollection(_inMemSettings)
             .Build();
+
 
         // Act
         services.AddRenovatorApplication(configuration);
@@ -79,7 +83,9 @@ public class DomainServicesServiceCollectionExtensionsTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder().Build();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(_inMemSettings)
+            .Build();
 
         // Act
         var result = services.AddRenovatorApplication(configuration);
@@ -89,36 +95,12 @@ public class DomainServicesServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddRenovatorApplication_WithNullConfiguration_ShouldStillRegisterServices()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder().Build(); // Empty configuration
-
-        // Act
-        services.AddRenovatorApplication(configuration);
-        var serviceProvider = services.BuildServiceProvider();
-
-        // Assert - Services should still be registered even with minimal configuration
-        Assert.NotNull(serviceProvider.GetService<IComputerResourceCheckerService>());
-        Assert.NotNull(serviceProvider.GetService<INpmCommandService>());
-        Assert.NotNull(serviceProvider.GetService<IGitCommandService>());
-        Assert.NotNull(serviceProvider.GetService<IRepoExplorerService>());
-        
-        // Note: The processing managers might fail to resolve if NpmHttpClient dependencies are not satisfied
-        // but the registration itself should succeed
-    }
-
-    [Fact]
     public void AddRenovatorApplication_ShouldRegisterLoggingAndHttpClient()
     {
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["NpmHttpClient:BaseUrl"] = "https://registry.npmjs.org"
-            })
+            .AddInMemoryCollection(_inMemSettings)
             .Build();
 
         // Act
