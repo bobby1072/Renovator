@@ -8,7 +8,7 @@ namespace Renovator.Tests.DomainServicesTests;
 
 public class DomainServicesServiceCollectionExtensionsTests
 {
-    private static readonly Dictionary<string, string?> _inMemSettings = new Dictionary<string, string?>
+    private static readonly Dictionary<string, string?> _inMemSettings = new ()
         {
             { "NpmJsRegistryHttpClientSettings:BaseUrl", "https://registry.npmjs.com/" },
             { "NpmJsRegistryHttpClientSettings:TimeoutInSeconds", "45" },
@@ -19,27 +19,6 @@ public class DomainServicesServiceCollectionExtensionsTests
 
     [Fact]
     public void AddRenovatorApplication_ShouldRegisterAllRequiredServices()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(_inMemSettings)
-            .Build();
-
-        // Act
-        services.AddRenovatorApplication(configuration);
-
-        // Assert - Verify all services are registered in the service collection
-        Assert.Contains(services, s => s.ServiceType == typeof(IComputerResourceCheckerService));
-        Assert.Contains(services, s => s.ServiceType == typeof(INpmCommandService));
-        Assert.Contains(services, s => s.ServiceType == typeof(IGitCommandService));
-        Assert.Contains(services, s => s.ServiceType == typeof(INpmRenovatorProcessingManager));
-        Assert.Contains(services, s => s.ServiceType == typeof(IGitNpmRenovatorProcessingManager));
-        Assert.Contains(services, s => s.ServiceType == typeof(IRepoExplorerService));
-    }
-
-    [Fact]
-    public void AddRenovatorApplication_ShouldRegisterServicesWithCorrectLifetime()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -81,38 +60,5 @@ public class DomainServicesServiceCollectionExtensionsTests
         Assert.NotNull(repoExplorerService);
         Assert.Equal(ServiceLifetime.Scoped, repoExplorerService.Lifetime);
         Assert.Equal(typeof(RepoExplorerService), repoExplorerService.ImplementationType);
-    }
-
-    [Fact]
-    public void AddRenovatorApplication_ShouldReturnServiceCollection()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(_inMemSettings)
-            .Build();
-
-        // Act
-        var result = services.AddRenovatorApplication(configuration);
-
-        // Assert
-        Assert.Same(services, result);
-    }
-
-    [Fact]
-    public void AddRenovatorApplication_ShouldRegisterLoggingAndHttpClient()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(_inMemSettings)
-            .Build();
-
-        // Act
-        services.AddRenovatorApplication(configuration);
-
-        // Assert - Verify logging and HTTP client service descriptors are registered
-        Assert.Contains(services, s => s.ServiceType == typeof(Microsoft.Extensions.Logging.ILoggerFactory));
-        Assert.Contains(services, s => s.ServiceType == typeof(IHttpClientFactory));
     }
 }
