@@ -13,7 +13,7 @@ using System.Text;
 
 namespace Npm.Renovator.ConsoleApp.Concrete;
 
-internal class ConsoleApplicationService : IConsoleApplicationService
+internal sealed class ConsoleApplicationService : IConsoleApplicationService
 {
     private readonly IServiceProvider _serviceProvider;
     private AsyncServiceScope _currentAsyncScope;

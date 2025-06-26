@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
-    internal class ComputerResourceCheckerService: IComputerResourceCheckerService
+    internal sealed class ComputerResourceCheckerService: IComputerResourceCheckerService
     {
         private readonly ILogger<ComputerResourceCheckerService> _logger;
 

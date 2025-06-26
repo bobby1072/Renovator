@@ -2,7 +2,7 @@
 
 namespace Npm.Renovator.Domain.Models
 {
-    public record TempRepositoryFromGit : IDisposable
+    public sealed record TempRepositoryFromGit : IDisposable
     {
         public required Uri GitRepoLocation { get; init; }
         public Guid FolderId { get; init; } = Guid.NewGuid();

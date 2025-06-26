@@ -1,6 +1,6 @@
 ﻿namespace Npm.Renovator.Domain.Models
 {
-    public class GitDependencyUpgradeBuilder: DependencyUpgradeBuilder
+    public sealed class GitDependencyUpgradeBuilder: DependencyUpgradeBuilder
     {
         public Uri RemoteRepoLocation { get; init; }
         /// <summary>

@@ -7,7 +7,7 @@ public record ProcessCommandResult
     public string? ExceptionOutput { get; init; }
 }
 
-public record ProcessCommandResult<T> : ProcessCommandResult, IDisposable
+public sealed record ProcessCommandResult<T> : ProcessCommandResult, IDisposable
 {
     public T? Data { get; init; }
 

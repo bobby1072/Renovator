@@ -2,7 +2,7 @@
 
 namespace Npm.Renovator.Domain.Models
 {
-    public record LazyPackageJson
+    public sealed record LazyPackageJson
     {
         public required string FullLocalPathToPackageJson { get; init; }
         public required Lazy<JsonObject> FullPackageJson { get; init; }

@@ -10,7 +10,7 @@ using Npm.Renovator.NpmHttpClient.Abstract;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
-    internal class GitNpmRenovatorProcessingManager : NpmRenovatorProcessingManager, IGitNpmRenovatorProcessingManager
+    internal sealed class GitNpmRenovatorProcessingManager : NpmRenovatorProcessingManager, IGitNpmRenovatorProcessingManager
     {
         private readonly ILogger<GitNpmRenovatorProcessingManager> _logger;
         private readonly IGitCommandService _gitCommandService;

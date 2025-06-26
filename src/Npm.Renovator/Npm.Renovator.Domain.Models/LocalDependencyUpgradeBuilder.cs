@@ -1,6 +1,6 @@
 ﻿namespace Npm.Renovator.Domain.Models;
 
-public class LocalDependencyUpgradeBuilder: DependencyUpgradeBuilder
+public sealed class LocalDependencyUpgradeBuilder: DependencyUpgradeBuilder
 {
     public string LocalSystemFilePathToJson { get; init; }
     private LocalDependencyUpgradeBuilder(string localSystemFilePathToJson)

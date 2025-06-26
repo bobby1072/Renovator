@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
-    internal class GitCommandService: IGitCommandService
+    internal sealed class GitCommandService: IGitCommandService
     {
         private const string _tempFolderLocalLocation = "TestGitFolders";
         private readonly ILogger<GitCommandService> _logger;

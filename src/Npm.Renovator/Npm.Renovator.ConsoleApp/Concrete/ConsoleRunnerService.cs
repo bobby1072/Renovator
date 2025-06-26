@@ -4,7 +4,7 @@ using Npm.Renovator.Domain.Services.Abstract;
 
 namespace Npm.Renovator.ConsoleApp.Concrete
 {
-    internal class ConsoleRunnerService: IHostedService
+    internal sealed class ConsoleRunnerService: IHostedService
     {
         private readonly IConsoleApplicationService _consoleApplicationService;
         private readonly IComputerResourceCheckerService _computerResourceCheckerService;

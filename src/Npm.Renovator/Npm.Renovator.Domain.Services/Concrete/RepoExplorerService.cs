@@ -8,7 +8,7 @@ using System.Text.Json.Nodes;
 
 namespace Npm.Renovator.Domain.Services.Concrete
 {
-    internal class RepoExplorerService : IRepoExplorerService
+    internal sealed class RepoExplorerService : IRepoExplorerService
     {
         private static readonly JsonNodeOptions _jsonNodeOptions =
             new() { PropertyNameCaseInsensitive = true };

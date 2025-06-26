@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Npm.Renovator.Domain.Services.Concrete;
 
-internal class NpmCommandService: INpmCommandService
+internal sealed class NpmCommandService: INpmCommandService
 {
     private readonly ILogger<NpmCommandService> _logger;
 

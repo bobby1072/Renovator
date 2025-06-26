@@ -1,6 +1,6 @@
 namespace Npm.Renovator.NpmHttpClient.Models.Response
 {
-    public record NpmJsRegistryResponseSingleObjectPackage
+    public sealed record NpmJsRegistryResponseSingleObjectPackage
     {
         public required string Name { get; init; }
         public required string Version { get; init; }

@@ -11,7 +11,7 @@ public record RenovatorOutcome
     public bool IsSuccess => RenovatorException == null;
 }
 
-public record RenovatorOutcome<T> : RenovatorOutcome
+public sealed record RenovatorOutcome<T> : RenovatorOutcome
 {
     public T? Data { get; init; }
 }
