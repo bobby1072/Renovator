@@ -24,15 +24,29 @@ namespace Renovator.NpmHttpClient.Concrete
 
         public async Task<NpmJsRegistryResponse?> ExecuteAsync(NpmJsRegistryRequestBody requestBody, CancellationToken token = default)
         {
-            var response = await _configurations.BaseUrl
-                .AppendPathSegment("-")
-                .AppendPathSegment("v1")
-                .AppendPathSegment("search")
-                .AppendQueryParameter("text", requestBody.Text)
-                .AppendQueryParameter("size", requestBody.Size.ToString())
-                .GetJsonAsync<NpmJsRegistryResponse>(_httpClient, token);
+            try
+            {
+                var response = await _configurations.BaseUrl
+                    .AppendPathSegment("-")
+                    .AppendPathSegment("v1")
+                    .AppendPathSegment("search")
+                    .AppendQueryParameter("text", requestBody.Text)
+                    .AppendQueryParameter("size", requestBody.Size.ToString())
+                    .GetJsonAsync<NpmJsRegistryResponse>(_httpClient, token);
 
-            return response;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "An exception occured while executing the {ClientName} with message: {Message}",
+                    nameof(NpmJsRegistryHttpClient),
+                    ex.Message
+                );
+
+                throw;
+            }
         }
     }
 }
