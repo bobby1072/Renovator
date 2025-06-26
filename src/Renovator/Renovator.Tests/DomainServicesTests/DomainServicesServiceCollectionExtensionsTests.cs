@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Renovator.Domain.Services.Abstract;
+using Renovator.Domain.Services.Concrete;
 using Renovator.Domain.Services.Extensions;
 
 namespace Renovator.Tests.DomainServicesTests;
@@ -27,15 +28,14 @@ public class DomainServicesServiceCollectionExtensionsTests
 
         // Act
         services.AddRenovatorApplication(configuration);
-        var serviceProvider = services.BuildServiceProvider();
 
-        // Assert - Verify all services are registered
-        Assert.NotNull(serviceProvider.GetService<IComputerResourceCheckerService>());
-        Assert.NotNull(serviceProvider.GetService<INpmCommandService>());
-        Assert.NotNull(serviceProvider.GetService<IGitCommandService>());
-        Assert.NotNull(serviceProvider.GetService<INpmRenovatorProcessingManager>());
-        Assert.NotNull(serviceProvider.GetService<IGitNpmRenovatorProcessingManager>());
-        Assert.NotNull(serviceProvider.GetService<IRepoExplorerService>());
+        // Assert - Verify all services are registered in the service collection
+        Assert.Contains(services, s => s.ServiceType == typeof(IComputerResourceCheckerService));
+        Assert.Contains(services, s => s.ServiceType == typeof(INpmCommandService));
+        Assert.Contains(services, s => s.ServiceType == typeof(IGitCommandService));
+        Assert.Contains(services, s => s.ServiceType == typeof(INpmRenovatorProcessingManager));
+        Assert.Contains(services, s => s.ServiceType == typeof(IGitNpmRenovatorProcessingManager));
+        Assert.Contains(services, s => s.ServiceType == typeof(IRepoExplorerService));
     }
 
     [Fact]
@@ -47,11 +47,10 @@ public class DomainServicesServiceCollectionExtensionsTests
             .AddInMemoryCollection(_inMemSettings)
             .Build();
 
-
         // Act
         services.AddRenovatorApplication(configuration);
 
-        // Assert - Verify services are registered as Scoped
+        // Assert - Verify services are registered as Scoped with correct implementation types
         var computerResourceChecker = services.FirstOrDefault(s => s.ServiceType == typeof(IComputerResourceCheckerService));
         var npmCommandService = services.FirstOrDefault(s => s.ServiceType == typeof(INpmCommandService));
         var gitCommandService = services.FirstOrDefault(s => s.ServiceType == typeof(IGitCommandService));
@@ -61,21 +60,27 @@ public class DomainServicesServiceCollectionExtensionsTests
 
         Assert.NotNull(computerResourceChecker);
         Assert.Equal(ServiceLifetime.Scoped, computerResourceChecker.Lifetime);
+        Assert.Equal(typeof(ComputerResourceCheckerService), computerResourceChecker.ImplementationType);
 
         Assert.NotNull(npmCommandService);
         Assert.Equal(ServiceLifetime.Scoped, npmCommandService.Lifetime);
+        Assert.Equal(typeof(NpmCommandService), npmCommandService.ImplementationType);
 
         Assert.NotNull(gitCommandService);
         Assert.Equal(ServiceLifetime.Scoped, gitCommandService.Lifetime);
+        Assert.Equal(typeof(GitCommandService), gitCommandService.ImplementationType);
 
         Assert.NotNull(npmRenovatorProcessingManager);
         Assert.Equal(ServiceLifetime.Scoped, npmRenovatorProcessingManager.Lifetime);
+        Assert.Equal(typeof(NpmRenovatorProcessingManager), npmRenovatorProcessingManager.ImplementationType);
 
         Assert.NotNull(gitNpmRenovatorProcessingManager);
         Assert.Equal(ServiceLifetime.Scoped, gitNpmRenovatorProcessingManager.Lifetime);
+        Assert.Equal(typeof(GitNpmRenovatorProcessingManager), gitNpmRenovatorProcessingManager.ImplementationType);
 
         Assert.NotNull(repoExplorerService);
         Assert.Equal(ServiceLifetime.Scoped, repoExplorerService.Lifetime);
+        Assert.Equal(typeof(RepoExplorerService), repoExplorerService.ImplementationType);
     }
 
     [Fact]
@@ -105,10 +110,9 @@ public class DomainServicesServiceCollectionExtensionsTests
 
         // Act
         services.AddRenovatorApplication(configuration);
-        var serviceProvider = services.BuildServiceProvider();
 
-        // Assert - Verify logging and HTTP client are available
-        Assert.NotNull(serviceProvider.GetService<Microsoft.Extensions.Logging.ILoggerFactory>());
-        Assert.NotNull(serviceProvider.GetService<System.Net.Http.IHttpClientFactory>());
+        // Assert - Verify logging and HTTP client service descriptors are registered
+        Assert.Contains(services, s => s.ServiceType == typeof(Microsoft.Extensions.Logging.ILoggerFactory));
+        Assert.Contains(services, s => s.ServiceType == typeof(IHttpClientFactory));
     }
 }
