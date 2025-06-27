@@ -16,10 +16,10 @@ namespace Renovator.Domain.Services.Concrete;
 
 internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 {
-    protected readonly INpmJsRegistryHttpClient _npmJsRegistryHttpClient;
     protected readonly IRepoExplorerService _reader;
     private readonly ILogger<NpmRenovatorProcessingManager> _logger;
-    protected readonly INpmCommandService _npmCommandService;
+    private readonly INpmJsRegistryHttpClient _npmJsRegistryHttpClient;
+    private readonly INpmCommandService _npmCommandService;
     public NpmRenovatorProcessingManager(INpmJsRegistryHttpClient npmJsRegistryHttpClient,
         IRepoExplorerService reader,
         ILogger<NpmRenovatorProcessingManager> logger,
@@ -123,9 +123,9 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 
         var (timeTaken, finishedJobs) = await OperationTimerUtils.TimeWithResultsAsync(() => Task.WhenAll(jobList));
 
-        _logger.LogDebug("Npm Requests completed in {TimeTaken}ms with responses: {ResponseArray}",
+        _logger.LogDebug("Npm Requests completed in {TimeTaken}ms with responses: {@ResponseArray}",
             timeTaken,
-            JsonSerializer.Serialize(finishedJobs));
+            finishedJobs);
 
 
         return finishedJobs.FastArrayWhere(x => x is not null).SelectMany(x => x!.Objects).ToArray();
@@ -135,7 +135,26 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         _logger.LogError(ex, "NpmRenovatorProcessingManager caught an exception with the inner message: {InnerMessage}",
             ex.InnerException?.Message);
     }
-    protected async Task AttemptToRollbackRepo(string filePath, LazyPackageJson originalDependencies,
+    protected static IEnumerable<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage> GetListOfPotentialNewPackages(Dictionary<string, string> dependencyList, IReadOnlyCollection<NpmJsRegistryResponseSingleObject> foundPackagesFromRegistry)
+    {
+        foreach (var package in dependencyList)
+        {
+            yield return new CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage
+            {
+                NameOnNpm = package.Key,
+                CurrentVersion = package.Value,
+                PotentialNewVersions = foundPackagesFromRegistry
+                    .FastArrayWhere(x => x.Package.Name == package.Key && x.Package.Version != package.Value.Replace("^", ""))
+                    .FastArraySelect(x => new CurrentPackageVersionsAndPotentialUpgradesViewPotentialNewVersion
+                    {
+                        CurrentVersion = x.Package.Version,
+                        ReleaseDate = x.Updated
+                    })
+                    .ToArray()
+            };
+        }
+    }
+    private async Task AttemptToRollbackRepo(string filePath, LazyPackageJson originalDependencies,
         CancellationToken cancellationToken)
     {
         try
@@ -167,8 +186,13 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 
             newVersionJobList.Add(newVersionJob.Invoke());
         }
-        var versionJobResult = await Task.WhenAll(newVersionJobList);
+        var (timeTaken, versionJobResult) = await OperationTimerUtils.TimeWithResultsAsync(() => Task.WhenAll(newVersionJobList));
 
+        _logger.LogDebug("It took {TimeTaken}ms to get package upgrades from client with results: {@Results}",
+            timeTaken,
+            versionJobResult
+        );
+        
         var dupedDict = dependencyDict.ToDictionary();
         foreach (var vers in versionJobResult)
         {
@@ -178,23 +202,4 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         return dupedDict;
     }
 
-    protected static IEnumerable<CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage> GetListOfPotentialNewPackages(Dictionary<string, string> dependencyList, IReadOnlyCollection<NpmJsRegistryResponseSingleObject> foundPackagesFromRegistry)
-    {
-        foreach (var package in dependencyList)
-        {
-            yield return new CurrentPackageVersionsAndPotentialUpgradesViewSinglePackage
-            {
-                NameOnNpm = package.Key,
-                CurrentVersion = package.Value,
-                PotentialNewVersions = foundPackagesFromRegistry
-                    .FastArrayWhere(x => x.Package.Name == package.Key && x.Package.Version != package.Value.Replace("^", ""))
-                    .FastArraySelect(x => new CurrentPackageVersionsAndPotentialUpgradesViewPotentialNewVersion
-                    {
-                        CurrentVersion = x.Package.Version,
-                        ReleaseDate = x.Updated
-                    })
-                    .ToArray()
-            };
-        }
-    }
 }

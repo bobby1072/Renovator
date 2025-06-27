@@ -2,11 +2,11 @@
 {
     public sealed class GitDependencyUpgradeBuilder: DependencyUpgradeBuilder
     {
-        public Uri RemoteRepoLocation { get; init; }
+        public Uri RemoteRepoLocation { get; }
         /// <summary>
         /// Should reflect the 'name' property in your target package.json
         /// </summary>
-        public string NameInPackageJson { get; init; }
+        public string NameInPackageJson { get; }
         private GitDependencyUpgradeBuilder(Uri remoteRepoLocation, string nameInPackageJson)
         {
             RemoteRepoLocation = remoteRepoLocation;
