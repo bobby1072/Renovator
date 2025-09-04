@@ -35,6 +35,7 @@ internal sealed class ConsoleApplicationService : IConsoleApplicationService
         set => _gitProcessingManagerInstance = value;
     }
 
+    private Action _stopApplication = () => {};
     public ConsoleApplicationService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
@@ -48,8 +49,9 @@ internal sealed class ConsoleApplicationService : IConsoleApplicationService
         await _currentAsyncScope.DisposeAsync();
     }
 
-    public async Task ExecuteAsync()
+    public async Task ExecuteAsync(Action stopApplication, CancellationToken cancellationToken)
     {
+        _stopApplication = stopApplication;
         while (true)
         {
             try
@@ -60,17 +62,15 @@ internal sealed class ConsoleApplicationService : IConsoleApplicationService
                 }
                 _currentAsyncScope = _serviceProvider.CreateAsyncScope();
 
-                using var cancelTokenSource = new CancellationTokenSource();
-
                 var consoleJourneyState = new ConsoleJourneyState { NextMove = MainMenuJourney };
-                while (!cancelTokenSource.IsCancellationRequested)
+                while (!cancellationToken.IsCancellationRequested)
                 {
                     if (consoleJourneyState.NextMove is null)
                     {
                         break;
                     }
                     consoleJourneyState = await consoleJourneyState.NextMove.Invoke(
-                        cancelTokenSource.Token
+                        cancellationToken
                     );
                 }
             }
@@ -80,6 +80,11 @@ internal sealed class ConsoleApplicationService : IConsoleApplicationService
                 Console.WriteLine(
                     $"{NewConsoleLines()}Operation has been cancelled...{NewConsoleLines()}"
                 );
+                return;
+            }
+            catch (EndApplicationException)
+            {
+                _stopApplication.Invoke();
                 return;
             }
             catch (ConsoleException ex)
@@ -124,7 +129,7 @@ internal sealed class ConsoleApplicationService : IConsoleApplicationService
                     1 => GetCurrentPackageVersionAndPotentialUpgradesViewJourney(ct),
                     2 => AttemptToRenovateRepoJourney(ct),
                     3 => AttemptToRenovateGitRepoJourney(ct),
-                    4 => throw new OperationCanceledException(),
+                    4 => throw new EndApplicationException(),
                     _ => throw new ConsoleException($"{NewConsoleLines()}Please choose a valid option...{NewConsoleLines()}")
                 }
             }

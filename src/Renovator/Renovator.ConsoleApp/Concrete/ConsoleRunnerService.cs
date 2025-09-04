@@ -8,19 +8,23 @@ namespace Renovator.ConsoleApp.Concrete
     {
         private readonly IConsoleApplicationService _consoleApplicationService;
         private readonly IComputerResourceCheckerService _computerResourceCheckerService;
-        public ConsoleRunnerService(IConsoleApplicationService consoleApplicationService, IComputerResourceCheckerService computerResourceCheckerService)
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        public ConsoleRunnerService(IConsoleApplicationService consoleApplicationService, IComputerResourceCheckerService computerResourceCheckerService, IHostApplicationLifetime hostApplicationLifetime)
         {
             _consoleApplicationService = consoleApplicationService;
             _computerResourceCheckerService = computerResourceCheckerService;
+            _hostApplicationLifetime = hostApplicationLifetime;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await _computerResourceCheckerService.CheckResourcesAsync(cancellationToken);
-            await _consoleApplicationService.ExecuteAsync();
+            await _consoleApplicationService.ExecuteAsync(_hostApplicationLifetime.StopApplication, cancellationToken);
         }
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            Console.WriteLine($"{Environment.NewLine}Application exiting...{Environment.NewLine}");
+            
             return _consoleApplicationService.DisposeAsync().AsTask();
         }
     }
