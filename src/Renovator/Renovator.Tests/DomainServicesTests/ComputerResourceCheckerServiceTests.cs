@@ -7,12 +7,12 @@ namespace Renovator.Tests.DomainServicesTests;
 
 public class ComputerResourceCheckerServiceTests
 {
-    private readonly Mock<ILogger<ComputerResourceCheckerService>> _mockLogger;
-    private readonly ComputerResourceCheckerService _sut;
+    private readonly Mock<ILogger<ComputerResourceCheckProcessCommand>> _mockLogger;
+    private readonly ComputerResourceCheckProcessCommand _sut;
 
     public ComputerResourceCheckerServiceTests()
     {
-        _mockLogger = new Mock<ILogger<ComputerResourceCheckerService>>();
+        _mockLogger = new Mock<ILogger<ComputerResourceCheckProcessCommand>>();
         _sut = new ComputerResourceCheckerService(_mockLogger.Object);
     }
 

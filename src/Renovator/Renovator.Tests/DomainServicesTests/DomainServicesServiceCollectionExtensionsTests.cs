@@ -39,15 +39,15 @@ public class DomainServicesServiceCollectionExtensionsTests
 
         Assert.NotNull(computerResourceChecker);
         Assert.Equal(ServiceLifetime.Scoped, computerResourceChecker.Lifetime);
-        Assert.Equal(typeof(ComputerResourceCheckerService), computerResourceChecker.ImplementationType);
+        Assert.Equal(typeof(ComputerResourceCheckProcessCommand), computerResourceChecker.ImplementationType);
 
         Assert.NotNull(npmCommandService);
         Assert.Equal(ServiceLifetime.Scoped, npmCommandService.Lifetime);
-        Assert.Equal(typeof(NpmCommandService), npmCommandService.ImplementationType);
+        Assert.Equal(typeof(NpmInstallProcessCommand), npmCommandService.ImplementationType);
 
         Assert.NotNull(gitCommandService);
         Assert.Equal(ServiceLifetime.Scoped, gitCommandService.Lifetime);
-        Assert.Equal(typeof(GitCommandService), gitCommandService.ImplementationType);
+        Assert.Equal(typeof(CheckoutRemoteRepoToLocalTempStoreProcessCommand), gitCommandService.ImplementationType);
 
         Assert.NotNull(npmRenovatorProcessingManager);
         Assert.Equal(ServiceLifetime.Scoped, npmRenovatorProcessingManager.Lifetime);
