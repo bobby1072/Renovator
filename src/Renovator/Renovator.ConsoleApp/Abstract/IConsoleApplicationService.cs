@@ -2,5 +2,5 @@
 
 public interface IConsoleApplicationService: IAsyncDisposable
 {
-    Task ExecuteAsync();
+    Task ExecuteAsync(Action stopApplication, CancellationToken cancellationToken);
 }

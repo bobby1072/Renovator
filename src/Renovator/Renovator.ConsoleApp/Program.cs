@@ -19,18 +19,17 @@ try
         {
             services
                 .AddRenovatorApplication(context.Configuration)
-                .AddLogging(opts =>
-                {
-                    opts.SetMinimumLevel(LogLevel.None);
-                })
                 .AddTransient<IConsoleApplicationService, ConsoleApplicationService>()
                 .AddHostedService<ConsoleRunnerService>();
+        })
+        .ConfigureLogging(opts =>
+        {
+            opts.SetMinimumLevel(LogLevel.None);
         })
         .Build();
 
 
-    await host.StartAsync();
-    await host.StopAsync();
+    await host.RunAsync();
 }
 catch(Exception e)
 {
