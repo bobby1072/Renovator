@@ -19,11 +19,10 @@ namespace Renovator.Domain.Services.Concrete
             ILogger<GitNpmRenovatorProcessingManager> logger,
             INpmJsRegistryHttpClient npmJsRegistryHttpClient,
             IRepoExplorerService reader,
-            ILogger<NpmRenovatorProcessingManager> baseLogger,
             INpmCommandService npmCommandService) :
                 base(npmJsRegistryHttpClient,
                     reader,
-                    baseLogger,
+                    logger,
                     npmCommandService)
         {
             _gitCommandService = gitCommandService;

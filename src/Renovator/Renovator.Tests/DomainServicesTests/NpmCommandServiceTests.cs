@@ -6,13 +6,13 @@ namespace Renovator.Tests.DomainServicesTests;
 
 public class NpmCommandServiceTests
 {
-    private readonly Mock<ILogger<NpmCommandService>> _mockLogger;
-    private readonly NpmCommandService _sut;
+    private readonly Mock<ILogger<NpmInstallProcessCommand>> _mockLogger;
+    private readonly NpmInstallProcessCommand _sut;
 
     public NpmCommandServiceTests()
     {
-        _mockLogger = new Mock<ILogger<NpmCommandService>>();
-        _sut = new NpmCommandService(_mockLogger.Object);
+        _mockLogger = new Mock<ILogger<NpmInstallProcessCommand>>();
+        _sut = new NpmInstallProcessCommand(_mockLogger.Object);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class NpmCommandServiceTests
         // This test verifies current behavior - constructor accepts null
         
         // Act & Assert
-        var service = new NpmCommandService(null!);
+        var service = new NpmInstallProcessCommand(null!);
         Assert.NotNull(service);
         
         // The service will likely fail when used with null logger, but constructor doesn't validate

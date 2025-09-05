@@ -9,7 +9,9 @@ namespace Renovator.ConsoleApp.Concrete
         private readonly IConsoleApplicationService _consoleApplicationService;
         private readonly IComputerResourceCheckerService _computerResourceCheckerService;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
-        public ConsoleRunnerService(IConsoleApplicationService consoleApplicationService, IComputerResourceCheckerService computerResourceCheckerService, IHostApplicationLifetime hostApplicationLifetime)
+        public ConsoleRunnerService(IConsoleApplicationService consoleApplicationService,
+            IComputerResourceCheckerService computerResourceCheckerService, 
+            IHostApplicationLifetime hostApplicationLifetime)
         {
             _consoleApplicationService = consoleApplicationService;
             _computerResourceCheckerService = computerResourceCheckerService;
