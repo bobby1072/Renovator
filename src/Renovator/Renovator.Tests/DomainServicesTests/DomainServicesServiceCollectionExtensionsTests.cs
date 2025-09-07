@@ -30,24 +30,29 @@ public class DomainServicesServiceCollectionExtensionsTests
         services.AddRenovatorApplication(configuration);
 
         // Assert - Verify services are registered as Scoped with correct implementation types
-        var computerResourceChecker = services.FirstOrDefault(s => s.ServiceType == typeof(IComputerResourceCheckerService));
-        var npmCommandService = services.FirstOrDefault(s => s.ServiceType == typeof(INpmCommandService));
-        var gitCommandService = services.FirstOrDefault(s => s.ServiceType == typeof(IGitCommandService));
+        var processExecutor = services.FirstOrDefault(s => s.ServiceType == typeof(IProcessExecutor));
+        var computerResourceChecker = services.FirstOrDefault(s => s.ServiceType == typeof(ComputerResourceCheckProcessCommand));
+        var npmCommandService = services.FirstOrDefault(s => s.ServiceType == typeof(NpmInstallProcessCommand));
+        var gitCommandService = services.FirstOrDefault(s => s.ServiceType == typeof(CheckoutRemoteRepoToLocalTempStoreProcessCommand));
         var npmRenovatorProcessingManager = services.FirstOrDefault(s => s.ServiceType == typeof(INpmRenovatorProcessingManager));
         var gitNpmRenovatorProcessingManager = services.FirstOrDefault(s => s.ServiceType == typeof(IGitNpmRenovatorProcessingManager));
         var repoExplorerService = services.FirstOrDefault(s => s.ServiceType == typeof(IRepoExplorerService));
 
+        Assert.NotNull(processExecutor);
+        Assert.Equal(ServiceLifetime.Scoped, processExecutor.Lifetime);
+        Assert.Equal(typeof(ProcessExecutor), processExecutor.ImplementationType);
+
         Assert.NotNull(computerResourceChecker);
-        Assert.Equal(ServiceLifetime.Scoped, computerResourceChecker.Lifetime);
-        Assert.Equal(typeof(ComputerResourceCheckerService), computerResourceChecker.ImplementationType);
+        Assert.Equal(ServiceLifetime.Transient, computerResourceChecker.Lifetime);
+        Assert.Equal(typeof(ComputerResourceCheckProcessCommand), computerResourceChecker.ImplementationType);
 
         Assert.NotNull(npmCommandService);
-        Assert.Equal(ServiceLifetime.Scoped, npmCommandService.Lifetime);
-        Assert.Equal(typeof(NpmCommandService), npmCommandService.ImplementationType);
+        Assert.Equal(ServiceLifetime.Transient, npmCommandService.Lifetime);
+        Assert.Equal(typeof(NpmInstallProcessCommand), npmCommandService.ImplementationType);
 
         Assert.NotNull(gitCommandService);
-        Assert.Equal(ServiceLifetime.Scoped, gitCommandService.Lifetime);
-        Assert.Equal(typeof(GitCommandService), gitCommandService.ImplementationType);
+        Assert.Equal(ServiceLifetime.Transient, gitCommandService.Lifetime);
+        Assert.Equal(typeof(CheckoutRemoteRepoToLocalTempStoreProcessCommand), gitCommandService.ImplementationType);
 
         Assert.NotNull(npmRenovatorProcessingManager);
         Assert.Equal(ServiceLifetime.Scoped, npmRenovatorProcessingManager.Lifetime);

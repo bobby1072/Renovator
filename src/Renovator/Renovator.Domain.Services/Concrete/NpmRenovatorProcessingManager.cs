@@ -17,18 +17,18 @@ namespace Renovator.Domain.Services.Concrete;
 internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 {
     protected readonly IRepoExplorerService _reader;
+    protected readonly IProcessExecutor _processExecutor;
     private readonly ILogger<NpmRenovatorProcessingManager> _logger;
     private readonly INpmJsRegistryHttpClient _npmJsRegistryHttpClient;
-    private readonly INpmCommandService _npmCommandService;
     public NpmRenovatorProcessingManager(INpmJsRegistryHttpClient npmJsRegistryHttpClient,
         IRepoExplorerService reader,
         ILogger<NpmRenovatorProcessingManager> logger,
-        INpmCommandService npmCommandService)
+        IProcessExecutor processExecutor)
     {
         _npmJsRegistryHttpClient = npmJsRegistryHttpClient;
         _reader = reader;
         _logger = logger;
-        _npmCommandService = npmCommandService;
+        _processExecutor = processExecutor;
     }
 
     public async Task<RenovatorOutcome<ProcessCommandResult>> AttemptToRenovateLocalSystemRepoAsync(LocalDependencyUpgradeBuilder upgradeBuilder, CancellationToken cancellationToken = default)
@@ -48,7 +48,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
             };
             await _reader.UpdateExistingPackageJsonDependenciesAsync(analysedDependencies, upgradeBuilder.LocalSystemFilePathToJson, cancellationToken);
 
-            var npmIResult = await _npmCommandService.RunNpmInstallAsync(upgradeBuilder.LocalSystemFilePathToJson.GetFolderSpaceFromFilePath(), cancellationToken);
+            var npmIResult = await _processExecutor.RunCommandAsync<NpmInstallProcessCommand, string, ProcessCommandResult>(upgradeBuilder.LocalSystemFilePathToJson.GetFolderSpaceFromFilePath(), cancellationToken);
 
             var modelToReturn = new RenovatorOutcome<ProcessCommandResult>
             {
@@ -161,7 +161,7 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         {
             _logger.LogDebug("Attempting to rollback repo at {FilePath}", filePath);
             await _reader.UpdateExistingPackageJsonDependenciesAsync(originalDependencies, filePath, cancellationToken);
-            await _npmCommandService.RunNpmInstallAsync(filePath, cancellationToken);
+            await _processExecutor.RunCommandAsync<NpmInstallProcessCommand, string, ProcessCommandResult>(filePath, cancellationToken);
         }
         catch (Exception ex)
         {

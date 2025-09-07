@@ -13,20 +13,16 @@ namespace Renovator.Domain.Services.Concrete
     internal sealed class GitNpmRenovatorProcessingManager : NpmRenovatorProcessingManager, IGitNpmRenovatorProcessingManager
     {
         private readonly ILogger<GitNpmRenovatorProcessingManager> _logger;
-        private readonly IGitCommandService _gitCommandService;
         private TempRepositoryFromGit? _tempRepoInstance;
-        public GitNpmRenovatorProcessingManager(IGitCommandService gitCommandService,
+        public GitNpmRenovatorProcessingManager(IProcessExecutor processExecutor,
             ILogger<GitNpmRenovatorProcessingManager> logger,
             INpmJsRegistryHttpClient npmJsRegistryHttpClient,
-            IRepoExplorerService reader,
-            ILogger<NpmRenovatorProcessingManager> baseLogger,
-            INpmCommandService npmCommandService) :
+            IRepoExplorerService reader) :
                 base(npmJsRegistryHttpClient,
                     reader,
-                    baseLogger,
-                    npmCommandService)
+                    logger,
+                    processExecutor)
         {
-            _gitCommandService = gitCommandService;
             _logger = logger;
         }
         public void Dispose()
@@ -164,8 +160,9 @@ namespace Renovator.Domain.Services.Concrete
             _tempRepoInstance?.Dispose();
             _tempRepoInstance = null;
 
-            var tempRepo = await _gitCommandService.CheckoutRemoteRepoToLocalTempStoreAsync(gitRepoUri, cancellationToken);
-
+            var tempRepo = await _processExecutor
+                .RunCommandAsync<CheckoutRemoteRepoToLocalTempStoreProcessCommand, Uri, ProcessCommandResult<TempRepositoryFromGit>>(gitRepoUri, cancellationToken);
+            
             if (tempRepo.Data is null)
             {
                 _logger.LogError("Git clone command failed with error output: {Output} and standard output {StdOutput}",

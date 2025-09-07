@@ -1,18 +1,21 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Renovator.Domain.Services.Concrete;
+using System.Diagnostics;
 
 namespace Renovator.Tests.DomainServicesTests;
 
 public class NpmCommandServiceTests
 {
-    private readonly Mock<ILogger<NpmCommandService>> _mockLogger;
-    private readonly NpmCommandService _sut;
+    private readonly Mock<ILogger<NpmInstallProcessCommand>> _mockLogger;
+    private readonly Mock<Process> _mockProcess;
+    private readonly NpmInstallProcessCommand _sut;
 
     public NpmCommandServiceTests()
     {
-        _mockLogger = new Mock<ILogger<NpmCommandService>>();
-        _sut = new NpmCommandService(_mockLogger.Object);
+        _mockLogger = new Mock<ILogger<NpmInstallProcessCommand>>();
+        _mockProcess = new Mock<Process>();
+        _sut = new NpmInstallProcessCommand(_mockProcess.Object, _mockLogger.Object);
     }
 
     [Fact]
@@ -23,7 +26,7 @@ public class NpmCommandServiceTests
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var result = await _sut.RunNpmInstallAsync(workingDirectory, cancellationToken);
+        var result = await _sut.ExecuteCommandAsync(workingDirectory, cancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -43,7 +46,7 @@ public class NpmCommandServiceTests
 
         // Act & Assert
         await Assert.ThrowsAnyAsync<OperationCanceledException>(
-            () => _sut.RunNpmInstallAsync(workingDirectory, cts.Token));
+            () => _sut.ExecuteCommandAsync(workingDirectory, cts.Token));
     }
 
     [Theory]
@@ -62,7 +65,7 @@ public class NpmCommandServiceTests
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var result = await _sut.RunNpmInstallAsync(directory, cancellationToken);
+        var result = await _sut.ExecuteCommandAsync(directory, cancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -78,7 +81,7 @@ public class NpmCommandServiceTests
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var result = await _sut.RunNpmInstallAsync(workingDirectory, cancellationToken);
+        var result = await _sut.ExecuteCommandAsync(workingDirectory, cancellationToken);
 
         // Assert
         if (!string.IsNullOrEmpty(result.ExceptionOutput))
@@ -103,7 +106,7 @@ public class NpmCommandServiceTests
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var result = await _sut.RunNpmInstallAsync(workingDirectory, cancellationToken);
+        var result = await _sut.ExecuteCommandAsync(workingDirectory, cancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -122,7 +125,7 @@ public class NpmCommandServiceTests
         // This test verifies current behavior - constructor accepts null
         
         // Act & Assert
-        var service = new NpmCommandService(null!);
+        var service = new NpmInstallProcessCommand(new Process(), null!);
         Assert.NotNull(service);
         
         // The service will likely fail when used with null logger, but constructor doesn't validate
@@ -140,7 +143,7 @@ public class NpmCommandServiceTests
         
         try
         {
-            var result = await _sut.RunNpmInstallAsync(workingDirectory, cts.Token);
+            var result = await _sut.ExecuteCommandAsync(workingDirectory, cts.Token);
             var elapsed = DateTime.UtcNow - startTime;
             
             // Assert - Should complete within reasonable time
@@ -168,7 +171,7 @@ public class NpmCommandServiceTests
         // Either by throwing an exception or returning an error result
         try
         {
-            var result = await _sut.RunNpmInstallAsync(invalidDirectory, cancellationToken);
+            var result = await _sut.ExecuteCommandAsync(invalidDirectory, cancellationToken);
             Assert.NotNull(result);
             // If it returns a result, it should indicate failure or have some output
             Assert.True(!string.IsNullOrEmpty(result.ExceptionOutput) || 

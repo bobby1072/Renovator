@@ -34,7 +34,7 @@ try
 catch(Exception e)
 {
     Console.Clear();
-    Console.WriteLine($"Exception occured during setup with message: {Environment.NewLine}");
+    Console.WriteLine($"unexpected exception occurred during setup with message: {Environment.NewLine}");
     Console.WriteLine(e.Message);
 }
 
