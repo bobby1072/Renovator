@@ -2,18 +2,21 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Renovator.Common.Exceptions;
 using Renovator.Domain.Services.Concrete;
+using System.Diagnostics;
 
 namespace Renovator.Tests.DomainServicesTests;
 
 public class ComputerResourceCheckerServiceTests
 {
     private readonly Mock<ILogger<ComputerResourceCheckProcessCommand>> _mockLogger;
+    private readonly Mock<Process> _mockProcess;
     private readonly ComputerResourceCheckProcessCommand _sut;
 
     public ComputerResourceCheckerServiceTests()
     {
         _mockLogger = new Mock<ILogger<ComputerResourceCheckProcessCommand>>();
-        _sut = new ComputerResourceCheckerService(_mockLogger.Object);
+        _mockProcess = new Mock<Process>();
+        _sut = new ComputerResourceCheckProcessCommand(_mockProcess.Object, _mockLogger.Object);
     }
 
     [Fact]
@@ -28,7 +31,7 @@ public class ComputerResourceCheckerServiceTests
         
         try
         {
-            await _sut.CheckResourcesAsync(cancellationToken);
+            await _sut.ExecuteCommandAsync(cancellationToken);
             // If we get here, the system has the required resources
             Assert.True(true, "System has required resources (npm, node, git)");
         }
@@ -60,7 +63,7 @@ public class ComputerResourceCheckerServiceTests
         // The service might throw InvalidProgramException if system resources are missing
         // or OperationCanceledException if cancellation is properly handled
         var exception = await Assert.ThrowsAnyAsync<Exception>(
-            () => _sut.CheckResourcesAsync(cts.Token));
+            () => _sut.ExecuteCommandAsync(cts.Token));
         
         Assert.True(exception is OperationCanceledException or InvalidProgramException,
             $"Expected OperationCanceledException or InvalidProgramException, but got {exception.GetType()}");
@@ -80,7 +83,7 @@ public class ComputerResourceCheckerServiceTests
         
         try
         {
-            await _sut.CheckResourcesAsync(cts.Token);
+            await _sut.ExecuteCommandAsync(cts.Token);
             var elapsed = DateTime.UtcNow - startTime;
             
             // Assert - Should complete reasonably quickly if tools are available
@@ -108,7 +111,7 @@ public class ComputerResourceCheckerServiceTests
         // This test verifies current behavior - constructor accepts null
         
         // Act & Assert
-        var service = new ComputerResourceCheckerService(null!);
+        var service = new ComputerResourceCheckProcessCommand(new Process(), null!);
         Assert.NotNull(service);
         
         // The service will likely fail when used with null logger, but constructor doesn't validate
@@ -127,7 +130,7 @@ public class ComputerResourceCheckerServiceTests
         Exception? caughtException = null;
         try
         {
-            await _sut.CheckResourcesAsync(cancellationToken);
+            await _sut.ExecuteCommandAsync(cancellationToken);
         }
         catch (Exception ex)
         {
