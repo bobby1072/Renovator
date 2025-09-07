@@ -16,14 +16,14 @@ public static class DomainServicesServiceCollectionExtensions
             .AddLogging()
             .AddHttpClient()
             .AddNpmHttpClient(configurationManager)
-            .AddScoped<ComputerResourceCheckProcessCommand>()
-            .AddScoped<NpmInstallProcessCommand>()
-            .AddScoped<IGitCommandService, CheckoutRemoteRepoToLocalTempStoreProcessCommand>()
             .AddScoped<INpmRenovatorProcessingManager, NpmRenovatorProcessingManager>()
             .AddScoped<IGitNpmRenovatorProcessingManager, GitNpmRenovatorProcessingManager>()
             .AddScoped<IRepoExplorerService, RepoExplorerService>()
             .AddScoped<IProcessExecutor, ProcessExecutor>()
-            .AddScoped(sp =>
+            .AddTransient<ComputerResourceCheckProcessCommand>()
+            .AddTransient<NpmInstallProcessCommand>()
+            .AddTransient<CheckoutRemoteRepoToLocalTempStoreProcessCommand>()
+            .AddTransient(_ =>
             {
                 var process = new Process();
                 process.StartInfo = ProcessHelper.GetDefaultProcessStartInfo();

@@ -2,7 +2,7 @@ using Renovator.Domain.Models;
 
 namespace Renovator.Domain.Services.Abstract;
 
-internal interface IProcessExecutor
+public interface IProcessExecutor
 {
     Task<TProcessCommandResult> RunCommandAsync<TProcessCommand, TProcessCommandResult>(CancellationToken ct = default)
         where TProcessCommand : BaseProcessCommand<TProcessCommandResult>

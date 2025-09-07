@@ -5,7 +5,7 @@ using Renovator.Domain.Models;
 
 namespace Renovator.Domain.Services.Concrete
 {
-    internal sealed class ComputerResourceCheckProcessCommand: BaseProcessCommand<ProcessCommandResult>
+    public sealed class ComputerResourceCheckProcessCommand: BaseProcessCommand<ProcessCommandResult>
     {
         public override string Name => nameof(ComputerResourceCheckProcessCommand);
         private readonly ILogger<ComputerResourceCheckProcessCommand> _logger;

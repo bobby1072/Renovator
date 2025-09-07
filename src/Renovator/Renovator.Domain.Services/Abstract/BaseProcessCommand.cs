@@ -3,7 +3,7 @@ using Renovator.Domain.Models;
 
 namespace Renovator.Domain.Services.Abstract;
 
-internal abstract class BaseProcessCommand: IDisposable
+public abstract class BaseProcessCommand
 {
     public abstract string Name { get; }
     protected readonly Process _processRunner;
@@ -11,16 +11,15 @@ internal abstract class BaseProcessCommand: IDisposable
     {
         _processRunner = processRunner;
     }
-    public void Dispose() => _processRunner.Dispose();
 }
 
-internal abstract class BaseProcessCommand<TProcessCommandResult>: BaseProcessCommand where TProcessCommandResult : ProcessCommandResult
+public abstract class BaseProcessCommand<TProcessCommandResult>: BaseProcessCommand where TProcessCommandResult : ProcessCommandResult
 {
     public BaseProcessCommand(Process processRunner): base(processRunner) {}
     public abstract Task<TProcessCommandResult> ExecuteCommandAsync(CancellationToken cancellationToken = default);
 }
 
-internal abstract class BaseProcessCommand<TProcessCommandInput, TProcessCommandResult> : BaseProcessCommand where TProcessCommandResult : ProcessCommandResult
+public abstract class BaseProcessCommand<TProcessCommandInput, TProcessCommandResult> : BaseProcessCommand where TProcessCommandResult : ProcessCommandResult
 {
     public BaseProcessCommand(Process processRunner): base(processRunner) {}
     public abstract Task<TProcessCommandResult> ExecuteCommandAsync(TProcessCommandInput input, CancellationToken token = default);
