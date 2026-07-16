@@ -1,9 +1,8 @@
-﻿using BT.Common.FastArray.Proto;
-using BT.Common.OperationTimer.Proto;
+﻿using System.Diagnostics;
+using BT.Common.FastArray.Proto;
 using Microsoft.Extensions.Logging;
 using Renovator.Domain.Models;
 using Renovator.Domain.Models.Views;
-using System.Text.Json;
 using Renovator.Common.Exceptions;
 using Renovator.Common.Extensions;
 using Renovator.Common.Helpers;
@@ -120,11 +119,12 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
         var jobList = packagesToCheck.DistinctBy(x => x.Key).FastArraySelect(x => _npmJsRegistryHttpClient.ExecuteAsync(
                 new NpmJsRegistryRequestBody { Text = x.Key, Size = 1 }
             ));
-
-        var (timeTaken, finishedJobs) = await OperationTimerUtils.TimeWithResultsAsync(() => Task.WhenAll(jobList));
-
+        var stopWatch = Stopwatch.StartNew();
+        var finishedJobs = await Task.WhenAll(jobList);
+        stopWatch.Stop();    
+        
         _logger.LogDebug("Npm Requests completed in {TimeTaken}ms with responses: {@ResponseArray}",
-            timeTaken,
+            stopWatch.ElapsedMilliseconds,
             finishedJobs);
 
 
@@ -186,10 +186,12 @@ internal class NpmRenovatorProcessingManager : INpmRenovatorProcessingManager
 
             newVersionJobList.Add(newVersionJob.Invoke());
         }
-        var (timeTaken, versionJobResult) = await OperationTimerUtils.TimeWithResultsAsync(() => Task.WhenAll(newVersionJobList));
-
+        var stopWatch = Stopwatch.StartNew();
+        var versionJobResult = await Task.WhenAll(newVersionJobList);
+        stopWatch.Stop();
+        
         _logger.LogDebug("It took {TimeTaken}ms to get package upgrades from client with results: {@Results}",
-            timeTaken,
+            stopWatch.ElapsedMilliseconds,
             versionJobResult
         );
         
